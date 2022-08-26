@@ -15,29 +15,3 @@ path_create <- function(..., abs = FALSE) {
     path
   }
 }
-
-
-#' Check Whether a `dm` Object is Connected to a Remote Server
-#'
-#' @param dm The `dm` object to check
-#'
-#' @return A `logical` indicating whether the `dm` is remote or not
-#'
-#' @keywords internal
-dm_is_remote <- function(dm) {
-  con <- try(dm::dm_get_con(dm), silent = TRUE)
-  !rlang::inherits_any(con, "try-error")
-}
-
-
-#' Disconnect a `dm` Object from the Remote Server
-#'
-#' @param dm The `dm` object to disconnect
-#'
-#' @return The `dm` (invisibly)
-#'
-#' @keywords internal
-dm_disconnect <- function(dm) {
-  if (dm_is_remote(dm)) DBI::dbDisconnect(dm::dm_get_con(dm))
-  invisible(dm)
-}

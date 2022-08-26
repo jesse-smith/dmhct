@@ -4,7 +4,7 @@
 \alias{path_create}
 \title{Create a Path from Components}
 \usage{
-path_create(...)
+path_create(..., abs = FALSE)
 }
 \arguments{
 \item{...}{\verb{[chr]} Components of a path}
