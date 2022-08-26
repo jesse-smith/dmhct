@@ -39,6 +39,8 @@ con_sql_server <- function(
 #' @param con An ODBC connection
 #'
 #' @return A `dm` containing HCT data
+#'
+#' @export
 dm_sql_server <- function(con = con_sql_server()) {
   # Check whether connection is default argument (and thus transient)
   con_quo <- rlang::enquo(con)
