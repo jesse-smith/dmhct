@@ -21,7 +21,6 @@ dm_elt <- function(
 ) {
   # Check arguments
   stopifnot(dm_is_remote(dm_remote))
-  checkmate::assert_logical(data.table, any.missing = FALSE, len = 1L)
   checkmate::assert_logical(cache, any.missing = FALSE, len = 1L)
   checkmate::assert_logical(reset, any.missing = FALSE, len = 1L)
   checkmate::assert_logical(
