@@ -13,7 +13,7 @@ dm_cache_write <- function(
     dm,
     checksum,
     file,
-    dir = path_create(system.file("", package = "dmhct"), "cache"),
+    dir = path_create("~", ".cache_dmhct"),
     n_threads = max(1L, parallel::detectCores() %/% 2L)
 ) {
   # Clean and combine file and dir
@@ -58,7 +58,7 @@ dm_cache_write <- function(
 dm_cache_check <- function(
     checksum,
     file,
-    dir = path_create(system.file("", package = "predHCT"), "cache"),
+    dir = path_create("~", ".cache_dmhct"),
     n_threads = max(1L, parallel::detectCores() %/% 2L)
 ) {
   # Read
@@ -82,7 +82,7 @@ dm_cache_check <- function(
 dm_cache_read <- function(
     obj = c("data", "checksum"),
     file,
-    dir = path_create(system.file("", package = "predHCT"), "cache"),
+    dir = path_create("~", ".cache_dmhct"),
     fail = TRUE,
     n_threads = if (obj == "data") max(1L, parallel::detectCores() %/% 2L) else 1L
 ) {

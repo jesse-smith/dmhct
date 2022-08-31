@@ -7,7 +7,7 @@
 dm_cache_read(
   obj = c("data", "checksum"),
   file,
-  dir = path_create(system.file("", package = "predHCT"), "cache"),
+  dir = path_create("~", ".cache_dmhct"),
   fail = TRUE,
   n_threads = if (obj == "data") max(1L, parallel::detectCores()\%/\%2L) else 1L
 )

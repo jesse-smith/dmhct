@@ -7,7 +7,7 @@
 dm_cache_check(
   checksum,
   file,
-  dir = path_create(system.file("", package = "predHCT"), "cache"),
+  dir = path_create("~", ".cache_dmhct"),
   n_threads = max(1L, parallel::detectCores()\%/\%2L)
 )
 }
