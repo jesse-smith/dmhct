@@ -124,16 +124,18 @@ dm_extract <- function(
 
   # Extract tables
   dm_remote <- dm_remote %>%
+    dm_cerner_extract() %>%
+    dm_chimerism_extract() %>%
+    dm_death_extract() %>%
     dm_disease_status_extract() %>%
     dm_engraftment_extract() %>%
-    dm_relapse_extract() %>%
-    dm_cerner_extract() %>%
-    dm_master_extract() %>%
-    dm_death_extract() %>%
     dm_hla_extract() %>%
+    dm_master_extract() %>%
+    dm_mrd_extract() %>%
+    dm_relapse_extract() %>%
     dm::dm_select_tbl(
-      c("disease_status", "engraftment", "relapse", "cerner", "master"),
-      c("death", "hla", "chimerism", "mrd")
+      c("cerner", "chimerism", "death", "disease_status", "engraftment", "hla"),
+      c("master", "mrd", "relapse")
     )
 
   # Collect/compute
@@ -178,12 +180,12 @@ dm_transform <- function(dm_local = dm_extract(), cache = TRUE, reset = FALSE) {
   }
 
   dm_local <- dm_local %>%
+    dm_cerner_transform() %>%
+    dm_death_transform() %>%
     dm_disease_status_transform() %>%
     dm_engraftment_transform() %>%
-    dm_cerner_transform() %>%
     dm_hla_transform() %>%
-    dm_master_transform() %>%
-    dm_death_transform()
+    dm_master_transform()
 
   # Cache
   if (cache || reset) dm_cache_write(dm_local, checksum, cache_file)
