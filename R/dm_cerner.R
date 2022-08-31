@@ -9,7 +9,7 @@
 #' @return The updated `dm`
 dm_cerner_extract <- function(
     dm_remote,
-    path_var = system.file("extdata", "cerner_var_map.csv", package = "predHCT"),
+    path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct"),
     quiet = TRUE
 ) {
   if ("cerner" %in% names(dm_remote)) {
@@ -47,7 +47,7 @@ dm_cerner_extract <- function(
 dm_cerner_transform <- function(
     dm_local,
     numeric_only = TRUE,
-    path = system.file("extdata", "cerner_var_map.csv", package = "predHCT")
+    path = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
 ) {
   dt <- dm_local$cerner
   class <- df_class(dt)
@@ -287,7 +287,7 @@ dm_cerner_transform <- function(
 #' @keywords internal
 std_cerner_tbl <- function(
     tbl,
-    path_var = system.file("extdata", "cerner_var_map.csv", package = "predHCT")
+    path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
 ) {
   # Get column names
   cols <- colnames(tbl)

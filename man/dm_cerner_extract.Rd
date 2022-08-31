@@ -6,7 +6,7 @@
 \usage{
 dm_cerner_extract(
   dm_remote,
-  path_var = system.file("extdata", "cerner_var_map.csv", package = "predHCT"),
+  path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct"),
   quiet = TRUE
 )
 }

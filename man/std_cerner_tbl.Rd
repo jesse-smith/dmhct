@@ -6,7 +6,7 @@
 \usage{
 std_cerner_tbl(
   tbl,
-  path_var = system.file("extdata", "cerner_var_map.csv", package = "predHCT")
+  path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
 )
 }
 \arguments{

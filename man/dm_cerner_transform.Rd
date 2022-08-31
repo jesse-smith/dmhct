@@ -7,7 +7,7 @@
 dm_cerner_transform(
   dm_local,
   numeric_only = TRUE,
-  path = system.file("extdata", "cerner_var_map.csv", package = "predHCT")
+  path = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
 )
 }
 \arguments{
