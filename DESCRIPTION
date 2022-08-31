@@ -13,13 +13,16 @@ Imports:
     dbplyr,
     dm,
     dplyr,
+    forcats,
     fs,
+    janitor,
     lubridate,
     magrittr,
     odbc,
     purrr,
     qs,
     rlang,
+    stringi,
     stringr,
     tibble
 Encoding: UTF-8
