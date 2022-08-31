@@ -242,16 +242,10 @@ dm_master_transform <- function(dm_local) {
   # Only use marrow and PBSC transplants
   dt <- dt[cat_product_type %in% c("Marrow", "PBSC", NA_character_)]
   # Don't use mismatched donors
-  data.table::set(dt, j = "is_mm06", value = dt$cat_degree_match06 < 3L)
-  data.table::set(dt, i = is.na(dt$is_mm06), j = "is_mm06", value = FALSE)
-  dt[, "is_mm06" := cat_degree_match06 < 3L]
-  dt[, "is_mm08" := cat_degree_match08 < 4L]
-  dt[, "is_mm10" := cat_degree_match10 < 5L]
-  dt[, "is_mm" := cat_donor_type %like% "^MM"]
-  dt[is.na(is_mm06), "is_mm06" := FALSE]
-  dt[is.na(is_mm08), "is_mm08" := FALSE]
-  dt[is.na(is_mm10), "is_mm10" := FALSE]
-  dt[is.na(is_mm), "is_mm" := FALSE]
+  dt[, "is_mm06" := tidyr::replace_na(cat_degree_match06 < 3L, FALSE)]
+  dt[, "is_mm08" := tidyr::replace_na(cat_degree_match08 < 4L, FALSE)]
+  dt[, "is_mm10" := tidyr::replace_na(cat_degree_match10 < 5L, FALSE)]
+  dt[, "is_mm" := tidyr::replace_na(cat_donor_type %like% "^MM", FALSE)]
   dt[, "is_mm" := is_mm | is_mm06 | is_mm08 | is_mm10]
   dt <- dt[is_mm == FALSE]
   mm_cols <- stringr::str_subset(colnames(dt), "^is_mm")
