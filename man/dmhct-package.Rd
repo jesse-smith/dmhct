@@ -4,12 +4,12 @@
 \name{dmhct-package}
 \alias{dmhct}
 \alias{dmhct-package}
-\title{dmhct: What the Package Does (One Line, Title Case)}
+\title{dmhct: A Data Model Package for the MLinHCT Project}
 \description{
-What the package does (one paragraph).
+Extracts, Loads, and Transforms data from the SQL Server containing HCT data to a `dm` object with cleaned tables.
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Jesse Smith \email{jesse.smith@stjude.org}
 
 }
 \keyword{internal}

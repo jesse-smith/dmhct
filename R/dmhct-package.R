@@ -21,3 +21,5 @@
 ## usethis namespace: end
 NULL
 
+# Suppress R CMD CHECK NOTES for `.data` and `.`
+globalVariables(c(".data", "."), add = TRUE)

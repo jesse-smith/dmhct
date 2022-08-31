@@ -1,19 +1,20 @@
 #' Extract, Load, and Transform Remote Tables to Local Source
 #'
 #' @param dm_remote Remote `dm` object containing HCT data
-#' @param cache Whether to use the cache. If `cache == TRUE` and `reset == TRUE`,
-#'   the data will be ELT'd from the source and cached, even if an up-to-date
-#'   cache exists.
-#' @param reset Whether to force collection and caching of data.
-#' @param close Whether to close the SQL Server connection on exit. `NULL`
-#'   closes if `dm_remote` has attribute `default == TRUE` and leaves open
-#'   otherwise.
+#' @param cache `[logical(1)]` Should results be cached (if inputs have changed)
+#'   or read from cache (if inputs have not changed)?
+#' @param reset `[logical(1)]` Should the cache be reset to the current results,
+#'   even if inputs have not changed? This is useful if data processing logic
+#'   has changed, but the underlying data have not.
+#' @param close `[logical(1)]` Whether to close the SQL Server connection on
+#'   exit. `NULL` closes if `dm_remote` has attribute `default == TRUE` and
+#'   leaves open otherwise.
 #'
 #' @return A `dm` object
 #'
 #' @export
 dm_elt <- function(
-    dm_remote = sql_server_dm(),
+    dm_remote = dm_sql_server(),
     cache = TRUE,
     reset = FALSE,
     close = NULL
@@ -60,12 +61,23 @@ dm_elt <- function(
 #'   combines all Cerner tables into one and joins HLA tables.
 #'
 #' @param dm_remote `[dm]` A `dm` object connected to the SQL Server for MLinHCT
+#' @param collect `[logical(1)]` Should tables be collected locally on output?
+#'   `collect = TRUE` means that tables will also be computed, even if
+#'   `compute = FALSE`.
+#' @param compute `[logical(1)]` Should tables be computed on the server? This
+#'   does not mean that the computed tables will be transferred to the local
+#'   machine; to do so, set `collect = TRUE`.
+#' @param cache `[logical(1)]` Should results be cached (if inputs have changed)
+#'   or read from cache (if inputs have not changed)?
+#' @param reset `[logical(1)]` Should the cache be reset to the current results,
+#'   even if inputs have not changed? This is useful if data processing logic
+#'   has changed, but the underlying data have not.
 #'
 #' @return The updated `dm` object
 #'
 #' @export
 dm_extract <- function(
-    dm_remote = sql_server_dm(),
+    dm_remote = dm_sql_server(),
     collect = TRUE,
     compute = FALSE,
     cache = collect,
@@ -141,6 +153,10 @@ dm_extract <- function(
 #' Transform Tables to Analysis-Friendly Format
 #'
 #' @param dm_local `[dm]` A local `dm` object from `dm_extract()`
+#' @param cache `[logical(1)]` Should the results be cached?
+#' @param reset `[logical(1)]` Should the cache be reset to the current results,
+#'   even if inputs have not changed? This is useful if data processing logic
+#'   has changed, but the underlying data have not.
 #'
 #' @return `[dm]` The updated `dm` object
 #'

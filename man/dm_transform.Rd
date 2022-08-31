@@ -8,6 +8,12 @@ dm_transform(dm_local = dm_extract(), cache = TRUE, reset = FALSE)
 }
 \arguments{
 \item{dm_local}{\verb{[dm]} A local \code{dm} object from \code{dm_extract()}}
+
+\item{cache}{\verb{[logical(1)]} Should the results be cached?}
+
+\item{reset}{\verb{[logical(1)]} Should the cache be reset to the current results,
+even if inputs have not changed? This is useful if data processing logic
+has changed, but the underlying data have not.}
 }
 \value{
 \verb{[dm]} The updated \code{dm} object

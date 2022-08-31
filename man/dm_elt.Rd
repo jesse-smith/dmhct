@@ -4,20 +4,21 @@
 \alias{dm_elt}
 \title{Extract, Load, and Transform Remote Tables to Local Source}
 \usage{
-dm_elt(dm_remote = sql_server_dm(), cache = TRUE, reset = FALSE, close = NULL)
+dm_elt(dm_remote = dm_sql_server(), cache = TRUE, reset = FALSE, close = NULL)
 }
 \arguments{
 \item{dm_remote}{Remote \code{dm} object containing HCT data}
 
-\item{cache}{Whether to use the cache. If \code{cache == TRUE} and \code{reset == TRUE},
-the data will be ELT'd from the source and cached, even if an up-to-date
-cache exists.}
+\item{cache}{\verb{[logical(1)]} Should results be cached (if inputs have changed)
+or read from cache (if inputs have not changed)?}
 
-\item{reset}{Whether to force collection and caching of data.}
+\item{reset}{\verb{[logical(1)]} Should the cache be reset to the current results,
+even if inputs have not changed? This is useful if data processing logic
+has changed, but the underlying data have not.}
 
-\item{close}{Whether to close the SQL Server connection on exit. \code{NULL}
-closes if \code{dm_remote} has attribute \code{default == TRUE} and leaves open
-otherwise.}
+\item{close}{\verb{[logical(1)]} Whether to close the SQL Server connection on
+exit. \code{NULL} closes if \code{dm_remote} has attribute \code{default == TRUE} and
+leaves open otherwise.}
 }
 \value{
 A \code{dm} object

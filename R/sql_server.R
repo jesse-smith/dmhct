@@ -16,7 +16,6 @@ con_sql_server <- function(
     database = "IRB_MLinHCT",
     trusted_connection = TRUE,
     dsn = NULL,
-    temp = FALSE,
     ...
 ) {
   if (!is.null(dsn)) {

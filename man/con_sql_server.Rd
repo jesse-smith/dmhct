@@ -9,7 +9,6 @@ con_sql_server(
   database = "IRB_MLinHCT",
   trusted_connection = TRUE,
   dsn = NULL,
-  temp = FALSE,
   ...
 )
 }

@@ -1,12 +1,11 @@
 Package: dmhct
-Title: What the Package Does (One Line, Title Case)
+Title: A Data Model Package for the MLinHCT Project
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+    person("Jesse", "Smith", , "jesse.smith@stjude.org", role = c("aut", "cre"))
+Description: Extracts, Loads, and Transforms data from the SQL Server containing
+    HCT data to a `dm` object with cleaned tables.
+License: MIT + file LICENSE
 Imports: 
     checkmate,
     data.table,
@@ -15,9 +14,9 @@ Imports:
     dm,
     dplyr,
     fs,
+    lubridate,
     magrittr,
     odbc,
-    parallel,
     purrr,
     qs,
     rlang,

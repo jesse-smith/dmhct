@@ -8,9 +8,6 @@ dm_collect(dm_remote)
 }
 \arguments{
 \item{dm_remote}{\verb{[dm]} A \code{dm} object connected to a remote source}
-
-\item{data.table}{\verb{[lgl(1)]} Should tables be converted to \code{data.table}s
-(\code{TRUE}) or left as \code{tibble}s (\code{FALSE})?}
 }
 \value{
 \verb{[dm]} A new \code{dm} object containing the collected (local) tables

@@ -1,8 +1,6 @@
 #' Collect All Tables in a `dm` Object
 #'
 #' @param dm_remote `[dm]` A `dm` object connected to a remote source
-#' @param data.table `[lgl(1)]` Should tables be converted to `data.table`s
-#'   (`TRUE`) or left as `tibble`s (`FALSE`)?
 #'
 #' @return `[dm]` A new `dm` object containing the collected (local) tables
 #'
@@ -22,6 +20,7 @@ dm_collect <- function(dm_remote) {
 #' Compute All Tables in a `dm` Object
 #'
 #' @param dm_remote `[dm]` A `dm` object connected to a remote source
+#' @param quiet Should messages be suppressed during computation?
 #'
 #' @return `[dm]` The updated object with tables computed
 #'
