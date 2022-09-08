@@ -3,6 +3,7 @@
 export(con_sql_server)
 export(dm_cerner_transform)
 export(dm_chimerism_extract)
+export(dm_chimerism_transform)
 export(dm_collect)
 export(dm_compute)
 export(dm_death_extract)
