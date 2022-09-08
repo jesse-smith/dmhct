@@ -4,10 +4,7 @@
 \alias{std_cerner_tbl}
 \title{Standardize a Cerner Table}
 \usage{
-std_cerner_tbl(
-  tbl,
-  path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
-)
+std_cerner_tbl(tbl)
 }
 \arguments{
 \item{tbl}{\verb{[tbl_dbi]} A table containing Cerner data}
@@ -17,7 +14,6 @@ A \code{tbl_dbi} with standardized columns
 }
 \description{
 Selects needed columns from a Cerner table and converts them to the expected
-class. Test names are replaced with standardized variable names and rows
-with missing information are dropped.
+class.
 }
 \keyword{internal}

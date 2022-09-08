@@ -43,6 +43,9 @@ dm_death_transform <- function(dm_local) {
   cat_death_class <- cat_death_location <- dt_death <- dt_trans <- NULL
   lgl_on_therapy <- NULL
 
+  # Filter unused patients w/ master
+  dt <- dt[entity_id %in% dm_local$master$entity_id]
+
   # Convert datetimes to dates
   dt[, c("dt_death", "dt_trans") := list(
     lubridate::as_date(dt_death),
@@ -131,7 +134,7 @@ dm_death_transform <- function(dm_local) {
   by <- which(
     !colnames(dt) %in% c("dt_trans", "cat_cod_primary", "cat_cod_contrib")
   )
-  dt <- dt[!duplicated(dt, by = by)]
+  dt <- unique(dt, by = by)
 
   # Move cod cols to back
   data.table::setcolorder(

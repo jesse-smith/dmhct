@@ -23,7 +23,7 @@ dm_cerner_extract <- function(
   # Row bind to single table
   tbl_cerner <- purrr::reduce(
     dm_cerner[-1L],
-    ~ dplyr::union_all(std_cerner_tbl(.x), std_cerner_tbl(.y)),
+    ~ dplyr::union_all(.x, std_cerner_tbl(.y)),
     .init = std_cerner_tbl(dm_cerner[[1L]])
   )
 
@@ -52,6 +52,10 @@ dm_cerner_transform <- function(
   dt <- dm_local$cerner
   class <- df_class(dt)
   dt <- data.table::as.data.table(dt)
+
+  # Filter unused patients w/ master
+  dt <- dt[entity_id %in% dm_local$master$entity_id]
+
 
   # Silence R CMD CHECK Notes
   var <- test <- result <- ..pos <- ..neg <- NULL
@@ -277,18 +281,14 @@ dm_cerner_transform <- function(
 #' Standardize a Cerner Table
 #'
 #' Selects needed columns from a Cerner table and converts them to the expected
-#' class. Test names are replaced with standardized variable names and rows
-#' with missing information are dropped.
+#' class.
 #'
 #' @param tbl `[tbl_dbi]` A table containing Cerner data
 #'
 #' @return A `tbl_dbi` with standardized columns
 #'
 #' @keywords internal
-std_cerner_tbl <- function(
-    tbl,
-    path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
-) {
+std_cerner_tbl <- function(tbl) {
   # Get column names
   cols <- colnames(tbl)
   # Select and rename needed columns
