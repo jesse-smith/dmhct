@@ -106,13 +106,13 @@ dm_extract <- function(
     # Create file name
     cache_file <- "dm_extract"
     # Compute checksum
-    checksum  <- eval(dm_checksum(dm_remote))
+    checksum <- eval(dm_cache$checksum(dm_remote))
   }
 
   # Cache
   if (cache && !reset) {
-    no_change <- dm_cache_check(checksum, cache_file)
-    if (no_change) return(dm_cache_read("data",  cache_file))
+    no_change <- dm_cache$check(checksum, cache_file)
+    if (no_change) return(dm_cache$read("data",  cache_file))
   }
 
   # Extract tables
@@ -140,7 +140,7 @@ dm_extract <- function(
   if (collect) dm <- dm_collect(dm_remote)
 
   # Cache
-  if (cache || reset) dm_cache_write(dm, checksum, cache_file)
+  if (cache || reset) dm_cache$write(dm, checksum, cache_file)
 
   # Return
   dm
@@ -166,13 +166,13 @@ dm_transform <- function(dm_local = dm_extract(), cache = TRUE, reset = FALSE) {
 
   if (cache || reset) {
     cache_file <- "dm_transform"
-    checksum <- dm_checksum(dm_local)
+    checksum <- dm_cache$checksum(dm_local)
   }
 
   # Cache
   if (cache && !reset) {
-    no_change <- dm_cache_check(checksum, cache_file)
-    if (no_change) return(dm_cache_read("data", cache_file))
+    no_change <- dm_cache$check(checksum, cache_file)
+    if (no_change) return(dm_cache$read("data", cache_file))
   }
 
   dm_local <- dm_local %>%
@@ -189,7 +189,7 @@ dm_transform <- function(dm_local = dm_extract(), cache = TRUE, reset = FALSE) {
     dm_relapse_transform()
 
   # Cache
-  if (cache || reset) dm_cache_write(dm_local, checksum, cache_file)
+  if (cache || reset) dm_cache$write(dm_local, checksum, cache_file)
 
   dm_local
 }

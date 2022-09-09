@@ -41,7 +41,7 @@ dm_chimerism_extract <- function(dm_remote) {
       !is.na(.data$dt_trans),
       !is.na(.data$dt_chimerism),
       !(is.na(.data$pct_donor) & is.na(.data$pct_host)),
-      dt_chimerism >= dt_trans
+      .data$dt_chimerism >= .data$dt_trans
     ) %>%
     dm::dm_update_zoomed()
 }
@@ -59,6 +59,13 @@ dm_chimerism_transform <- function(dm_local) {
   class <- df_class(dt)
   dt <- data.table::as.data.table(dt)
 
+
+  # Silence R CMD CHECK Notes
+  cat_cell_sep <- cat_method <- pct_donor <- pct_host <- NULL
+  pct_donor_tmp <- pct_host_tmp <- dt_trans <- dt_chimerism <- NULL
+  delta_donor <- delta_host <- ..pred_donor <- ..pred_host <- NULL
+  dist_keep <- dist_swap <- tmp_donor <- cat_method1 <- NULL
+
   # Dates
   dt_cols <- c("dt_trans", "dt_chimerism")
   dt[, c(dt_cols) := lapply(.SD, lubridate::as_date), .SDcols = dt_cols]
@@ -75,15 +82,15 @@ dm_chimerism_transform <- function(dm_local) {
 
   # Cell Source
   dt[, "cat_cell_sep" := data.table::fcase(
-    str_detect_fct(cat_cell_sep, 1L, "bone\\s+marrow"), "Bone Marrow",
-    str_detect_fct(cat_cell_sep, 2L, "peripheral\\s+blood"), "Peripheral Blood",
-    str_detect_fct(cat_cell_sep, 11L, "unsorted"), "Peripheral Blood",
-    str_detect_fct(cat_cell_sep, 3L, "t\\s*-?\\s*cell"), "T Cells",
-    # str_detect_fct(cat_cell_sep, 4L, "b\\s*-?\\s*cell"), "B Cells",
-    # str_detect_fct(cat_cell_sep, 6L, "monocyte"), "Monocytes",
-    # str_detect_fct(cat_cell_sep, 7L, "neutrophil"), "Neutrophils",
-    # str_detect_fct(cat_cell_sep, 9L, "nk\\s*-?\\s*cell"), "NK Cells",
-    # str_detect_fct(cat_cell_sep, 10L, "myeloid"), "Myeloid Cells",
+    utils_chimerism$str_detect_fct(cat_cell_sep, 1L, "bone\\s+marrow"), "Bone Marrow",
+    utils_chimerism$str_detect_fct(cat_cell_sep, 2L, "peripheral\\s+blood"), "Peripheral Blood",
+    utils_chimerism$str_detect_fct(cat_cell_sep, 11L, "unsorted"), "Peripheral Blood",
+    utils_chimerism$str_detect_fct(cat_cell_sep, 3L, "t\\s*-?\\s*cell"), "T Cells",
+    # utils_chimerism$str_detect_fct(cat_cell_sep, 4L, "b\\s*-?\\s*cell"), "B Cells",
+    # utils_chimerism$str_detect_fct(cat_cell_sep, 6L, "monocyte"), "Monocytes",
+    # utils_chimerism$str_detect_fct(cat_cell_sep, 7L, "neutrophil"), "Neutrophils",
+    # utils_chimerism$str_detect_fct(cat_cell_sep, 9L, "nk\\s*-?\\s*cell"), "NK Cells",
+    # utils_chimerism$str_detect_fct(cat_cell_sep, 10L, "myeloid"), "Myeloid Cells",
     # !is.na(cat_cell_sep), "Other",
     default = NA_character_
   )]
@@ -101,12 +108,12 @@ dm_chimerism_transform <- function(dm_local) {
 
   # Chimerism Method
   dt[, "cat_method" := data.table::fcase(
-    str_detect_fct(cat_method, 1L, "standard\\s+cytogenetics"), "Standard Cytogenetics",
-    str_detect_fct(cat_method, 2L, "FISH"), "FISH",
-    str_detect_fct(cat_method, 3L, "RFLP"), "RFLP",
-    str_detect_fct(cat_method, 4L, "PCR"), "PCR",
-    str_detect_fct(cat_method, 5L, "hla\\s+serotyping"), "HLA Serotyping",
-    str_detect_fct(cat_method, 6L, "VNTR"), "VNTR",
+    utils_chimerism$str_detect_fct(cat_method, 1L, "standard\\s+cytogenetics"), "Standard Cytogenetics",
+    utils_chimerism$str_detect_fct(cat_method, 2L, "FISH"), "FISH",
+    utils_chimerism$str_detect_fct(cat_method, 3L, "RFLP"), "RFLP",
+    utils_chimerism$str_detect_fct(cat_method, 4L, "PCR"), "PCR",
+    utils_chimerism$str_detect_fct(cat_method, 5L, "hla\\s+serotyping"), "HLA Serotyping",
+    utils_chimerism$str_detect_fct(cat_method, 6L, "VNTR"), "VNTR",
     !is.na(cat_method), "Other",
     default = NA_character_
   )]
@@ -142,8 +149,8 @@ dm_chimerism_transform <- function(dm_local) {
   dt[is.na(pct_donor_tmp) & pct_donor %like% "1\\s*/\\s*0\\s*/\\s*1900", pct_donor_tmp := 0]
 
   # Get middle of ranges
-  dt[is.na(pct_donor_tmp), "pct_donor_tmp" := str_range_to_num(pct_donor)]
-  dt[is.na(pct_host_tmp), "pct_host_tmp" := str_range_to_num(pct_host)]
+  dt[is.na(pct_donor_tmp), "pct_donor_tmp" := utils_chimerism$str_range_to_num(pct_donor)]
+  dt[is.na(pct_host_tmp), "pct_host_tmp" := utils_chimerism$str_range_to_num(pct_host)]
 
   # Fill using extracted complements
   dt[is.na(pct_donor_tmp) & !is.na(pct_host_tmp), pct_donor_tmp := 100 - pct_host_tmp]
@@ -163,44 +170,6 @@ dm_chimerism_transform <- function(dm_local) {
   pk <- c("entity_id", "dt_chimerism")
   data.table::setkeyv(dt, pk)
 
-  # Modeling helper functions
-  normalize <- function(x) {
-    x <- as.numeric(x)
-    r <- range(x, na.rm = TRUE)
-    (x - r[[1L]]) / (r[[2L]] - r[[1L]])
-  }
-
-  probit <- function(x, range = c(0, 100), tol = sqrt(.Machine$double.eps)) {
-    checkmate::assert_numeric(
-      range,
-      finite = TRUE, any.missing = FALSE, len = 2L, unique = TRUE, sorted = TRUE
-    )
-    checkmate::assert_number(tol, lower = 0, upper = 0.01, finite = TRUE)
-    range <- as.numeric(range)
-    if (any(!x %between% range, na.rm = TRUE)) {
-      warning("`x` contains values outside of `range`; these values will be truncated by `logit()`")
-    }
-    p <- (x - range[[1L]]) / (diff(range))
-    p <- pmax(tol, pmin(1 - tol, p, na.rm = TRUE), na.rm = TRUE)
-    qnorm(p)
-  }
-
-  inv_probit <- function(x, range = c(0, 100), tol = sqrt(.Machine$double.eps)) {
-    checkmate::assert_numeric(
-      range,
-      finite = TRUE, any.missing = FALSE, len = 2L, unique = TRUE, sorted = TRUE
-    )
-    checkmate::assert_number(tol, lower = 0, upper = 0.01, finite = TRUE)
-    range <- as.numeric(range)
-    p <- pnorm(x)
-    if (any(!p %between% c(0, 1), na.rm = TRUE)) {
-      warning("`x` contains values outside of [0, 1] when transformed; these values will be truncated by `logistic()`")
-    }
-    p <- data.table::fifelse(p < tol, 0, p)
-    p <- data.table::fifelse(p > (1 - tol), 1, p)
-    p * diff(range) + range[[1L]]
-  }
-
   # Calculate largest differences within patient + date + cell type groupings
   dt[, c("delta_donor", "delta_host") := list(
     apply(abs(outer(pct_donor, pct_donor, `-`)), 1L, max),
@@ -213,8 +182,8 @@ dm_chimerism_transform <- function(dm_local) {
   }), .SDcols = c("cat_cell_sep", "cat_method")]
   # Add normalized predictors for modeling
   dt[, c("t_trans", "t") := list(
-    normalize(dt_trans),
-    normalize(dt_chimerism - dt_trans)
+    utils_chimerism$normalize(dt_trans),
+    utils_chimerism$normalize(dt_chimerism - dt_trans)
   )]
 
   # Convert to data.frame for lme4
@@ -226,13 +195,13 @@ dm_chimerism_transform <- function(dm_local) {
   # [entity_id: random slope + intercept, cat_cell_sep: fixed] was best model
 
   # Predict donor
-  pred_donor <- inv_probit(predict(lme4::lmer(
-    probit(pct_donor) ~ t_trans + cat_cell_sep_lf + cat_method_lf + (t | entity_id),
+  pred_donor <- utils_chimerism$inv_probit(stats::predict(lme4::lmer(
+    utils_chimerism$probit(pct_donor) ~ t_trans + cat_cell_sep_lf + cat_method_lf + (t | entity_id),
     data = dt[dt$delta_donor < 5,]
   ), newdata = dt[dt$delta_donor >= 5,]))
   # Predict host
-  pred_host <- inv_probit(predict(lme4::lmer(
-    probit(pct_host) ~ t_trans + cat_cell_sep_lf + cat_method_lf + (t | entity_id),
+  pred_host <- utils_chimerism$inv_probit(stats::predict(lme4::lmer(
+    utils_chimerism$probit(pct_host) ~ t_trans + cat_cell_sep_lf + cat_method_lf + (t | entity_id),
     data = dt[dt$delta_host < 5,]
   ), newdata = dt[dt$delta_host >= 5,]))
 
@@ -291,21 +260,118 @@ dm_chimerism_transform <- function(dm_local) {
     dm::dm_add_tbl(chimerism = dt[])
 }
 
+#' Utility Functions for Chimerism Table ELT
+#'
+#' @description
+#' Collection of utility functions for chimerism data
+#'
+#' @aliases utils_chimerism
+#'
+#' @keywords internal
+UtilsChimerism <- R6Class(
+  "UtilsChimerism",
+  cloneable = FALSE,
+  public = list(
+    #' Detect Factor Level in Chimerism Data
+    #'
+    #' @param x `[character]` A character vector
+    #' @param lvl `[character(1)]` The level's numeric representation
+    #' @param lbl `[character(1)]` The level's label
+    #'
+    #' @return `[logical]` A logical indicating presence or absence of the
+    #'   indicated factor level
+    str_detect_fct = function(x, lvl, lbl) {
+      stringr::str_detect(
+        x,
+        paste0("(?i)(^", lvl, "\\s*=)|(", lbl, ")")
+      )
+    },
+    #' Convert a % Range to It's Midpoint
+    #'
+    #' @param x `[character]` Character representation of a range of percentages
+    #'
+    #' @return `[numeric]` The midpoint of each range of values
+    str_range_to_num = function(x) {
+      x %>%
+        stringr::str_replace("<=?", "0-") %>%
+        stringr::str_replace(">=?", "100-") %>%
+        stringr::str_split("\\s*-\\s*") %>%
+        lapply(as.numeric) %>%
 
-str_detect_fct <- function(x, lvl, lbl) {
-  stringr::str_detect(
-    x,
-    paste0("(?i)(^", lvl, "\\s*=)|(", lbl, ")")
+        vapply(function(num) mean(as.numeric(num)), double(1L))
+    },
+    #' Normalize a `numeric` Vector to `[0, 1]`
+    #'
+    #' @param x `[numeric]` A `numeric` vector or a vector than can be coerced to `numeric`
+    #'
+    #' @return `[double]` The normalized vector
+    normalize = function(x) {
+      x <- as.numeric(x)
+      r <- range(x, na.rm = TRUE)
+      (x - r[[1L]]) / (r[[2L]] - r[[1L]])
+    },
+    #' Transform a `numeric` Vector Using the Probit Function
+    #'
+    #' @description
+    #' Transforms a `numeric` vector using the Gaussian quantile function
+    #' \code{\link[stats:Normal]{qnorm()}}. Converts the vector to the
+    #' `[0, 1]` range using `range` prior to transformation. Since `qnorm(0)`
+    #' and `qnorm(1)` are infinite, values closer than `tol` to `0` or `1` are
+    #' truncated before transformation.
+    #'
+    #' @param x `[numeric]` A vector to transform
+    #' @param range `[numeric(2)]` The lower and upper bounds of the domain of `x`
+    #' @param tol `[numeric(1)]` The tolerance for truncating `x` on the `[0, 1]`
+    #'   scale; must be between `0` and `0.01`.
+    #' @return `[numeric]` The transformed vector
+    probit = function(x, range = c(0, 100), tol = sqrt(.Machine$double.eps)) {
+      checkmate::assert_numeric(
+        range,
+        finite = TRUE, any.missing = FALSE, len = 2L, unique = TRUE, sorted = TRUE
+      )
+      checkmate::assert_number(tol, lower = 0, upper = 0.01, finite = TRUE)
+      range <- as.numeric(range)
+      if (any(!x %between% range, na.rm = TRUE)) {
+        warning("`x` contains values outside of `range`; these values will be truncated by `logit()`")
+      }
+      p <- (x - range[[1L]]) / (diff(range))
+      p <- pmax(tol, pmin(1 - tol, p, na.rm = TRUE), na.rm = TRUE)
+      qnorm(p)
+    },
+    #' Transform a `numeric` Vector Using the Inverse Probit Function
+    #'
+    #' @description
+    #' Transforms a `numeric` vector using the Gaussian distribution function
+    #' \code{\link[stats:Normal]{pnorm()}}. As the inverse of `probit()`, also
+    #' inverts truncation by replacing transformed values closer than `tol` to
+    #' `0` or `1` with `0` or `1` (respectively). Maps result to the domain
+    #' specified by `range`; values outside of `range` will be truncated.
+    #'
+    #' @param x `[numeric]` A vector to transform
+    #' @param range `[numeric(2)]` The lower and upper bounds of the range of the result
+    #' @param tol `[numeric(1)]` The tolerance used for truncating in the `probit` transform
+    #'
+    #' @return `[numeric]` The transformed vector
+    inv_probit = function(x, range = c(0, 100), tol = sqrt(.Machine$double.eps)) {
+      checkmate::assert_numeric(
+        range,
+        finite = TRUE, any.missing = FALSE, len = 2L, unique = TRUE, sorted = TRUE
+      )
+      checkmate::assert_number(tol, lower = 0, upper = 0.01, finite = TRUE)
+      range <- as.numeric(range)
+      p <- pnorm(x)
+      if (any(!p %between% c(0, 1), na.rm = TRUE)) {
+        warning("`x` contains values outside of [0, 1] when transformed; these values will be truncated by `logistic()`")
+      }
+      p <- data.table::fifelse(p < tol, 0, p)
+      p <- data.table::fifelse(p > (1 - tol), 1, p)
+      p * diff(range) + range[[1L]]
+    }
   )
-}
+)
 
-
-str_range_to_num <- function(x) {
-  x %>%
-    stringr::str_replace("<=?", "0-") %>%
-    stringr::str_replace(">=?", "100-") %>%
-    stringr::str_split("\\s*-\\s*") %>%
-    lapply(as.numeric) %>%
-
-    vapply(function(num) mean(as.numeric(num)), double(1L))
-}
+#' @rdname UtilsChimerism
+#' @usage NULL
+#' @format NULL
+#' @keywords internal
+utils_chimerism <- UtilsChimerism$new()

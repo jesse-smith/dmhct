@@ -171,9 +171,9 @@ dm_master_transform <- function(dm_local) {
   dt[num_age_donor < 0, "num_age_donor" := NA_real_]
 
   # Degree of match
-  dt[, "num_degree_match06" := convert_degree_match(num_degree_match, denom =  6L)]
-  dt[, "num_degree_match08" := convert_degree_match(num_degree_match, denom =  8L)]
-  dt[, "num_degree_match10" := convert_degree_match(num_degree_match, denom = 10L)]
+  dt[, "num_degree_match06" := utils_master$convert_degree_match(num_degree_match, denom =  6L)]
+  dt[, "num_degree_match08" := utils_master$convert_degree_match(num_degree_match, denom =  8L)]
+  dt[, "num_degree_match10" := utils_master$convert_degree_match(num_degree_match, denom = 10L)]
   dt[, "num_degree_match" := NULL]
 
   # Add from HLA typing
@@ -272,47 +272,66 @@ dm_master_transform <- function(dm_local) {
 }
 
 
-#' Convert Degree of Match `character` Data to Count with Specified Denominator
+#' Utility Functions for Master Table ELT
 #'
-#' @param x `[character]` Vector of degree of match counts
-#' @param denom `[integer(1)]` Denominator of counts to extract
+#' @description
+#' Collection of utility functions for master data
 #'
-#' @return An `integer` vector of counts
+#' @aliases utils_master
 #'
 #' @keywords internal
-convert_degree_match <- function(x, denom = 6L) {
-  # Extract fractions as list
-  x_list <- stringr::str_extract_all(x, "[0-9]+/[0-9]+")
-  # Split into denominator and numerator
-  x_split <- list()
-  x_split$n <- purrr::map(
-    x_list, ~ as.integer(stringr::str_extract(.x, "^[0-9]+"))
+UtilsMaster <- R6Class(
+  "UtilsMaster",
+  public = list(
+    #' Convert Degree of Match `character` Data to Count with Specified Denominator
+    #'
+    #' @param x `[character]` Vector of degree of match counts
+    #' @param denom `[integer(1)]` Denominator of counts to extract
+    #'
+    #' @return An `integer` vector of counts
+    #'
+    #' @keywords internal
+    convert_degree_match = function(x, denom = 6L) {
+      # Extract fractions as list
+      x_list <- stringr::str_extract_all(x, "[0-9]+/[0-9]+")
+      # Split into denominator and numerator
+      x_split <- list()
+      x_split$n <- purrr::map(
+        x_list, ~ as.integer(stringr::str_extract(.x, "^[0-9]+"))
+      )
+      x_split$d <- purrr::map(
+        x_list, ~ as.integer(stringr::str_extract(.x, "[0-9]+$"))
+      )
+
+      # Get n w/ denominator >= denom parameter
+      n <- purrr::map2(
+        x_split$n,
+        x_split$d,
+        ~ .x[.y >= denom] / .y[.y >= denom]
+      ) %>%
+        # Full match means n == denom
+        purrr::map_int(~ (if (any(.x == 1, na.rm = TRUE)) denom else NA_integer_))
+
+      # Not full match means extract numerator where denominator == denom param
+      n_exact <- purrr::map2(
+        x_split$n,
+        x_split$d,
+        ~ suppressWarnings(as.integer(max(.x[.y == denom], na.rm = TRUE)))
+      ) %>%
+        purrr::map_int(~ (if (NROW(.x) == 0L) NA_integer_ else .x))
+
+      # Fill in exact where n is missing
+      n_is_na <- is.na(n)
+      n[n_is_na] <- n_exact[n_is_na]
+
+      # Return n
+      n
+    }
   )
-  x_split$d <- purrr::map(
-    x_list, ~ as.integer(stringr::str_extract(.x, "[0-9]+$"))
-  )
+)
 
-  # Get n w/ denominator >= denom parameter
-  n <- purrr::map2(
-    x_split$n,
-    x_split$d,
-    ~ .x[.y >= denom] / .y[.y >= denom]
-  ) %>%
-    # Full match means n == denom
-    purrr::map_int(~ (if (any(.x == 1, na.rm = TRUE)) denom else NA_integer_))
-
-  # Not full match means extract numerator where denominator == denom param
-  n_exact <- purrr::map2(
-    x_split$n,
-    x_split$d,
-    ~ suppressWarnings(as.integer(max(.x[.y == denom], na.rm = TRUE)))
-  ) %>%
-    purrr::map_int(~ (if (NROW(.x) == 0L) NA_integer_ else .x))
-
-  # Fill in exact where n is missing
-  n_is_na <- is.na(n)
-  n[n_is_na] <- n_exact[n_is_na]
-
-  # Return n
-  n
-}
+#' @rdname UtilsMaster
+#' @usage NULL
+#' @format NULL
+#' @keywords internal
+utils_master <- UtilsMaster$new()

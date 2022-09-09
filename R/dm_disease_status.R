@@ -46,6 +46,9 @@ dm_disease_status_transform <- function(dm_local) {
   class <- df_class(dt)
   dt <- data.table::as.data.table(dt)
 
+  # Silence R CMD CHECK Notes
+  entity_id <- NULL
+
   # Filter unused patients w/ master
   dt <- dt[entity_id %in% dm_local$master$entity_id]
 

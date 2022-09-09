@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom checkmate %??%
 #' @importFrom data.table %between%
 #' @importFrom data.table %chin%
 #' @importFrom data.table %flike%
@@ -17,8 +18,10 @@
 #' @importFrom data.table .SD
 #' @importFrom data.table :=
 #' @importFrom data.table data.table
-#' @importFrom checkmate %??%
 #' @importFrom magrittr %>%
+#' @importFrom qs qread
+#' @importFrom qs qsave
+#' @importFrom R6 R6Class
 ## usethis namespace: end
 NULL
 

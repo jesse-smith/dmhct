@@ -23,8 +23,8 @@ dm_cerner_extract <- function(
   # Row bind to single table
   tbl_cerner <- purrr::reduce(
     dm_cerner[-1L],
-    ~ dplyr::union_all(.x, std_cerner_tbl(.y)),
-    .init = std_cerner_tbl(dm_cerner[[1L]])
+    ~ dplyr::union_all(.x, utils_cerner$std_cerner_tbl(.y)),
+    .init = utils_cerner$std_cerner_tbl(dm_cerner[[1L]])
   )
 
   dm_remote %>%
@@ -58,7 +58,7 @@ dm_cerner_transform <- function(
 
 
   # Silence R CMD CHECK Notes
-  var <- test <- result <- ..pos <- ..neg <- NULL
+  entity_id <- var <- test <- result <- ..pos <- ..neg <- NULL
 
   # Load variable map
   var_map <- path %>%
@@ -277,46 +277,64 @@ dm_cerner_transform <- function(
     dm::dm_add_tbl(cerner = dt)
 }
 
-
-#' Standardize a Cerner Table
+#' Utility Functions for Cerner Table ELT
 #'
-#' Selects needed columns from a Cerner table and converts them to the expected
-#' class.
+#' @description
+#' Collection of utility functions for cerner data
 #'
-#' @param tbl `[tbl_dbi]` A table containing Cerner data
-#'
-#' @return A `tbl_dbi` with standardized columns
+#' @aliases utils_cerner
 #'
 #' @keywords internal
-std_cerner_tbl <- function(tbl) {
-  # Get column names
-  cols <- colnames(tbl)
-  # Select and rename needed columns
-  EntityId <- stringr::str_subset(cols, "(?i)entity")
-  Date     <- stringr::str_subset(cols, "(?i)date")
-  Test     <- stringr::str_subset(cols, "(?i)test")
-  Result   <- stringr::str_subset(cols, "(?i)result")
+UtilsCerner <- R6Class(
+  "UtilsCerner",
+  cloneable = FALSE,
+  public = list(
+    #' Standardize a Cerner Table
+    #'
+    #' @description
+    #' Selects needed columns from a Cerner table and converts them to the
+    #' expected class.
+    #'
+    #' @param tbl `[tbl_dbi]` A table containing Cerner data
+    #'
+    #' @return A `tbl_dbi` with standardized columns
+    std_cerner_tbl = function(tbl) {
+      # Get column names
+      cols <- colnames(tbl)
+      # Select and rename needed columns
+      EntityId <- stringr::str_subset(cols, "(?i)entity")
+      Date     <- stringr::str_subset(cols, "(?i)date")
+      Test     <- stringr::str_subset(cols, "(?i)test")
+      Result   <- stringr::str_subset(cols, "(?i)result")
 
-  # Update tbl
-  tbl %>%
-    dplyr::select(
-      entity_id = {{ EntityId }},
-      date      = {{ Date }},
-      test      = {{ Test }},
-      result    = {{ Result }}
-    ) %>%
-    # Ensure columns are of expected type
-    dplyr::mutate(
-      entity_id = as.integer(.data$entity_id),
-      date = dbplyr::sql("CONVERT(DATETIME, date)"),
-      test = trimws(as.character(.data$test)),
-      result = trimws(as.character(.data$result))
-    ) %>%
-    # Filter
-    dplyr::filter(
-      !is.na(.data$entity_id),
-      !is.na(.data$date),
-      !is.na(.data$test),
-      !is.na(.data$result)
-    )
-}
+      # Update tbl
+      tbl %>%
+        dplyr::select(
+          entity_id = {{ EntityId }},
+          date      = {{ Date }},
+          test      = {{ Test }},
+          result    = {{ Result }}
+        ) %>%
+        # Ensure columns are of expected type
+        dplyr::mutate(
+          entity_id = as.integer(.data$entity_id),
+          date = dbplyr::sql("CONVERT(DATETIME, date)"),
+          test = trimws(as.character(.data$test)),
+          result = trimws(as.character(.data$result))
+        ) %>%
+        # Filter
+        dplyr::filter(
+          !is.na(.data$entity_id),
+          !is.na(.data$date),
+          !is.na(.data$test),
+          !is.na(.data$result)
+        )
+    }
+  )
+)
+
+#' @rdname UtilsCerner
+#' @usage NULL
+#' @format NULL
+#' @keywords internal
+utils_cerner <- UtilsCerner$new()

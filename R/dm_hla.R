@@ -16,8 +16,8 @@ dm_hla_extract <- function(dm_remote, quiet = TRUE) {
   }
 
   hla <- dplyr::full_join(
-    std_hla_tbl(dm_remote$hla_donor),
-    std_hla_tbl(dm_remote$hla_patient),
+    utils_hla$std_hla_tbl(dm_remote$hla_donor),
+    utils_hla$std_hla_tbl(dm_remote$hla_patient),
     by = c("entity_id", "gene"),
     suffix = c("_donor", "_entity")
   )
@@ -52,8 +52,8 @@ dm_hla_transform <- function(dm_local) {
        stringr::str_squish()]
   # Clean alleles
   dt[, c("allele_donor", "allele_entity") := list(
-    std_hla_allele(allele_donor),
-    std_hla_allele(allele_entity)
+    utils_hla$std_hla_allele(allele_donor),
+    utils_hla$std_hla_allele(allele_entity)
   )]
 
   # Remove rows with missing data and gene == "Bw"
@@ -113,71 +113,86 @@ dm_hla_transform <- function(dm_local) {
 }
 
 
-#' Standardize an HLA Table
+#' Utility Functions for HLA Table ELT
 #'
-#' @param tbl `[data.frame]` HLA data
-#' @param na `[character]` Vector of values to interpret as `NA`
+#' @description
+#' Collection of utility functions for HLA data
 #'
-#' @return The standardized data
+#' @aliases utils_hla
 #'
 #' @keywords internal
-std_hla_tbl <- function(
+UtilsHLA <- R6Class(
+  "UtilsHLA",
+  cloneable = FALSE,
+  public = list(
+    #' Standardize an HLA Table
+    #'
+    #' @param tbl `[data.frame]` HLA data
+    #' @param na `[character]` Vector of values to interpret as `NA`
+    #'
+    #' @return The standardized data
+    std_hla_tbl = function(
     tbl, na = c("", "NT", "Blank", "-", "Not Interpretable")
-) {
-  tbl <- tbl %>%
-    dplyr::mutate(
-      entity_id = as.integer(.data$EntityID),
-      gene = trimws(.data$display),
-      allele = trimws(.data$result_val),
-      allele = dplyr::if_else(
-        .data$allele %in% {{ na }},
-        NA_character_,
-        .data$allele
+    ) {
+      tbl <- tbl %>%
+        dplyr::mutate(
+          entity_id = as.integer(.data$EntityID),
+          gene = trimws(.data$display),
+          allele = trimws(.data$result_val),
+          allele = dplyr::if_else(
+            .data$allele %in% {{ na }},
+            NA_character_,
+            .data$allele
+          )
+        ) %>%
+        dplyr::filter(
+          !is.na(.data$entity_id),
+          !is.na(.data$gene),
+          !is.na(.data$allele)
+        )
+
+      if ("DonorID" %in% colnames(tbl)) {
+        tbl <- tbl %>%
+          dplyr::mutate(donor_id = as.integer(.data$DonorID)) %>%
+          dplyr::filter(!is.na(.data$donor_id))
+      }
+
+      dplyr::select(
+        tbl,
+        dplyr::starts_with("donor_id"), "entity_id", "gene", "allele"
       )
-    ) %>%
-    dplyr::filter(
-      !is.na(.data$entity_id),
-      !is.na(.data$gene),
-      !is.na(.data$allele)
-    )
+    },
+    #' Standardize HLA Allele Representations
+    #'
+    #' @param x `[character]` A vector of allele IDs
+    #'
+    #' @return Standardized alleles
+    std_hla_allele = function(x) {
+      # Extract first set of numbers in allele ID
+      a_id <- x %>%
+        # Remove letters
+        stringr::str_remove_all("(?i)[A-Z]") %>%
+        # Remove any remaining prefix
+        stringr::str_remove(".*[*]") %>%
+        # Extract first set of numbers
+        stringr::str_extract("[0-9]+")
 
-  if ("DonorID" %in% colnames(tbl)) {
-    tbl <- tbl %>%
-      dplyr::mutate(donor_id = as.integer(.data$DonorID)) %>%
-      dplyr::filter(!is.na(.data$donor_id))
-  }
+      # If ID is longer than 3 characters, extract the first 2
+      a_id_short <- data.table::fifelse(
+        nchar(a_id) > 3L,
+        stringr::str_sub(a_id, 1L, 2L),
+        a_id
+      )
 
-  dplyr::select(
-    tbl,
-    dplyr::starts_with("donor_id"), "entity_id", "gene", "allele"
+      # Convert to integer
+      as.integer(a_id_short)
+    }
   )
-}
+)
 
 
-#' Standardize HLA Allele Representations
-#'
-#' @param x `[character]` A vector of allele IDs
-#'
-#' @return Standardized alleles
-#'
+#' @rdname UtilsHLA
+#' @usage NULL
+#' @format NULL
 #' @keywords internal
-std_hla_allele <- function(x) {
-  # Extract first set of numbers in allele ID
-  a_id <- x %>%
-    # Remove letters
-    stringr::str_remove_all("(?i)[A-Z]") %>%
-    # Remove any remaining prefix
-    stringr::str_remove(".*[*]") %>%
-    # Extract first set of numbers
-    stringr::str_extract("[0-9]+")
-
-  # If ID is longer than 3 characters, extract the first 2
-  a_id_short <- data.table::fifelse(
-    nchar(a_id) > 3L,
-    stringr::str_sub(a_id, 1L, 2L),
-    a_id
-  )
-
-  # Convert to integer
-  as.integer(a_id_short)
-}
+utils_hla <- UtilsHLA$new()

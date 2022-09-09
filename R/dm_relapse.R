@@ -30,7 +30,7 @@ dm_relapse_extract <- function(dm_remote) {
       # )
     ) %>%
     # Filter
-    dplyr::filter(!is.na(entity_id), !is.na(dt_relapse)) %>%
+    dplyr::filter(!is.na(.data$entity_id), !is.na(.data$dt_relapse)) %>%
     dm::dm_update_zoomed()
 }
 
@@ -39,6 +39,10 @@ dm_relapse_transform <- function(dm_local) {
   dt <- dm_local$relapse
   class <- df_class(dt)
   dt <- data.table::as.data.table(dt)
+
+  # Silence R CMD CHECK Notes
+  entity_id <- dt_relapse <- dt_remission <- lgl_remission <- NULL
+  ..yes <- ..no <- NULL
 
   # Filter unused patients w/ master
   dt <- dt[entity_id %in% dm_local$master$entity_id]
