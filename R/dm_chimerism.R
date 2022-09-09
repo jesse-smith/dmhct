@@ -15,8 +15,10 @@ dm_chimerism_extract <- function(dm_remote) {
   )
   dm_remote %>%
     dm::dm_zoom_to("chimerism") %>%
+    dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
+    dplyr::semi_join(master, by = "entity_id") %>%
     dplyr::transmute(
-      entity_id = as.integer(.data$EntityID),
+      .data$entity_id,
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
       dt_chimerism = dbplyr::sql("CONVERT(DATETIME, [Chimerism_Date])"),
       cat_cell_sep = trimws(as.character(.data[["Cell Separation"]])),
@@ -77,7 +79,7 @@ dm_chimerism_transform <- function(dm_local) {
     j = setdiff(colnames(dt_master), c("entity_id", "dt_trans")),
     value = NULL
   )
-  dt <- dt[dt_master, on = c("entity_id", "dt_trans")]
+  dt <- dt[dt_master, on = c("entity_id", "dt_trans"), nomatch = NULL]
   rm(dt_master)
 
   # Cell Source
