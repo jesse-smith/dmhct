@@ -16,7 +16,7 @@ dm_chimerism_extract <- function(dm_remote) {
   dm_remote %>%
     dm::dm_zoom_to("chimerism") %>%
     dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
-    dplyr::semi_join(master, by = "entity_id") %>%
+    dplyr::semi_join("master", by = "entity_id") %>%
     dplyr::transmute(
       .data$entity_id,
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
@@ -242,7 +242,7 @@ dm_chimerism_transform <- function(dm_local) {
     pct_donor = mean(c(pct_donor, 100 - pct_host))
   ), by = c(pk, "cat_cell_sep")]
 
-  # # Logic (derived from Akshay's response on 2022-09-02 and call on 2022-09-08)
+  # Logic (derived from Akshay's response on 2022-09-02 and call on 2022-09-08)
   # - Bone marrow and peripheral blood are separate X
   # - Unsorted and peripheral blood are the same X
   # - T Cell is separate; drop remaining specific cell lineages X
@@ -299,7 +299,6 @@ UtilsChimerism <- R6Class(
         stringr::str_replace(">=?", "100-") %>%
         stringr::str_split("\\s*-\\s*") %>%
         lapply(as.numeric) %>%
-
         vapply(function(num) mean(as.numeric(num)), double(1L))
     },
     #' Normalize a `numeric` Vector to `[0, 1]`

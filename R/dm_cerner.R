@@ -23,8 +23,8 @@ dm_cerner_extract <- function(
   # Row bind to single table
   tbl_cerner <- purrr::reduce(
     dm_cerner[-1L],
-    ~ dplyr::union_all(.x, utils_cerner$std_cerner_tbl(.y)),
-    .init = utils_cerner$std_cerner_tbl(dm_cerner[[1L]])
+    ~ dplyr::union_all(.x, utils_cerner$std_cerner_tbl(.y, dm_remote$master)),
+    .init = utils_cerner$std_cerner_tbl(dm_cerner[[1L]], dm_remote$master)
   )
 
   dm_remote %>%
@@ -296,9 +296,10 @@ UtilsCerner <- R6Class(
     #' expected class.
     #'
     #' @param tbl `[tbl_dbi]` A table containing Cerner data
+    #' @param master `[tbl_dbi]` A table containing master `entity_id` data
     #'
     #' @return A `tbl_dbi` with standardized columns
-    std_cerner_tbl = function(tbl) {
+    std_cerner_tbl = function(tbl, master = NULL) {
       # Get column names
       cols <- colnames(tbl)
       # Select and rename needed columns
@@ -315,9 +316,14 @@ UtilsCerner <- R6Class(
           test      = {{ Test }},
           result    = {{ Result }}
         ) %>%
+        # Filter to patients in master if supplied
+        dplyr::mutate(entity_id = as.integer(.data$entity_id)) %>%
+        purrr::when(
+          is.data.frame(master) ~ dplyr::semi_join(., master, by = "entity_id"),
+          ~ .
+        ) %>%
         # Ensure columns are of expected type
         dplyr::mutate(
-          entity_id = as.integer(.data$entity_id),
           date = dbplyr::sql("CONVERT(DATETIME, date)"),
           test = trimws(as.character(.data$test)),
           result = trimws(as.character(.data$result))

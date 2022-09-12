@@ -17,8 +17,10 @@ dm_disease_status_extract <- function(dm_remote) {
 
   dm_remote %>%
     dm::dm_zoom_to("disease_status") %>%
+    dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
+    dplyr::semi_join("master", by = "entity_id") %>%
     dplyr::transmute(
-      entity_id = as.integer(.data$EntityID),
+      .data$entity_id,
       date = dbplyr::sql("CONVERT(DATETIME, Disease_Status_DATE)"),
       disease_status = trimws(as.character(.data[["Disease Status"]])),
       disease_status = dplyr::if_else(

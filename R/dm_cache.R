@@ -101,7 +101,7 @@ DMCache <- R6Class(
     n_threads = max(1L, parallel::detectCores() %/% 2L)
     ) {
       # Read
-      old_checksum <- dm_cache_read(
+      old_checksum <- dm_cache$read(
         "checksum", file = file, dir = dir, fail = FALSE, n_threads = n_threads
       )
       # Check

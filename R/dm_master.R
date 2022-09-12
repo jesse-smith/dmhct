@@ -73,10 +73,10 @@ dm_master_transform <- function(dm_local) {
   dt[, "lgl_death" := lgl_survival != "Alive"]
   dt[, "lgl_survival" := NULL]
 
-  # Survival time
+  # Survival time - endpoint comes from timestamp of upload in SQL Server
   dt[, "num_t_surv" := as.numeric(data.table::fifelse(
     !lgl_death,
-    as.Date("2020-12-31") - dt_trans,
+    as.Date("2022-07-20") - dt_trans,
     dt_death - dt_trans
   ))]
 
@@ -167,7 +167,7 @@ dm_master_transform <- function(dm_local) {
   ), levels = c("Black", "White", "Other"))]
 
   # Donor age
-  dt[, num_age_donor := as.numeric(dt_trans - dt_donor_birth)]
+  dt[, num_age_donor := lubridate::interval(dt_donor_birth, dt_trans) / lubridate::years(1L)]
   dt[num_age_donor < 0, "num_age_donor" := NA_real_]
 
   # Degree of match

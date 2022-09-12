@@ -18,8 +18,10 @@ dm_engraftment_extract <- function(dm_remote) {
   )
   dm_remote %>%
     dm::dm_zoom_to("engraftment") %>%
+    dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
+    dplyr::semi_join("master", by = "entity_id") %>%
     dplyr::transmute(
-      entity_id = as.integer(.data$EntityID),
+      .data$entity_id,
       date = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
       cat_recovery_type = trimws(as.character(.data[["Recovery type"]])),
       lgl_recovery = trimws(as.character(.data[["Is there evidence of Hematopoietic Recovery?"]])),

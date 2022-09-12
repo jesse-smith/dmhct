@@ -186,6 +186,7 @@ dm_transform <- function(dm_local = dm_extract(), cache = TRUE, reset = FALSE) {
     dm_death_transform() %>%
     dm_disease_status_transform() %>%
     dm_engraftment_transform() %>%
+    dm_mrd_transform() %>%
     dm_relapse_transform()
 
   # Cache

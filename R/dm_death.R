@@ -8,8 +8,10 @@
 dm_death_extract <- function(dm_remote) {
   dm_remote %>%
     dm::dm_zoom_to("death") %>%
+    dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
+    dplyr::semi_join("master", by = "entity_id") %>%
     dplyr::transmute(
-      entity_id = as.integer(.data$EntityID),
+      .data$entity_id,
       dt_death = dbplyr::sql("CONVERT(DATETIME, Date)"),
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
       lgl_on_therapy = trimws(as.character(.data$Timing)),
