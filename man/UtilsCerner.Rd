@@ -26,13 +26,15 @@ Collection of utility functions for cerner data
 Selects needed columns from a Cerner table and converts them to the
 expected class.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{UtilsCerner$std_cerner_tbl(tbl)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{UtilsCerner$std_cerner_tbl(tbl, master = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{tbl}}{\verb{[tbl_dbi]} A table containing Cerner data}
+
+\item{\code{master}}{\verb{[tbl_dbi]} A table containing master \code{entity_id} data}
 }
 \if{html}{\out{</div>}}
 }
