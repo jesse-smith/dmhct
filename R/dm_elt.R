@@ -127,11 +127,12 @@ dm_extract <- function(
     dm_death_extract() %>%
     dm_disease_status_extract() %>%
     dm_engraftment_extract() %>%
+    dm_gvhd_extract() %>%
     dm_mrd_extract() %>%
     dm_relapse_extract() %>%
     dm::dm_select_tbl(
       c("hla", "master", "cerner", "chimerism", "death", "disease_status"),
-      c("engraftment", "mrd", "relapse")
+      c("engraftment", "gvhd", "mrd", "relapse")
     )
 
   # Collect/compute
@@ -186,6 +187,7 @@ dm_transform <- function(dm_local = dm_extract(), cache = TRUE, reset = FALSE) {
     dm_death_transform() %>%
     dm_disease_status_transform() %>%
     dm_engraftment_transform() %>%
+    dm_gvhd_transform() %>%
     dm_mrd_transform() %>%
     dm_relapse_transform()
 
