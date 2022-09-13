@@ -233,8 +233,10 @@ dm_chimerism_transform <- function(dm_local) {
   dt <- dt[!is.na(cat_cell_sep)]
 
   # Prefer highest ranked method available in group (ranked in factor definition)
-  dt[, "cat_method1" := cat_method[[1L]], by = c(pk, "cat_cell_sep")]
-  dt <- dt[cat_method %in% cat_method1][, "cat_method1" := NULL]
+  dt[, "cat_method_explicit" := forcats::fct_explicit_na(cat_method)]
+  dt[, "cat_method1" := cat_method_explicit[[1L]], by = c(pk, "cat_cell_sep")]
+  dt <- dt[cat_method_explicit == cat_method1]
+  dt[, c("cat_method_explicit", "cat_method1") := NULL]
 
   # Get average within group
   dt <- dt[, list(

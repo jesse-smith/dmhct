@@ -215,7 +215,7 @@ dm_mrd_transform <- function(dm_local) {
      "cat_source" := factor("Bone Marrow", levels = levels(cat_source))]
 
   # Drop non-BM source
-  dt <- dt[!cat_source %in% "Bone Marrow"]
+  dt <- dt[cat_source %in% "Bone Marrow"]
 
   # Repeat once
   for (i in 1:2) {
@@ -251,8 +251,8 @@ dm_mrd_transform <- function(dm_local) {
     )]
   }
 
-  # Remove missing numeric results
-  dt <- dt[!is.na(pct_result)]
+  # Remove missing numeric results and drop logical result
+  dt <- dt[, "lgl_result" := NULL][!is.na(pct_result)]
 
   # Set primary key
   pk <- c("entity_id", "dt_mrd")
@@ -262,8 +262,10 @@ dm_mrd_transform <- function(dm_local) {
   data.table::setorderv(dt, na.last = TRUE)
 
   # Choose best available test
-  dt[, "cat_method1" := cat_method[[1L]], by = pk]
-  dt <- dt[cat_method %in% cat_method1][, "cat_method1" := NULL]
+  dt[, "cat_method_explicit" := forcats::fct_explicit_na(cat_method)]
+  dt[, "cat_method1" := cat_method_explicit[[1L]], by = pk]
+  dt <- dt[cat_method_explicit == cat_method1]
+  dt[, c("cat_method_explicit", "cat_method1") := NULL]
 
   # Average within group
   dt <- dt[, list(
