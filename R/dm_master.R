@@ -204,15 +204,13 @@ dm_master_transform <- function(dm_local) {
   dt[num_degree_match06 > num_degree_match08, "num_degree_match08" := num_degree_match06]
   dt[num_degree_match06 > num_degree_match10, "num_degree_match10" := num_degree_match06]
   dt[num_degree_match08 > num_degree_match10, "num_degree_match10" := num_degree_match08]
-  # related <- !dt$cat_donor_relation %in% c("Unrelated", NA_character_)
-  # full06 <- dt$num_degree_match06 %in% 6L
-  # full08 <- dt$num_degree_match08 %in% 8L
-  # full10 <- dt$num_degree_match10 %in% 10L
-  # any_full_related <- (full06 | full08 | full10) & related
-  # dt[is.na(num_degree_match06) & any_full_related, "num_degree_match06" :=  6L]
-  # dt[is.na(num_degree_match08) & any_full_related, "num_degree_match08" :=  8L]
-  # dt[is.na(num_degree_match10) & any_full_related, "num_degree_match10" := 10L]
-  # rm(related, full06, full08, full10, any_full_related)
+  related <- !dt$cat_donor_relation %in% c("Unrelated", NA_character_)
+  full10 <- dt$num_degree_match10 %in% 10L
+  full08 <- dt$num_degree_match08 %in% 8L | full10
+  full06 <- dt$num_degree_match06 %in% 6L | full08
+  dt[is.na(num_degree_match08) & full08, "num_degree_match08" := 8L]
+  dt[is.na(num_degree_match06) & full06, "num_degree_match06" := 6L]
+  rm(full06, full08, full10)
 
   # Convert to ordered factor
   dt[, "cat_degree_match06" := factor(num_degree_match06, ordered = TRUE)]
