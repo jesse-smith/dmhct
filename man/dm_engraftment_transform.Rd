@@ -7,10 +7,10 @@
 dm_engraftment_transform(dm_local)
 }
 \arguments{
-\item{dm_local}{\verb{[dm]} A \code{dm} with HLA data}
+\item{dm_local}{\verb{[dm]} Local \code{dm} w/ HCT data}
 }
 \value{
-The \code{dm} with the \code{engraftment} table transformed
+\verb{[dm]} The \code{dm} object w/ transformed \code{engraftment} table
 }
 \description{
 Transform the Engraftment Table in a Local \code{dm}

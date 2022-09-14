@@ -7,10 +7,10 @@
 dm_disease_status_extract(dm_remote)
 }
 \arguments{
-\item{dm_remote}{Remote \code{dm} object connected to SQL Server}
+\item{dm_remote}{\verb{[dm]} Remote \code{dm} object connected to SQL Server w/ HCT data}
 }
 \value{
-\code{dm} object with instructions for updating \code{disease_status} table
+\verb{[dm]} The \code{dm} object w/ instructions for updating \code{disease_status} table
 }
 \description{
 Extract Disease Status Table from SQL Server

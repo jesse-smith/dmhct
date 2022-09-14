@@ -7,10 +7,11 @@
 dm_sql_server(con = con_sql_server())
 }
 \arguments{
-\item{con}{An ODBC connection}
+\item{con}{\verb{[Microsoft SQL Server]} An ODBC connection to an SQL Server
+database}
 }
 \value{
-A \code{dm} containing HCT data
+\verb{[dm]} A \code{dm} containing HCT data
 }
 \description{
 Create a \code{dm} Object of HCT Data from Connection to SQL Server

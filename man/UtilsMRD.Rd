@@ -20,6 +20,7 @@ Collection of utility functions for MRD data
 \itemize{
 \item \href{#method-UtilsMRD-str_detect_fct}{\code{UtilsMRD$str_detect_fct()}}
 \item \href{#method-UtilsMRD-str_range_to_num}{\code{UtilsMRD$str_range_to_num()}}
+\item \href{#method-UtilsMRD-str_excel_dt_to_num}{\code{UtilsMRD$str_excel_dt_to_num()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -33,17 +34,17 @@ Collection of utility functions for MRD data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[character]} A character vector}
+\item{\code{x}}{\verb{[chr]} A character vector}
 
-\item{\code{lvl}}{\verb{[character(1)]} The level's numeric representation}
+\item{\code{lvl}}{\verb{[chr(1)]} The level's numeric representation}
 
-\item{\code{lbl}}{\verb{[character(1)]} The level's label}
+\item{\code{lbl}}{\verb{[chr(1)]} The level's label}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\verb{[logical]} A logical indicating presence or absence of the
-indicated factor level
+\verb{[lgl]} A logical indicating presence or absence of the indicated
+factor level
 Convert a \% Range to It's Midpoint
 }
 }
@@ -64,6 +65,29 @@ Convert a \% Range to It's Midpoint
 }
 \subsection{Returns}{
 \verb{[numeric]} The midpoint of each range of values
+Convert Excel Date to Number
+
+Converts Excel dates in MDY format to a number using an origin of
+"1/0/1900". Elements that cannot be converted are returned as-is.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsMRD-str_excel_dt_to_num"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsMRD-str_excel_dt_to_num}{}}}
+\subsection{Method \code{str_excel_dt_to_num()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsMRD$str_excel_dt_to_num(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{\verb{[chr]} Character vector containing Excel dates}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\verb{[chr]} Numeric representation of Excel date, where available
 }
 }
 }

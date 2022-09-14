@@ -2,7 +2,7 @@
 #'
 #' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HCT data
 #'
-#' @return The `dm` with instructions to update the `gvhd` table
+#' @return `[dm]` The `dm` w/ instructions to update the `gvhd` table
 #'
 #' @export
 dm_gvhd_extract <- function(dm_remote) {
@@ -21,13 +21,13 @@ dm_gvhd_extract <- function(dm_remote) {
         NA_character_,
         .data$cat_grade
       ),
-      cat_type = toupper(trimws(as.character(.data$Term)))
+      cat_site = toupper(trimws(as.character(.data$Term)))
     ) %>%
     dplyr::filter(
       !is.na(.data$entity_id),
       !is.na(.data$dt_trans),
       !is.na(.data$dt_onset),
-      !(is.na(.data$cat_grade) & is.na(.data$cat_type))
+      !(is.na(.data$cat_grade) & is.na(.data$cat_site))
     ) %>%
     dm::dm_update_zoomed()
 }
@@ -35,9 +35,9 @@ dm_gvhd_extract <- function(dm_remote) {
 
 #' Transform the GVHD Table in a Local `dm`
 #'
-#' @param dm_local `[dm]` Local `dm` with HCT data
+#' @param dm_local `[dm]` Local `dm` w/ HCT data
 #'
-#' @return The transformed `dm`
+#' @return `[dm]` The `dm` object w/ transformed `gvhd` table
 #'
 #' @export
 dm_gvhd_transform <- function(dm_local) {
@@ -70,24 +70,26 @@ dm_gvhd_transform <- function(dm_local) {
 
   # Grade
   dt[, "cat_grade" := as.integer(cat_grade)]
-  dt[is.na(cat_grade), "cat_grade" := cat_type %>%
+  dt[is.na(cat_grade), "cat_grade" := cat_site %>%
        stringr::str_extract("(?<=GRADE)\\s*[0-9]") %>%
        stringr::str_squish() %>%
        as.integer()]
+  # Grade 0 means no GVHD
+  dt <- dt[!cat_grade %in% 0L]
   dt[, "cat_grade" := ordered(cat_grade)]
 
-  # Duration
-  dt[, "cat_type" := cat_type %>%
+  # Type
+  dt[, "cat_site" := cat_site %>%
        stringr::str_replace("\\b(CUTE|AUTE|ACTE|ACUT)\\b", " ACUTE ") %>%
        stringr::str_replace("\\b(HRONIC|CRONIC|CHONIC|CHRNIC|CHROIC|CHRONC|CHRONI|CHRNC)\\b", " CHRONIC ") %>%
        stringr::str_squish()]
-  dt[, "cat_duration" := cat_type %>%
+  dt[, "cat_type" := cat_site %>%
        stringr::str_extract("ACUTE|CHRONIC") %>%
        stringr::str_to_title() %>%
        factor()]
 
-  # Type
-  dt[, "cat_type" := cat_type %>%
+  # Site
+  dt[, "cat_site" := cat_site %>%
        # Clean
        stringr::str_replace_all("[^A-Z0-9]", " ") %>%
        stringr::str_remove_all("GVHD|GRAFT\\s*VERSUS\\s*HOST\\s*DISEASE") %>%
@@ -101,28 +103,28 @@ dm_gvhd_transform <- function(dm_local) {
        stringr::str_replace_all("EYE", "OCULAR") %>%
        stringr::str_remove_all("(?<=JOINT)\\s*(AND\\s*)?FASCIA") %>%
        stringr::str_squish()]
-  dt[, "cat_type" := data.table::fcase(
-    cat_type %in% c("SKIN", "NAILS", "HAIR", "ORAL", "OCULAR"), "Mucocutaneous",
-    cat_type %like% "\\b(GI|RECTUM|GUT)\\b", "GI Tract",
-    cat_type %in% c("JOINT", "CONNECTIVE TISSUE", "MYOSITIS", "MUSCULOSKELETAL"), "Musculoskeletal",
-    cat_type %in% c("GENITOURINARY"), "Genitourinary",
-    cat_type %in% c("", "NO SITE DETERMINED"), NA_character_,
-    !is.na(cat_type), stringr::str_to_title(cat_type)
+  dt[, "cat_site" := data.table::fcase(
+    cat_site %in% c("SKIN", "NAILS", "HAIR", "ORAL", "OCULAR"), "Mucocutaneous",
+    cat_site %like% "\\b(GI|RECTUM|GUT)\\b", "GI Tract",
+    cat_site %in% c("JOINT", "CONNECTIVE TISSUE", "MYOSITIS", "MUSCULOSKELETAL"), "Musculoskeletal",
+    cat_site %in% c("GENITOURINARY"), "Genitourinary",
+    cat_site %in% c("", "NO SITE DETERMINED"), NA_character_,
+    !is.na(cat_site), stringr::str_to_title(cat_site)
   )]
 
   # Chronic GVHD is not graded
-  dt[!is.na(cat_grade) & cat_duration == "Chronic",
+  dt[!is.na(cat_grade) & cat_type == "Chronic",
      "cat_grade" := factor(NA_integer_, levels = levels(cat_grade))]
-  # If missing duration and grade is supplied, assume acute
-  dt[is.na(cat_duration) & !is.na(cat_grade),
-     "cat_duration" := factor("Acute", levels = levels(cat_duration))]
+  # If missing type and grade is supplied, assume acute
+  dt[is.na(cat_type) & !is.na(cat_grade),
+     "cat_type" := factor("Acute", levels = levels(cat_type))]
 
   # Primary key
-  pk <- c("entity_id", "dt_onset", "cat_type")
+  pk <- c("entity_id", "dt_onset", "cat_site")
 
   # If multiple w/ same time, keep highest grade
   data.table::setorderv(dt, order = -1L, na.last = TRUE)
-  dt <- unique(dt, by = c(pk, "cat_duration"))
+  dt <- unique(dt, by = c(pk, "cat_type"))
 
   # Set order
   data.table::setorderv(dt)

@@ -1,8 +1,8 @@
 #' Extract Engraftment Table from SQL Server
 #'
-#' @param dm_remote `[dm]` A remote `dm` connected to an SQL Server w/ HLA data
+#' @param dm_remote `[dm]` A remote `dm` connected to an SQL Server w/ HCT data
 #'
-#' @return The `dm` with instructions for updating the `engraftment` table
+#' @return `[dm]` The `dm` w/ instructions for updating the `engraftment` table
 #'
 #' @export
 dm_engraftment_extract <- function(dm_remote) {
@@ -41,9 +41,9 @@ dm_engraftment_extract <- function(dm_remote) {
 
 #' Transform the Engraftment Table in a Local `dm`
 #'
-#' @param dm_local `[dm]` A `dm` with HLA data
+#' @param dm_local `[dm]` Local `dm` w/ HCT data
 #'
-#' @return The `dm` with the `engraftment` table transformed
+#' @return `[dm]` The `dm` object w/ transformed `engraftment` table
 #'
 #' @export
 dm_engraftment_transform <- function(dm_local) {

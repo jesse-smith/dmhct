@@ -21,7 +21,7 @@ path_create <- function(..., abs = FALSE) {
 #'
 #' @param data `[data.frame]` A `data.frame` or one of its sub-classes
 #'
-#' @return The name of the class
+#' @return `[chr(1)]` The name of the class
 #'
 #' @keywords internal
 df_class <- function(data) {
@@ -41,7 +41,7 @@ df_class <- function(data) {
 #'
 #' @param data `[data.table]` A `data.table` to cast; will be modified in-place
 #'   if possible.
-#' @param to `[character(1)]` The subclass to return
+#' @param to `[chr(1)]` The subclass to return
 #'
 #' @return The converted data
 #'

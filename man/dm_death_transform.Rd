@@ -10,7 +10,7 @@ dm_death_transform(dm_local)
 \item{dm_local}{\verb{[dm]} Local \code{dm} with HCT data}
 }
 \value{
-The \code{dm} with updated \code{death} table
+\verb{[dm]} The \code{dm} with updated \code{death} table
 }
 \description{
 Transform the Death Table in a Local \code{dm}

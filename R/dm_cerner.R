@@ -1,12 +1,12 @@
 #' Unite All Cerner Tables and Remove Individual Tables
 #'
-#' @param dm_remote `[dm]` Remote `dm` connected to an SQL Server w/ HLA data
+#' @param dm_remote `[dm]` Remote `dm` connected to an SQL Server w/ HCT data
 #' @param path_var `[chr(1)]` Path to CSV file mapping test names to
 #'   standardized variable names
-#' @param quiet Should the function return quietly if a Cerner table already
-#'   exists?
+#' @param quiet `[lgl(1)]` Should the function return quietly if a Cerner table
+#'   already exists?
 #'
-#' @return The updated `dm`
+#' @return The `dm` w/ instructions for creating a combined `cerner` table
 dm_cerner_extract <- function(
     dm_remote,
     path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct"),
@@ -37,11 +37,13 @@ dm_cerner_extract <- function(
 
 #' Transform an Extracted Cerner Table in a Local `dm`
 #'
-#' @param dm_local `[dm]` A `dm` with Cerner (EHR) HLA data
-#' @param numeric_only `[logical(1)]` Should non-numeric data be dropped during
+#' @param dm_local `[dm]` Local `dm` w/ HCT data
+#' @param numeric_only `[lgl(1)]` Should non-numeric data be dropped during
 #'   transformation?
-#' @param path `[character(1)]` Path to CSV file mapping test names to
+#' @param path `[chr(1)]` Path to CSV file mapping test names to
 #'   standardized variable names
+#'
+#' @return The `dm` object w/ transformed `cerner` table
 #'
 #' @export
 dm_cerner_transform <- function(
@@ -66,7 +68,7 @@ dm_cerner_transform <- function(
     data.table::fread(data.table = TRUE) %>%
     dplyr::distinct(.data$test, .keep_all = TRUE)
 
-  # Standardize test names with variable map
+  # Standardize test names w/ variable map
   dt <- var_map[dt, on = "test"][, "test" := var][, "var" := NULL]
 
   # Remove non-numeric columns if numeric only is TRUE
@@ -79,7 +81,7 @@ dm_cerner_transform <- function(
   dt[
     test %flike% "num_" | test %flike% "pct_",
     "result" := data.table::fifelse(
-      # Attempt numeric extraction for strings starting with number or "<>"
+      # Attempt numeric extraction for strings starting w/ number or "<>"
       result %like% "^[0-9.<>]",
       # Extract numbers + decimals
       stringr::str_extract(result, "([0-9]+)|([0-9]+?[.][0-9]+)"),
@@ -300,7 +302,7 @@ UtilsCerner <- R6Class(
     #' @param tbl `[tbl_dbi]` A table containing Cerner data
     #' @param master `[tbl_dbi]` A table containing master `entity_id` data
     #'
-    #' @return A `tbl_dbi` with standardized columns
+    #' @return `[tbl_dbi]` The standardized table
     std_cerner_tbl = function(tbl, master = NULL) {
       # Get column names
       cols <- colnames(tbl)

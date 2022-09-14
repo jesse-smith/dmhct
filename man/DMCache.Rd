@@ -47,20 +47,21 @@ objects
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dm}}{A \code{dm} object}
+\item{\code{dm}}{\verb{[dm]} A \code{dm} object}
 
-\item{\code{checksum}}{The hash of the \code{dm} object}
+\item{\code{checksum}}{\verb{[chr(1)]} The hash of the \code{dm} object}
 
-\item{\code{file}}{The file stem to use for the cache objects}
+\item{\code{file}}{\verb{[chr(1)]} The file stem to use for the cache objects}
 
-\item{\code{dir}}{The directory in which to save the cache objects}
+\item{\code{dir}}{\verb{[chr(1)]} The directory in which to save the cache objects}
 
-\item{\code{n_threads}}{The number of threads to use when serializing the \code{dm}}
+\item{\code{n_threads}}{\verb{[int(1)]} The number of threads to use when serializing
+the \code{dm} object}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The \code{dm} (invisibly)
+\verb{[dm]} The \code{dm} object (invisibly)
 Read \code{dm} Data or its Checksum from a the Specified Cache
 }
 }
@@ -81,20 +82,22 @@ Read \code{dm} Data or its Checksum from a the Specified Cache
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{obj}}{What to read from the cache}
+\item{\code{obj}}{\verb{[chr(1)]} What to read from the cache}
 
-\item{\code{file}}{The file stem to use for the cache objects}
+\item{\code{file}}{\verb{[chr(1)]} The file stem to use for the cache objects}
 
-\item{\code{dir}}{The directory in which to save the cache objects}
+\item{\code{dir}}{\verb{[chr(1)]} The directory in which to save the cache objects}
 
-\item{\code{fail}}{Whether to error if \code{dir}/\code{obj}_\code{file} combo does not exist}
+\item{\code{fail}}{\verb{[lgl(1)]} Whether to error if \code{dir}/\code{obj}_\code{file} combo does
+not exist}
 
-\item{\code{n_threads}}{The number of threads to use when serializing the \code{dm}}
+\item{\code{n_threads}}{\verb{[int(1)]} The number of threads to use when
+de-serializing the object}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The de-serialized object
+\verb{[dm|chr(1)]} The de-serialized object
 Check Hash for \code{dm} Object
 }
 }
@@ -114,19 +117,20 @@ Check Hash for \code{dm} Object
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{checksum}}{The hash of the \code{dm} object}
+\item{\code{checksum}}{\verb{[chr(1)]} The hash of the \code{dm} object}
 
-\item{\code{file}}{The file stem to use for the cache objects}
+\item{\code{file}}{\verb{[chr(1)]} The file stem to use for the cache objects}
 
-\item{\code{dir}}{The directory in which to save the cache objects}
+\item{\code{dir}}{\verb{[chr(1)]} The directory in which to save the cache objects}
 
-\item{\code{n_threads}}{The number of threads to use when serializing the \code{dm}}
+\item{\code{n_threads}}{\code{int(1)} The number of threads to use when
+de-serializing the cached checksum}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \code{logical} indicating whether the passed \code{checksum} and cached
-\code{checksum} are identical
+\verb{[lgl(1)]} Whether the passed \code{checksum} and cached \code{checksum}
+are identical
 Hash a \code{dm} Object
 
 \code{dm_checksum()} creates a checksum by hashing each table + its name individually,
@@ -146,12 +150,12 @@ change if any data or names are added, deleted, or modified.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{dm}}{The \code{dm} object to hash}
+\item{\code{dm}}{\verb{[dm]} The \code{dm} object to hash}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The hash string of the object
+\verb{[chr(1)]} The hash string of the object
 }
 }
 }

@@ -11,16 +11,16 @@ dm_cerner_extract(
 )
 }
 \arguments{
-\item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to an SQL Server w/ HLA data}
+\item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to an SQL Server w/ HCT data}
 
 \item{path_var}{\verb{[chr(1)]} Path to CSV file mapping test names to
 standardized variable names}
 
-\item{quiet}{Should the function return quietly if a Cerner table already
-exists?}
+\item{quiet}{\verb{[lgl(1)]} Should the function return quietly if a Cerner table
+already exists?}
 }
 \value{
-The updated \code{dm}
+The \code{dm} w/ instructions for creating a combined \code{cerner} table
 }
 \description{
 Unite All Cerner Tables and Remove Individual Tables

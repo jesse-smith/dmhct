@@ -15,23 +15,23 @@ dm_extract(
 \arguments{
 \item{dm_remote}{\verb{[dm]} A \code{dm} object connected to the SQL Server for MLinHCT}
 
-\item{collect}{\verb{[logical(1)]} Should tables be collected locally on output?
+\item{collect}{\verb{[lgl(1)]} Should tables be collected locally on output?
 \code{collect = TRUE} means that tables will also be computed, even if
 \code{compute = FALSE}.}
 
-\item{compute}{\verb{[logical(1)]} Should tables be computed on the server? This
+\item{compute}{\verb{[lgl(1)]} Should tables be computed on the server? This
 does not mean that the computed tables will be transferred to the local
 machine; to do so, set \code{collect = TRUE}.}
 
-\item{cache}{\verb{[logical(1)]} Should results be cached (if inputs have changed)
+\item{cache}{\verb{[lgl(1)]} Should results be cached (if inputs have changed)
 or read from cache (if inputs have not changed)?}
 
-\item{reset}{\verb{[logical(1)]} Should the cache be reset to the current results,
+\item{reset}{\verb{[lgl(1)]} Should the cache be reset to the current results,
 even if inputs have not changed? This is useful if data processing logic
 has changed, but the underlying data have not.}
 }
 \value{
-The updated \code{dm} object
+\verb{[dm]} The updated \code{dm} object
 }
 \description{
 \code{dm_extract()} selects tables and columns of potential interest. It

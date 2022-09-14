@@ -10,7 +10,7 @@ dm_is_remote(dm)
 \item{dm}{The \code{dm} object to check}
 }
 \value{
-A \code{logical} indicating whether the \code{dm} is remote or not
+\verb{[lgl(1)]} Whether the \code{dm} is remote or not
 }
 \description{
 Check Whether a \code{dm} Object is Connected to a Remote Server

@@ -1,8 +1,8 @@
 #' Extract Master Table from SQL Server
 #'
-#' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HLA data
+#' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HCT data
 #'
-#' @return The `dm` with instructions to update the `master` table
+#' @return `[dm]` The `dm` w/ instructions to update the `master` table
 #'
 #' @export
 dm_master_extract <- function(dm_remote) {
@@ -40,9 +40,9 @@ dm_master_extract <- function(dm_remote) {
 
 #' Transform the Master Table in a Local `dm`
 #'
-#' @param dm_local `[dm]` Local `dm` with HLA data
+#' @param dm_local `[dm]` Local `dm` w/ HLA data
 #'
-#' @return The transformed `dm`
+#' @return `[dm]` The `dm` object w/ transformed `master` table
 #'
 #' @export
 dm_master_transform <- function(dm_local) {
@@ -299,12 +299,12 @@ dm_master_transform <- function(dm_local) {
 UtilsMaster <- R6Class(
   "UtilsMaster",
   public = list(
-    #' Convert Degree of Match `character` Data to Count with Specified Denominator
+    #' Convert Degree of Match `character` Data to Count w/ Specified Denominator
     #'
-    #' @param x `[character]` Vector of degree of match counts
-    #' @param denom `[integer(1)]` Denominator of counts to extract
+    #' @param x `[chr]` Vector of degree of match counts
+    #' @param denom `[int(1)]` Denominator of counts to extract
     #'
-    #' @return An `integer` vector of counts
+    #' @return `[int]` An `integer` vector of counts
     #'
     #' @keywords internal
     convert_degree_match = function(x, denom = 6L) {

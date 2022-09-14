@@ -1,10 +1,10 @@
 #' Extract and Unite HLA Tables in SQL Server
 #'
-#' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HLA data
-#' @param quiet Should the function return quietly if an HLA table is already
-#'   present?
+#' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HCT data
+#' @param quiet `[lgl(1)]` Should the function return quietly if an HLA table is
+#'   already present?
 #'
-#' @return The `dm` with instructions to create the HLA table
+#' @return `[dm]` The `dm` w/ instructions to create a combined `hla` table
 #'
 #' @export
 dm_hla_extract <- function(dm_remote, quiet = TRUE) {
@@ -32,9 +32,9 @@ dm_hla_extract <- function(dm_remote, quiet = TRUE) {
 
 #' Transform an HLA Table in a Local `dm`
 #'
-#' @param dm_local Local `dm` with HCT data
+#' @param dm_local `[dm]` Local `dm` w/ HCT data
 #'
-#' @return The `dm` with transformed `hla` table
+#' @return `[dm]` The `dm` w/ transformed `hla` table
 #'
 #' @export
 dm_hla_transform <- function(dm_local) {
@@ -129,10 +129,10 @@ UtilsHLA <- R6Class(
   public = list(
     #' Standardize an HLA Table
     #'
-    #' @param tbl `[data.frame]` HLA data
-    #' @param na `[character]` Vector of values to interpret as `NA`
+    #' @param tbl `[tbl_dbi]` A table containing HLA data
+    #' @param na `[chr]` Vector of values to interpret as `NA`
     #'
-    #' @return The standardized data
+    #' @return `[tbl_dbi]` The standardized table
     std_hla_tbl = function(
     tbl, na = c("", "NT", "Blank", "-", "Not Interpretable")
     ) {
@@ -166,9 +166,9 @@ UtilsHLA <- R6Class(
     },
     #' Standardize HLA Allele Representations
     #'
-    #' @param x `[character]` A vector of allele IDs
+    #' @param x `[chr]` A vector of allele IDs
     #'
-    #' @return Standardized alleles
+    #' @return `[chr]` Standardized alleles
     std_hla_allele = function(x) {
       # Extract first set of numbers in allele ID
       a_id <- x %>%

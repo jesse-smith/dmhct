@@ -10,7 +10,7 @@ dm_death_extract(dm_remote)
 \item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to SQL Server w/ HCT data}
 }
 \value{
-The \code{dm} with instructions for updating the \code{death} table
+\verb{[dm]} The \code{dm} with instructions for updating the \code{death} table
 }
 \description{
 Extract Death Table from SQL Server

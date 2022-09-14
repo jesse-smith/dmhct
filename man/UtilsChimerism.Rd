@@ -20,6 +20,7 @@ Collection of utility functions for chimerism data
 \itemize{
 \item \href{#method-UtilsChimerism-str_detect_fct}{\code{UtilsChimerism$str_detect_fct()}}
 \item \href{#method-UtilsChimerism-str_range_to_num}{\code{UtilsChimerism$str_range_to_num()}}
+\item \href{#method-UtilsChimerism-str_excel_dt_to_num}{\code{UtilsChimerism$str_excel_dt_to_num()}}
 \item \href{#method-UtilsChimerism-normalize}{\code{UtilsChimerism$normalize()}}
 \item \href{#method-UtilsChimerism-probit}{\code{UtilsChimerism$probit()}}
 \item \href{#method-UtilsChimerism-inv_probit}{\code{UtilsChimerism$inv_probit()}}
@@ -36,17 +37,16 @@ Collection of utility functions for chimerism data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[character]} A character vector}
+\item{\code{x}}{\verb{[chr]} A character vector}
 
-\item{\code{lvl}}{\verb{[character(1)]} The level's numeric representation}
+\item{\code{lvl}}{\verb{[chr(1)]} The level's numeric representation}
 
-\item{\code{lbl}}{\verb{[character(1)]} The level's label}
+\item{\code{lbl}}{\verb{[chr(1)]} The level's label}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\verb{[logical]} A logical indicating presence or absence of the
-indicated factor level
+\verb{[lgl(1)]} Presence or absence of the indicated factor level
 Convert a \% Range to It's Midpoint
 }
 }
@@ -61,12 +61,35 @@ Convert a \% Range to It's Midpoint
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[character]} Character representation of a range of percentages}
+\item{\code{x}}{\verb{[chr]} Character representation of a range of percentages}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\verb{[numeric]} The midpoint of each range of values
+\verb{[dbl]} The midpoint of each range of values
+Convert Excel Date to Number
+
+Converts Excel dates in MDY format to a number using an origin of
+"1/0/1900". Elements that cannot be converted are returned as-is.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsChimerism-str_excel_dt_to_num"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsChimerism-str_excel_dt_to_num}{}}}
+\subsection{Method \code{str_excel_dt_to_num()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsChimerism$str_excel_dt_to_num(x)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{x}}{\verb{[chr]} Character vector containing Excel dates}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+\verb{[chr]} Numeric representation of Excel date, where available
 Normalize a \code{numeric} Vector to \verb{[0, 1]}
 }
 }
@@ -81,12 +104,13 @@ Normalize a \code{numeric} Vector to \verb{[0, 1]}
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[numeric]} A \code{numeric} vector or a vector than can be coerced to \code{numeric}}
+\item{\code{x}}{\verb{[dbl]} A \code{numeric} vector or a vector than can be coerced
+to \code{numeric}}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\verb{[double]} The normalized vector
+\verb{[dbl]} The normalized vector
 Transform a \code{numeric} Vector Using the Probit Function
 }
 }
@@ -106,17 +130,17 @@ truncated before transformation.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[numeric]} A vector to transform}
+\item{\code{x}}{\verb{[dbl]} A vector to transform}
 
-\item{\code{range}}{\verb{[numeric(2)]} The lower and upper bounds of the domain of \code{x}}
+\item{\code{range}}{\verb{[dbl(2)]} The lower and upper bounds of the domain of \code{x}}
 
-\item{\code{tol}}{\verb{[numeric(1)]} The tolerance for truncating \code{x} on the \verb{[0, 1]}
+\item{\code{tol}}{\verb{[dbl(1)]} The tolerance for truncating \code{x} on the \verb{[0, 1]}
 scale; must be between \code{0} and \code{0.01}.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\verb{[numeric]} The transformed vector
+\verb{[dbl]} The transformed vector
 Transform a \code{numeric} Vector Using the Inverse Probit Function
 }
 }
@@ -140,16 +164,16 @@ specified by \code{range}; values outside of \code{range} will be truncated.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[numeric]} A vector to transform}
+\item{\code{x}}{\verb{[dbl]} A vector to transform}
 
-\item{\code{range}}{\verb{[numeric(2)]} The lower and upper bounds of the range of the result}
+\item{\code{range}}{\verb{[dbl(2)]} The lower and upper bounds of the range of the result}
 
-\item{\code{tol}}{\verb{[numeric(1)]} The tolerance used for truncating in the \code{probit} transform}
+\item{\code{tol}}{\verb{[dbl(1)]} The tolerance used for truncating in the \code{probit} transform}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-\verb{[numeric]} The transformed vector
+\verb{[dbl]} The transformed vector
 }
 }
 }

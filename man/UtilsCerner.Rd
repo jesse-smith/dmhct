@@ -39,7 +39,7 @@ expected class.
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A \code{tbl_dbi} with standardized columns
+\verb{[tbl_dbi]} The standardized table
 }
 }
 }

@@ -7,10 +7,10 @@
 dm_hla_transform(dm_local)
 }
 \arguments{
-\item{dm_local}{Local \code{dm} with HCT data}
+\item{dm_local}{\verb{[dm]} Local \code{dm} w/ HCT data}
 }
 \value{
-The \code{dm} with transformed \code{hla} table
+\verb{[dm]} The \code{dm} w/ transformed \code{hla} table
 }
 \description{
 Transform an HLA Table in a Local \code{dm}

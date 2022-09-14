@@ -10,7 +10,7 @@ df_class(data)
 \item{data}{\verb{[data.frame]} A \code{data.frame} or one of its sub-classes}
 }
 \value{
-The name of the class
+\verb{[chr(1)]} The name of the class
 }
 \description{
 Get Class of \code{data.frame}-Like Object

@@ -7,13 +7,13 @@
 dm_hla_extract(dm_remote, quiet = TRUE)
 }
 \arguments{
-\item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to a SQL Server w/ HLA data}
+\item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to a SQL Server w/ HCT data}
 
-\item{quiet}{Should the function return quietly if an HLA table is already
-present?}
+\item{quiet}{\verb{[lgl(1)]} Should the function return quietly if an HLA table is
+already present?}
 }
 \value{
-The \code{dm} with instructions to create the HLA table
+\verb{[dm]} The \code{dm} w/ instructions to create a combined \code{hla} table
 }
 \description{
 Extract and Unite HLA Tables in SQL Server

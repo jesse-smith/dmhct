@@ -7,10 +7,10 @@
 dm_disease_status_transform(dm_local)
 }
 \arguments{
-\item{dm_local}{\code{dm} object}
+\item{dm_local}{\verb{[dm]} Local \code{dm} w/ HCT data}
 }
 \value{
-The \code{dm} object with transformed \code{disease_status} table
+\verb{[dm]} The \code{dm} object w/ transformed \code{disease_status} table
 }
 \description{
 Transform Disease Status Table in Local \code{dm}

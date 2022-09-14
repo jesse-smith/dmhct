@@ -20,7 +20,7 @@ dm_collect <- function(dm_remote) {
 #' Compute All Tables in a `dm` Object
 #'
 #' @param dm_remote `[dm]` A `dm` object connected to a remote source
-#' @param quiet Should messages be suppressed during computation?
+#' @param quiet `[lgl(1)]` Should messages be suppressed during computation?
 #'
 #' @return `[dm]` The updated object with tables computed
 #'
@@ -45,7 +45,7 @@ dm_compute <- function(dm_remote, quiet = TRUE) {
 #'
 #' @param dm The `dm` object to check
 #'
-#' @return A `logical` indicating whether the `dm` is remote or not
+#' @return `[lgl(1)]` Whether the `dm` is remote or not
 #'
 #' @export
 dm_is_remote <- function(dm) {
@@ -56,9 +56,9 @@ dm_is_remote <- function(dm) {
 
 #' Disconnect a `dm` Object from the Remote Server
 #'
-#' @param dm The `dm` object to disconnect
+#' @param dm `[dm]` The `dm` object to disconnect
 #'
-#' @return The `dm` (invisibly)
+#' @return `[dm]` The `dm` (invisibly)
 #'
 #' @export
 dm_disconnect <- function(dm) {

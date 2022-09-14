@@ -7,10 +7,10 @@
 dm_engraftment_extract(dm_remote)
 }
 \arguments{
-\item{dm_remote}{\verb{[dm]} A remote \code{dm} connected to an SQL Server w/ HLA data}
+\item{dm_remote}{\verb{[dm]} A remote \code{dm} connected to an SQL Server w/ HCT data}
 }
 \value{
-The \code{dm} with instructions for updating the \code{engraftment} table
+\verb{[dm]} The \code{dm} w/ instructions for updating the \code{engraftment} table
 }
 \description{
 Extract Engraftment Table from SQL Server

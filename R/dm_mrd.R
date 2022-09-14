@@ -2,7 +2,7 @@
 #'
 #' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HCT data
 #'
-#' @return The `dm` with instructions for updating the `mrd` table
+#' @return `[dm]` The `dm` with instructions for updating the `mrd` table
 #'
 #' @export
 dm_mrd_extract <- function(dm_remote) {
@@ -69,9 +69,9 @@ dm_mrd_extract <- function(dm_remote) {
 
 #' Transform the MRD Table in a Local `dm`
 #'
-#' @param dm_local `[dm]` Local `dm` with HLA data
+#' @param dm_local `[dm]` Local `dm` with HCT data
 #'
-#' @return The transformed `dm`
+#' @return `[dm]` The `dm` object w/ transformed `mrd` table
 #'
 #' @export
 dm_mrd_transform <- function(dm_local) {
@@ -88,14 +88,18 @@ dm_mrd_transform <- function(dm_local) {
   dt_cols <- c("dt_trans", "dt_mrd")
   dt[, c(dt_cols) := lapply(.SD, lubridate::as_date), .SDcols = dt_cols]
 
-  # Filter unused patients w/ master
+  # Filter unused patients and patients that should not have MRD w/ master
   dt_master <- data.table::as.data.table(dm_local$master)
   data.table::set(
     dt_master,
-    j = setdiff(colnames(dt_master), c("entity_id", "dt_trans")),
+    j = setdiff(colnames(dt_master), c("entity_id", "dt_trans", "cat_dx_grp")),
     value = NULL
   )
+  # Remove patients not in master
   dt <- dt[dt_master, on = c("entity_id", "dt_trans"), nomatch = NULL]
+  # Remove patients that should not have MRD
+  dt <- dt[cat_dx_grp %in% c("ALL", "AML", "Other Leukemias", "Myelodysplastic Syndrome", NA_character_)]
+  dt[, "cat_dx_grp" := NULL]
   rm(dt_master)
 
   # Remove transplant date
@@ -149,11 +153,7 @@ dm_mrd_transform <- function(dm_local) {
   dt[, c(result_cols) := lapply(.SD, stringr::str_remove, pattern = "\\^"),
      .SDcols = result_cols]
   # Handle Excel dates
-  dt[, c(result_cols) := lapply(.SD, function(x) data.table::fifelse(
-    x %like% "1/[0-9]+/1900",
-    stringr::str_extract(x, "(?<=1/)[0-9]+(?=/1900)"),
-    x
-  )), .SDcols = result_cols]
+  dt[, c(result_cols) := lapply(.SD, utils_mrd$str_excel_dt_to_num), .SDcols = result_cols]
   # Handle ranges w/ [=<>]
   dt[, c(result_cols) := lapply(.SD, function(x) data.table::fifelse(
     x %flike% "-",
@@ -161,7 +161,7 @@ dm_mrd_transform <- function(dm_local) {
     x
   )), .SDcols = result_cols]
 
-  # Handle "sensitivity limits" text
+  # Handle sensitivity limits text
   dt[num_actual_value %flike% "NOTHING TO SUGGEST",
      "num_actual_value" := num_actual_value %>%
        stringr::str_extract("[0-9]+\\s*/\\s*[0-9]+") %>%
@@ -210,12 +210,12 @@ dm_mrd_transform <- function(dm_local) {
   # Remove entirely missing results
   dt <- dt[!(is.na(pct_result) & is.na(lgl_result))]
 
-  # Fill source where possible
+  # Fill source where possible, assuming missings before the first PB sample are all BM
   dt[is.na(cat_source) & dt_mrd < min(dt[cat_source == "Peripheral Blood"]$dt_mrd),
      "cat_source" := factor("Bone Marrow", levels = levels(cat_source))]
 
   # Drop non-BM source
-  dt <- dt[cat_source %in% "Bone Marrow"]
+  dt <- dt[cat_source %in% c("Bone Marrow", NA_character_)]
 
   # Repeat once
   for (i in 1:2) {
@@ -227,7 +227,7 @@ dm_mrd_transform <- function(dm_local) {
       lgl_result & pct_result < 5e-3, factor("NGS", levels = levels(cat_method))
     )]
 
-    # Fill logical results where possible
+    # Fill logical results where possible using lower limits of detection
     dt[is.na(lgl_result), "lgl_result" := data.table::fcase(
       cat_method == "NGS" & pct_result < 1e-4, FALSE,
       cat_method == "PCR" & pct_result < 0.01, FALSE,
@@ -252,14 +252,14 @@ dm_mrd_transform <- function(dm_local) {
   }
 
   # Remove missing numeric results and drop logical result
-  dt <- dt[, "lgl_result" := NULL][!is.na(pct_result)]
+  # dt <- dt[, "lgl_result" := NULL][!is.na(pct_result)]
 
   # Set primary key
   pk <- c("entity_id", "dt_mrd")
   data.table::setkeyv(dt, pk)
 
   # Sort
-  data.table::setorderv(dt, na.last = TRUE)
+  data.table::setorderv(dt, setdiff(colnames(dt), "lgl_result"), na.last = TRUE)
 
   # Choose best available test
   dt[, "cat_method_explicit" := forcats::fct_explicit_na(cat_method)]
@@ -270,8 +270,29 @@ dm_mrd_transform <- function(dm_local) {
   # Average within group
   dt <- dt[, list(
     cat_method = cat_method[[1L]],
-    pct_result = mean(pct_result, na.rm = TRUE)
+    pct_result = mean(pct_result, na.rm = TRUE),
+    lgl_result = if (all(is.na(lgl_result))) {
+      NA
+    } else if (data.table::uniqueN(lgl_result, na.rm = TRUE) == 1L) {
+      lgl_result[!is.na(lgl_result)][[1L]]
+    } else {
+      NA
+    }
   ), keyby = pk]
+
+  # Add logical back where available
+  dt[is.na(lgl_result), "lgl_result" := data.table::fcase(
+    cat_method == "NGS" & pct_result < 1e-4, FALSE,
+    cat_method == "PCR" & pct_result < 0.01, FALSE,
+    cat_method == "Flow Cytometry" & pct_result < 0.1, FALSE,
+    cat_method == "FISH" & pct_result < 1, FALSE,
+    is.na(cat_method) & pct_result < 0.01, FALSE,
+    cat_method == "NGS" & pct_result >= 1e-4, TRUE,
+    cat_method == "PCR" & pct_result >= 0.01, TRUE,
+    cat_method == "Flow Cytometry" & pct_result >= 0.1, TRUE,
+    cat_method == "FISH" & pct_result >= 1, TRUE,
+    pct_result >= 1, TRUE
+  )]
 
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
@@ -299,12 +320,12 @@ UtilsMRD <- R6Class(
   public = list(
     #' Detect Factor Level in Chimerism Data
     #'
-    #' @param x `[character]` A character vector
-    #' @param lvl `[character(1)]` The level's numeric representation
-    #' @param lbl `[character(1)]` The level's label
+    #' @param x `[chr]` A character vector
+    #' @param lvl `[chr(1)]` The level's numeric representation
+    #' @param lbl `[chr(1)]` The level's label
     #'
-    #' @return `[logical]` A logical indicating presence or absence of the
-    #'   indicated factor level
+    #' @return `[lgl]` A logical indicating presence or absence of the indicated
+    #'   factor level
     str_detect_fct = function(x, lvl, lbl) {
       stringr::str_detect(
         x,
@@ -325,6 +346,25 @@ UtilsMRD <- R6Class(
         stringr::str_split("(?<![0-9][^Ee])\\s*-\\s*") %>%
         {suppressWarnings(lapply(., as.numeric))} %>%
         vapply(function(num) mean(as.numeric(num)), double(1L))
+    },
+    #' Convert Excel Date to Number
+    #'
+    #' Converts Excel dates in MDY format to a number using an origin of
+    #' "1/0/1900". Elements that cannot be converted are returned as-is.
+    #'
+    #' @param x `[chr]` Character vector containing Excel dates
+    #'
+    #' @return `[chr]` Numeric representation of Excel date, where available
+    str_excel_dt_to_num = function(x) {
+      dt_chr <- x %>%
+        stringr::str_extract("([1-9]|1[012])\\s*/\\s*[0-9]+\\s*/\\s*[0-9]{4}") %>%
+        stringr::str_remove_all("\\s")
+      dt <- suppressWarnings(lubridate::mdy(dt_chr))
+      suppressWarnings(data.table::fcase(
+        is.na(dt_chr), x,
+        !is.na(dt), as.character(as.numeric(dt - as.Date("1900-01-01")) + 1),
+        dt_chr %like% "1/[0-9]+/1900", stringr::str_extract(dt_chr, "(?<=1/)[0-9]+(?=/1900)")
+      ))
     }
   )
 )

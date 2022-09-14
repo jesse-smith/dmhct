@@ -2,7 +2,7 @@
 #'
 #' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HCT data
 #'
-#' @return The `dm` with instructions for updating the `chimerism` table
+#' @return `[dm]` The `dm` w/ instructions for updating the `chimerism` table
 #'
 #' @export
 dm_chimerism_extract <- function(dm_remote) {
@@ -51,9 +51,9 @@ dm_chimerism_extract <- function(dm_remote) {
 
 #' Transform the Chimerism Table in a Local `dm`
 #'
-#' @param dm_local `[dm]` Local `dm` with HCT data
+#' @param dm_local `[dm]` Local `dm` w/ HCT data
 #'
-#' @return The transformed `dm`
+#' @return `[dm]` The `dm` object w/ transformed `chimerism` table
 #'
 #' @export
 dm_chimerism_transform <- function(dm_local) {
@@ -82,12 +82,12 @@ dm_chimerism_transform <- function(dm_local) {
   dt <- dt[dt_master, on = c("entity_id", "dt_trans"), nomatch = NULL]
   rm(dt_master)
 
-  # Cell Source
+  # Cell Source (ignore all but BM and PB for now per discussion w/ Akshay)
   dt[, "cat_source" := data.table::fcase(
     utils_chimerism$str_detect_fct(cat_source, 1L, "bone\\s+marrow"), "Bone Marrow",
     utils_chimerism$str_detect_fct(cat_source, 2L, "peripheral\\s+blood"), "Peripheral Blood",
     utils_chimerism$str_detect_fct(cat_source, 11L, "unsorted"), "Peripheral Blood",
-    utils_chimerism$str_detect_fct(cat_source, 3L, "t\\s*-?\\s*cell"), "T Cells",
+    # utils_chimerism$str_detect_fct(cat_source, 3L, "t\\s*-?\\s*cell"), "T Cells",
     # utils_chimerism$str_detect_fct(cat_source, 4L, "b\\s*-?\\s*cell"), "B Cells",
     # utils_chimerism$str_detect_fct(cat_source, 6L, "monocyte"), "Monocytes",
     # utils_chimerism$str_detect_fct(cat_source, 7L, "neutrophil"), "Neutrophils",
@@ -98,8 +98,8 @@ dm_chimerism_transform <- function(dm_local) {
   )]
   dt[, "cat_source" := factor(cat_source, levels = c(
     "Bone Marrow",
-    "Peripheral Blood",
-    "T Cells"
+    "Peripheral Blood"
+    # "T Cells"
     # "B Cells",
     # "NK Cells",
     # "Monocytes",
@@ -119,6 +119,7 @@ dm_chimerism_transform <- function(dm_local) {
     !is.na(cat_method), "Other",
     default = NA_character_
   )]
+  # Order levels from most to least preferred method
   dt[, "cat_method" := factor(cat_method, levels = c(
     "VNTR",
     "RFLP",
@@ -146,9 +147,11 @@ dm_chimerism_transform <- function(dm_local) {
   dt[is.na(pct_donor_tmp) & !is.na(pct_host_tmp), pct_donor_tmp := 100 - pct_host_tmp]
   dt[is.na(pct_host_tmp) & !is.na(pct_donor_tmp), pct_host_tmp := 100 - pct_donor_tmp]
 
-  # 1/0/1900 is numeric 0 in Excel dates
-  dt[is.na(pct_host_tmp) & pct_host %like% "1\\s*/\\s*0\\s*/\\s*1900", pct_host_tmp := 0]
-  dt[is.na(pct_donor_tmp) & pct_donor %like% "1\\s*/\\s*0\\s*/\\s*1900", pct_donor_tmp := 0]
+  # Handle Excel dates
+  dt[is.na(pct_donor_tmp),
+     "pct_donor_tmp" := suppressWarnings(as.numeric(utils_chimerism$str_excel_dt_to_num(pct_donor)))]
+  dt[is.na(pct_host_tmp),
+     "pct_host_tmp" := suppressWarnings(as.numeric(utils_chimerism$str_excel_dt_to_num(pct_host)))]
 
   # Get middle of ranges
   dt[is.na(pct_donor_tmp), "pct_donor_tmp" := utils_chimerism$str_range_to_num(pct_donor)]
@@ -171,6 +174,8 @@ dm_chimerism_transform <- function(dm_local) {
   # Set primary key
   pk <- c("entity_id", "dt_chimerism", "cat_source")
   data.table::setkeyv(dt, pk)
+
+  # Handle mirrored duplicates in pct_donor and pct_host -----------------------
 
   # Calculate largest differences within patient + date + cell type groupings
   dt[, c("delta_donor", "delta_host") := list(
@@ -229,6 +234,8 @@ dm_chimerism_transform <- function(dm_local) {
   dt[, c("delta_donor", "delta_host", "cat_source_lf", "cat_method_lf") := NULL]
   dt[, c("t", "t_trans", "dist_keep", "dist_swap", "tmp_donor") := NULL]
 
+  # ----------------------------------------------------------------------------
+
   # Remove missing cell type
   dt <- dt[!is.na(cat_source)]
 
@@ -280,12 +287,11 @@ UtilsChimerism <- R6Class(
   public = list(
     #' Detect Factor Level in Chimerism Data
     #'
-    #' @param x `[character]` A character vector
-    #' @param lvl `[character(1)]` The level's numeric representation
-    #' @param lbl `[character(1)]` The level's label
+    #' @param x `[chr]` A character vector
+    #' @param lvl `[chr(1)]` The level's numeric representation
+    #' @param lbl `[chr(1)]` The level's label
     #'
-    #' @return `[logical]` A logical indicating presence or absence of the
-    #'   indicated factor level
+    #' @return `[lgl(1)]` Presence or absence of the indicated factor level
     str_detect_fct = function(x, lvl, lbl) {
       stringr::str_detect(
         x,
@@ -294,9 +300,9 @@ UtilsChimerism <- R6Class(
     },
     #' Convert a % Range to It's Midpoint
     #'
-    #' @param x `[character]` Character representation of a range of percentages
+    #' @param x `[chr]` Character representation of a range of percentages
     #'
-    #' @return `[numeric]` The midpoint of each range of values
+    #' @return `[dbl]` The midpoint of each range of values
     str_range_to_num = function(x) {
       x %>%
         stringr::str_replace("<=?", "0-") %>%
@@ -305,11 +311,31 @@ UtilsChimerism <- R6Class(
         lapply(as.numeric) %>%
         vapply(function(num) mean(as.numeric(num)), double(1L))
     },
+    #' Convert Excel Date to Number
+    #'
+    #' Converts Excel dates in MDY format to a number using an origin of
+    #' "1/0/1900". Elements that cannot be converted are returned as-is.
+    #'
+    #' @param x `[chr]` Character vector containing Excel dates
+    #'
+    #' @return `[chr]` Numeric representation of Excel date, where available
+    str_excel_dt_to_num = function(x) {
+      dt_chr <- x %>%
+        stringr::str_extract("([1-9]|1[012])\\s*/\\s*[0-9]+\\s*/\\s*[0-9]{4}") %>%
+        stringr::str_remove_all("\\s")
+      dt <- suppressWarnings(lubridate::mdy(dt_chr))
+      suppressWarnings(data.table::fcase(
+        is.na(dt_chr), x,
+        !is.na(dt), as.character(as.numeric(dt - as.Date("1900-01-01")) + 1),
+        dt_chr %like% "1/[0-9]+/1900", stringr::str_extract(dt_chr, "(?<=1/)[0-9]+(?=/1900)")
+      ))
+    },
     #' Normalize a `numeric` Vector to `[0, 1]`
     #'
-    #' @param x `[numeric]` A `numeric` vector or a vector than can be coerced to `numeric`
+    #' @param x `[dbl]` A `numeric` vector or a vector than can be coerced
+    #'   to `numeric`
     #'
-    #' @return `[double]` The normalized vector
+    #' @return `[dbl]` The normalized vector
     normalize = function(x) {
       x <- as.numeric(x)
       r <- range(x, na.rm = TRUE)
@@ -324,11 +350,11 @@ UtilsChimerism <- R6Class(
     #' and `qnorm(1)` are infinite, values closer than `tol` to `0` or `1` are
     #' truncated before transformation.
     #'
-    #' @param x `[numeric]` A vector to transform
-    #' @param range `[numeric(2)]` The lower and upper bounds of the domain of `x`
-    #' @param tol `[numeric(1)]` The tolerance for truncating `x` on the `[0, 1]`
+    #' @param x `[dbl]` A vector to transform
+    #' @param range `[dbl(2)]` The lower and upper bounds of the domain of `x`
+    #' @param tol `[dbl(1)]` The tolerance for truncating `x` on the `[0, 1]`
     #'   scale; must be between `0` and `0.01`.
-    #' @return `[numeric]` The transformed vector
+    #' @return `[dbl]` The transformed vector
     probit = function(x, range = c(0, 100), tol = sqrt(.Machine$double.eps)) {
       checkmate::assert_numeric(
         range,
@@ -352,11 +378,11 @@ UtilsChimerism <- R6Class(
     #' `0` or `1` with `0` or `1` (respectively). Maps result to the domain
     #' specified by `range`; values outside of `range` will be truncated.
     #'
-    #' @param x `[numeric]` A vector to transform
-    #' @param range `[numeric(2)]` The lower and upper bounds of the range of the result
-    #' @param tol `[numeric(1)]` The tolerance used for truncating in the `probit` transform
+    #' @param x `[dbl]` A vector to transform
+    #' @param range `[dbl(2)]` The lower and upper bounds of the range of the result
+    #' @param tol `[dbl(1)]` The tolerance used for truncating in the `probit` transform
     #'
-    #' @return `[numeric]` The transformed vector
+    #' @return `[dbl]` The transformed vector
     inv_probit = function(x, range = c(0, 100), tol = sqrt(.Machine$double.eps)) {
       checkmate::assert_numeric(
         range,

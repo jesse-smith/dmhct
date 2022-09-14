@@ -11,13 +11,16 @@ dm_cerner_transform(
 )
 }
 \arguments{
-\item{dm_local}{\verb{[dm]} A \code{dm} with Cerner (EHR) HLA data}
+\item{dm_local}{\verb{[dm]} Local \code{dm} w/ HCT data}
 
-\item{numeric_only}{\verb{[logical(1)]} Should non-numeric data be dropped during
+\item{numeric_only}{\verb{[lgl(1)]} Should non-numeric data be dropped during
 transformation?}
 
-\item{path}{\verb{[character(1)]} Path to CSV file mapping test names to
+\item{path}{\verb{[chr(1)]} Path to CSV file mapping test names to
 standardized variable names}
+}
+\value{
+The \code{dm} object w/ transformed \code{cerner} table
 }
 \description{
 Transform an Extracted Cerner Table in a Local \code{dm}

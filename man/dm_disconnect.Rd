@@ -7,10 +7,10 @@
 dm_disconnect(dm)
 }
 \arguments{
-\item{dm}{The \code{dm} object to disconnect}
+\item{dm}{\verb{[dm]} The \code{dm} object to disconnect}
 }
 \value{
-The \code{dm} (invisibly)
+\verb{[dm]} The \code{dm} (invisibly)
 }
 \description{
 Disconnect a \code{dm} Object from the Remote Server

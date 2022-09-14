@@ -19,7 +19,7 @@ Collection of utility functions for master data
 \keyword{internal}
 \keyword{of}
 \keyword{to}
-\keyword{with}
+\keyword{w/}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
@@ -38,14 +38,14 @@ Collection of utility functions for master data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[character]} Vector of degree of match counts}
+\item{\code{x}}{\verb{[chr]} Vector of degree of match counts}
 
-\item{\code{denom}}{\verb{[integer(1)]} Denominator of counts to extract}
+\item{\code{denom}}{\verb{[int(1)]} Denominator of counts to extract}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-An \code{integer} vector of counts
+\verb{[int]} An \code{integer} vector of counts
 }
 }
 \if{html}{\out{<hr>}}

@@ -10,7 +10,7 @@ dm_relapse_extract(dm_remote)
 \item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to SQL Server w/ HLA data}
 }
 \value{
-\code{dm} with instructions for updating \code{relapse} table
+\verb{[dm]} The \code{dm} object w/ instructions for updating \code{relapse} table
 }
 \description{
 Extract Relapse Table from SQL Server

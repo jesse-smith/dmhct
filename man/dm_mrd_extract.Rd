@@ -10,7 +10,7 @@ dm_mrd_extract(dm_remote)
 \item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to SQL Server w/ HCT data}
 }
 \value{
-The \code{dm} with instructions for updating the \code{mrd} table
+\verb{[dm]} The \code{dm} with instructions for updating the \code{mrd} table
 }
 \description{
 Extract MRD Table from SQL Server

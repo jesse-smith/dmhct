@@ -1,8 +1,8 @@
 #' Extract Disease Status Table from SQL Server
 #'
-#' @param dm_remote Remote `dm` object connected to SQL Server
+#' @param dm_remote `[dm]` Remote `dm` object connected to SQL Server w/ HCT data
 #'
-#' @return `dm` object with instructions for updating `disease_status` table
+#' @return `[dm]` The `dm` object w/ instructions for updating `disease_status` table
 #'
 #' @export
 dm_disease_status_extract <- function(dm_remote) {
@@ -38,9 +38,9 @@ dm_disease_status_extract <- function(dm_remote) {
 
 #' Transform Disease Status Table in Local `dm`
 #'
-#' @param dm_local `dm` object
+#' @param dm_local `[dm]` Local `dm` w/ HCT data
 #'
-#' @return The `dm` object with transformed `disease_status` table
+#' @return `[dm]` The `dm` object w/ transformed `disease_status` table
 #'
 #' @export
 dm_disease_status_transform <- function(dm_local) {

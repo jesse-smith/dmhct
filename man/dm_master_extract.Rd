@@ -7,10 +7,10 @@
 dm_master_extract(dm_remote)
 }
 \arguments{
-\item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to a SQL Server w/ HLA data}
+\item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to a SQL Server w/ HCT data}
 }
 \value{
-The \code{dm} with instructions to update the \code{master} table
+\verb{[dm]} The \code{dm} w/ instructions to update the \code{master} table
 }
 \description{
 Extract Master Table from SQL Server

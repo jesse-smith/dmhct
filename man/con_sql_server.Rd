@@ -26,7 +26,7 @@ above arguments are ignored.}
 \item{...}{Additional named arguments to pass to \code{odbc::dbConnect()}}
 }
 \value{
-An ODBC connection object
+\verb{[Microsoft SQL Server]} An ODBC connection object
 }
 \description{
 Connect to SQL Server Where Data is Stored

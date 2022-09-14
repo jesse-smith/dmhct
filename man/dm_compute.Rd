@@ -9,7 +9,7 @@ dm_compute(dm_remote, quiet = TRUE)
 \arguments{
 \item{dm_remote}{\verb{[dm]} A \code{dm} object connected to a remote source}
 
-\item{quiet}{Should messages be suppressed during computation?}
+\item{quiet}{\verb{[lgl(1)]} Should messages be suppressed during computation?}
 }
 \value{
 \verb{[dm]} The updated object with tables computed

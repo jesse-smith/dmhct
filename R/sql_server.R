@@ -8,7 +8,7 @@
 #'   above arguments are ignored.
 #' @param ... Additional named arguments to pass to `odbc::dbConnect()`
 #'
-#' @return An ODBC connection object
+#' @return `[Microsoft SQL Server]` An ODBC connection object
 #'
 #' @export
 con_sql_server <- function(
@@ -35,9 +35,10 @@ con_sql_server <- function(
 
 #' Create a `dm` Object of HCT Data from Connection to SQL Server
 #'
-#' @param con An ODBC connection
+#' @param con `[Microsoft SQL Server]` An ODBC connection to an SQL Server
+#'   database
 #'
-#' @return A `dm` containing HCT data
+#' @return `[dm]` A `dm` containing HCT data
 #'
 #' @export
 dm_sql_server <- function(con = con_sql_server()) {

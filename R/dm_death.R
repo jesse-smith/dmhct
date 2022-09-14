@@ -2,7 +2,7 @@
 #'
 #' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HCT data
 #'
-#' @return The `dm` with instructions for updating the `death` table
+#' @return `[dm]` The `dm` with instructions for updating the `death` table
 #'
 #' @export
 dm_death_extract <- function(dm_remote) {
@@ -31,7 +31,7 @@ dm_death_extract <- function(dm_remote) {
 #'
 #' @param dm_local `[dm]` Local `dm` with HCT data
 #'
-#' @return The `dm` with updated `death` table
+#' @return `[dm]` The `dm` with updated `death` table
 #'
 #' @export
 dm_death_transform <- function(dm_local) {

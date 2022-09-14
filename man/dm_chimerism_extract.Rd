@@ -10,7 +10,7 @@ dm_chimerism_extract(dm_remote)
 \item{dm_remote}{\verb{[dm]} Remote \code{dm} connected to SQL Server w/ HCT data}
 }
 \value{
-The \code{dm} with instructions for updating the \code{chimerism} table
+\verb{[dm]} The \code{dm} w/ instructions for updating the \code{chimerism} table
 }
 \description{
 Extract Chimerism Table from SQL Server

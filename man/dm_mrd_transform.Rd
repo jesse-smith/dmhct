@@ -7,10 +7,10 @@
 dm_mrd_transform(dm_local)
 }
 \arguments{
-\item{dm_local}{\verb{[dm]} Local \code{dm} with HLA data}
+\item{dm_local}{\verb{[dm]} Local \code{dm} with HCT data}
 }
 \value{
-The transformed \code{dm}
+\verb{[dm]} The \code{dm} object w/ transformed \code{mrd} table
 }
 \description{
 Transform the MRD Table in a Local \code{dm}

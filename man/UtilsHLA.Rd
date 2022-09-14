@@ -31,14 +31,14 @@ Collection of utility functions for HLA data
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{tbl}}{\verb{[data.frame]} HLA data}
+\item{\code{tbl}}{\verb{[tbl_dbi]} A table containing HLA data}
 
-\item{\code{na}}{\verb{[character]} Vector of values to interpret as \code{NA}}
+\item{\code{na}}{\verb{[chr]} Vector of values to interpret as \code{NA}}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The standardized data
+\verb{[tbl_dbi]} The standardized table
 Standardize HLA Allele Representations
 }
 }
@@ -53,12 +53,12 @@ Standardize HLA Allele Representations
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{x}}{\verb{[character]} A vector of allele IDs}
+\item{\code{x}}{\verb{[chr]} A vector of allele IDs}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-Standardized alleles
+\verb{[chr]} Standardized alleles
 }
 }
 }

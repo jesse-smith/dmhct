@@ -11,13 +11,14 @@ DMCache <- R6Class(
   public = list(
     #' Cache a `dm` Object in the Specified File and Directory
     #'
-    #' @param dm A `dm` object
-    #' @param checksum The hash of the `dm` object
-    #' @param file The file stem to use for the cache objects
-    #' @param dir The directory in which to save the cache objects
-    #' @param n_threads The number of threads to use when serializing the `dm`
+    #' @param dm `[dm]` A `dm` object
+    #' @param checksum `[chr(1)]` The hash of the `dm` object
+    #' @param file `[chr(1)]` The file stem to use for the cache objects
+    #' @param dir `[chr(1)]` The directory in which to save the cache objects
+    #' @param n_threads `[int(1)]` The number of threads to use when serializing
+    #'   the `dm` object
     #'
-    #' @return The `dm` (invisibly)
+    #' @return `[dm]` The `dm` object (invisibly)
     write = function(
     dm,
     checksum,
@@ -56,13 +57,15 @@ DMCache <- R6Class(
     },
     #' Read `dm` Data or its Checksum from a the Specified Cache
     #'
-    #' @param obj What to read from the cache
-    #' @param file The file stem to use for the cache objects
-    #' @param dir The directory in which to save the cache objects
-    #' @param fail Whether to error if `dir`/`obj`_`file` combo does not exist
-    #' @param n_threads The number of threads to use when serializing the `dm`
+    #' @param obj `[chr(1)]` What to read from the cache
+    #' @param file `[chr(1)]` The file stem to use for the cache objects
+    #' @param dir `[chr(1)]` The directory in which to save the cache objects
+    #' @param fail `[lgl(1)]` Whether to error if `dir`/`obj`_`file` combo does
+    #'   not exist
+    #' @param n_threads `[int(1)]` The number of threads to use when
+    #'   de-serializing the object
     #'
-    #' @return The de-serialized object
+    #' @return `[dm|chr(1)]` The de-serialized object
     read = function(
     obj = c("data", "checksum"),
     file,
@@ -87,13 +90,14 @@ DMCache <- R6Class(
     },
     #' Check Hash for `dm` Object
     #'
-    #' @param checksum The hash of the `dm` object
-    #' @param file The file stem to use for the cache objects
-    #' @param dir The directory in which to save the cache objects
-    #' @param n_threads The number of threads to use when serializing the `dm`
+    #' @param checksum `[chr(1)]` The hash of the `dm` object
+    #' @param file `[chr(1)]` The file stem to use for the cache objects
+    #' @param dir `[chr(1)]` The directory in which to save the cache objects
+    #' @param n_threads `int(1)` The number of threads to use when
+    #'   de-serializing the cached checksum
     #'
-    #' @return A `logical` indicating whether the passed `checksum` and cached
-    #'   `checksum` are identical
+    #' @return `[lgl(1)]` Whether the passed `checksum` and cached `checksum`
+    #'   are identical
     check = function(
     checksum,
     file,
@@ -114,9 +118,9 @@ DMCache <- R6Class(
     #' does not change when the ordering of the tables change in the dm, but does
     #' change if any data or names are added, deleted, or modified.
     #'
-    #' @param dm The `dm` object to hash
+    #' @param dm `[dm]` The `dm` object to hash
     #'
-    #' @return The hash string of the object
+    #' @return `[chr(1)]` The hash string of the object
     checksum = function(dm) {
       # dm table checksums
       tbl_chksm <- if (dm_is_remote(dm)) private$tbl_checksum_remote else private$tbl_checksum_local

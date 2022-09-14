@@ -10,7 +10,7 @@ dt_cast(data, to)
 \item{data}{\verb{[data.table]} A \code{data.table} to cast; will be modified in-place
 if possible.}
 
-\item{to}{\verb{[character(1)]} The subclass to return}
+\item{to}{\verb{[chr(1)]} The subclass to return}
 }
 \value{
 The converted data

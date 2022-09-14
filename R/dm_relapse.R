@@ -2,7 +2,7 @@
 #'
 #' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HLA data
 #'
-#' @return `dm` with instructions for updating `relapse` table
+#' @return `[dm]` The `dm` object w/ instructions for updating `relapse` table
 #'
 #' @export
 dm_relapse_extract <- function(dm_remote) {
@@ -37,6 +37,13 @@ dm_relapse_extract <- function(dm_remote) {
 }
 
 
+#' Transform the Relapse Table in a Local `dm`
+#'
+#' @param dm_local `[dm]` Local `dm` with HCT data
+#'
+#' @return `[dm]` The `dm` object w/ transformed `relapse` table
+#'
+#' @export
 dm_relapse_transform <- function(dm_local) {
   dt <- dm_local$relapse
   class <- df_class(dt)
