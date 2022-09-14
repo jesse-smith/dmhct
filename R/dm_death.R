@@ -165,5 +165,7 @@ dm_death_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("death") %>%
-    dm::dm_add_tbl(death = dt)
+    dm::dm_add_tbl(death = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("death", !!data.table::key(dt), check = TRUE)
 }

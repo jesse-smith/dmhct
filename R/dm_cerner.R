@@ -272,9 +272,11 @@ dm_cerner_transform <- function(
   # Convert back to tibble if input was not data.table
   dt <- dt_cast(dt, to = class)
 
-  dm_local %>%
+  dm <- dm_local %>%
     dm::dm_rm_tbl("cerner") %>%
-    dm::dm_add_tbl(cerner = dt)
+    dm::dm_add_tbl(cerner = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("cerner", !!data.table::key(dt), check = TRUE)
 }
 
 #' Utility Functions for Cerner Table ELT

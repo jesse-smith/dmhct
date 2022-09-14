@@ -279,7 +279,9 @@ dm_mrd_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("mrd") %>%
-    dm::dm_add_tbl(mrd = dt[])
+    dm::dm_add_tbl(mrd = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("mrd", !!data.table::key(dt), check = TRUE)
 }
 
 

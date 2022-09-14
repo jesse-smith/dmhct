@@ -109,7 +109,9 @@ dm_hla_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("hla") %>%
-    dm::dm_add_tbl(hla = dt)
+    dm::dm_add_tbl(hla = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("hla", !!data.table::key(dt), check = TRUE)
 }
 
 

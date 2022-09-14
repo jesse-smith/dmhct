@@ -102,5 +102,7 @@ dm_engraftment_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("engraftment") %>%
-    dm::dm_add_tbl(engraftment = dt)
+    dm::dm_add_tbl(engraftment = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("engraftment", !!data.table::key(dt), check = TRUE)
 }

@@ -81,5 +81,7 @@ dm_disease_status_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("disease_status") %>%
-    dm::dm_add_tbl(disease_status = dt)
+    dm::dm_add_tbl(disease_status = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("disease_status", !!data.table::key(dt), check = TRUE)
 }

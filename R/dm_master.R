@@ -235,7 +235,7 @@ dm_master_transform <- function(dm_local) {
   )
 
   # Remove duplicates
-  dt <- dt[!duplicated(dt)]
+  dt <- unique(dt)
 
   # Only use 1st transplant and kids
   dt <- dt[num_n_trans == 1L & num_age < 21]
@@ -259,6 +259,22 @@ dm_master_transform <- function(dm_local) {
   )
   dt[, (rm_vars) := rep(list(NULL), NROW(rm_vars))]
 
+  # Remove duplicates w/ missings
+  data.table::setorderv(dt, na.last = TRUE)
+  dt[, c("N", ".ID") := list(.N, seq_len(.N)), keyby = "entity_id"]
+  dt_dedup <- dt[N > 1L] %>%
+    data.table::setDF() %>%
+    dplyr::group_by(.data$entity_id) %>%
+    tidyr::fill(dplyr::everything(), .direction = "downup") %>%
+    data.table::setDT() %>%
+    unique(by = setdiff(colnames(dt), ".ID"))
+  dt_dedup <- dt[N > 1L][dt_dedup[, c("entity_id", ".ID")], on = c("entity_id", ".ID")]
+  dt <- rbind(dt[N == 1L], dt_dedup)
+  dt[, c("N", ".ID") := NULL]
+
+  # Re-sort rows
+  data.table::setorderv(dt)
+
   # Add primary key
   data.table::setkeyv(dt, "entity_id")
 
@@ -268,7 +284,9 @@ dm_master_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("master") %>%
-    dm::dm_add_tbl(master = dt)
+    dm::dm_add_tbl(master = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("master", !!data.table::key(dt), check = TRUE)
 }
 
 

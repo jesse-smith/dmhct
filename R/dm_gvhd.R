@@ -103,9 +103,9 @@ dm_gvhd_transform <- function(dm_local) {
        stringr::str_squish()]
   dt[, "cat_type" := data.table::fcase(
     cat_type %in% c("SKIN", "NAILS", "HAIR", "ORAL", "OCULAR"), "Mucocutaneous",
-    cat_type %like% "\\b(GI|RECTUM)\\b", "GI Tract",
+    cat_type %like% "\\b(GI|RECTUM|GUT)\\b", "GI Tract",
     cat_type %in% c("JOINT", "CONNECTIVE TISSUE", "MYOSITIS", "MUSCULOSKELETAL"), "Musculoskeletal",
-    cat_type %in% c("GUT", "GENITOURINARY"), "Genitourinary",
+    cat_type %in% c("GENITOURINARY"), "Genitourinary",
     cat_type %in% c("", "NO SITE DETERMINED"), NA_character_,
     !is.na(cat_type), stringr::str_to_title(cat_type)
   )]
@@ -117,11 +117,27 @@ dm_gvhd_transform <- function(dm_local) {
   dt[is.na(cat_duration) & !is.na(cat_grade),
      "cat_duration" := factor("Acute", levels = levels(cat_duration))]
 
+  # Primary key
+  pk <- c("entity_id", "dt_onset", "cat_type")
+
+  # If multiple w/ same time, keep highest grade
+  data.table::setorderv(dt, order = -1L, na.last = TRUE)
+  dt <- unique(dt, by = c(pk, "cat_duration"))
+
+  # Set order
+  data.table::setorderv(dt)
+
+  # Set key
+  data.table::setkeyv(dt, pk)
+
+
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
 
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("gvhd") %>%
-    dm::dm_add_tbl(gvhd = dt[])
+    dm::dm_add_tbl(gvhd = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("gvhd", !!data.table::key(dt), check = TRUE)
 }

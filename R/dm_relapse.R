@@ -81,5 +81,7 @@ dm_relapse_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("relapse") %>%
-    dm::dm_add_tbl(relapse = dt[])
+    dm::dm_add_tbl(relapse = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("relapse", !!data.table::key(dt), check = TRUE)
 }

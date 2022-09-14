@@ -21,9 +21,9 @@ dm_chimerism_extract <- function(dm_remote) {
       .data$entity_id,
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
       dt_chimerism = dbplyr::sql("CONVERT(DATETIME, [Chimerism_Date])"),
-      cat_cell_sep = trimws(as.character(.data[["Cell Separation"]])),
-      cat_cell_sep = dplyr::if_else(
-        .data$cat_cell_sep %in% {{ na }}, NA_character_, .data$cat_cell_sep
+      cat_source = trimws(as.character(.data[["Cell Separation"]])),
+      cat_source = dplyr::if_else(
+        .data$cat_source %in% {{ na }}, NA_character_, .data$cat_source
       ),
       cat_method = trimws(as.character(.data$Method)),
       cat_method = dplyr::if_else(
@@ -63,7 +63,7 @@ dm_chimerism_transform <- function(dm_local) {
 
 
   # Silence R CMD CHECK Notes
-  cat_cell_sep <- cat_method <- pct_donor <- pct_host <- NULL
+  cat_source <- cat_method <- pct_donor <- pct_host <- NULL
   pct_donor_tmp <- pct_host_tmp <- dt_trans <- dt_chimerism <- NULL
   delta_donor <- delta_host <- ..pred_donor <- ..pred_host <- NULL
   dist_keep <- dist_swap <- tmp_donor <- cat_method1 <- NULL
@@ -83,20 +83,20 @@ dm_chimerism_transform <- function(dm_local) {
   rm(dt_master)
 
   # Cell Source
-  dt[, "cat_cell_sep" := data.table::fcase(
-    utils_chimerism$str_detect_fct(cat_cell_sep, 1L, "bone\\s+marrow"), "Bone Marrow",
-    utils_chimerism$str_detect_fct(cat_cell_sep, 2L, "peripheral\\s+blood"), "Peripheral Blood",
-    utils_chimerism$str_detect_fct(cat_cell_sep, 11L, "unsorted"), "Peripheral Blood",
-    utils_chimerism$str_detect_fct(cat_cell_sep, 3L, "t\\s*-?\\s*cell"), "T Cells",
-    # utils_chimerism$str_detect_fct(cat_cell_sep, 4L, "b\\s*-?\\s*cell"), "B Cells",
-    # utils_chimerism$str_detect_fct(cat_cell_sep, 6L, "monocyte"), "Monocytes",
-    # utils_chimerism$str_detect_fct(cat_cell_sep, 7L, "neutrophil"), "Neutrophils",
-    # utils_chimerism$str_detect_fct(cat_cell_sep, 9L, "nk\\s*-?\\s*cell"), "NK Cells",
-    # utils_chimerism$str_detect_fct(cat_cell_sep, 10L, "myeloid"), "Myeloid Cells",
-    # !is.na(cat_cell_sep), "Other",
+  dt[, "cat_source" := data.table::fcase(
+    utils_chimerism$str_detect_fct(cat_source, 1L, "bone\\s+marrow"), "Bone Marrow",
+    utils_chimerism$str_detect_fct(cat_source, 2L, "peripheral\\s+blood"), "Peripheral Blood",
+    utils_chimerism$str_detect_fct(cat_source, 11L, "unsorted"), "Peripheral Blood",
+    utils_chimerism$str_detect_fct(cat_source, 3L, "t\\s*-?\\s*cell"), "T Cells",
+    # utils_chimerism$str_detect_fct(cat_source, 4L, "b\\s*-?\\s*cell"), "B Cells",
+    # utils_chimerism$str_detect_fct(cat_source, 6L, "monocyte"), "Monocytes",
+    # utils_chimerism$str_detect_fct(cat_source, 7L, "neutrophil"), "Neutrophils",
+    # utils_chimerism$str_detect_fct(cat_source, 9L, "nk\\s*-?\\s*cell"), "NK Cells",
+    # utils_chimerism$str_detect_fct(cat_source, 10L, "myeloid"), "Myeloid Cells",
+    # !is.na(cat_source), "Other",
     default = NA_character_
   )]
-  dt[, "cat_cell_sep" := factor(cat_cell_sep, levels = c(
+  dt[, "cat_source" := factor(cat_source, levels = c(
     "Bone Marrow",
     "Peripheral Blood",
     "T Cells"
@@ -169,19 +169,19 @@ dm_chimerism_transform <- function(dm_local) {
   data.table::setorderv(dt, na.last = TRUE)
 
   # Set primary key
-  pk <- c("entity_id", "dt_chimerism")
+  pk <- c("entity_id", "dt_chimerism", "cat_source")
   data.table::setkeyv(dt, pk)
 
   # Calculate largest differences within patient + date + cell type groupings
   dt[, c("delta_donor", "delta_host") := list(
     apply(abs(outer(pct_donor, pct_donor, `-`)), 1L, max),
     apply(abs(outer(pct_host, pct_host, `-`)), 1L, max)
-  ), by = c("entity_id", "dt_chimerism", "cat_cell_sep")]
+  ), by = pk]
 
   # Tidy factors for modeling
-  dt[, c("cat_cell_sep_lf", "cat_method_lf") := lapply(.SD, function(x) {
+  dt[, c("cat_source_lf", "cat_method_lf") := lapply(.SD, function(x) {
     forcats::fct_lump_min(forcats::fct_explicit_na(x), min = 100L)
-  }), .SDcols = c("cat_cell_sep", "cat_method")]
+  }), .SDcols = c("cat_source", "cat_method")]
   # Add normalized predictors for modeling
   dt[, c("t_trans", "t") := list(
     utils_chimerism$normalize(dt_trans),
@@ -192,18 +192,18 @@ dm_chimerism_transform <- function(dm_local) {
   data.table::setDF(dt)
 
   # Model selection by BIC
-  # Fit all combinations of entity_id & cat_cell_sep effects
+  # Fit all combinations of entity_id & cat_source effects
   # (fixed, random intercept, random slope, random slope + intercept for each)
-  # [entity_id: random slope + intercept, cat_cell_sep: fixed] was best model
+  # [entity_id: random slope + intercept, cat_source: fixed] was best model
 
   # Predict donor
   pred_donor <- utils_chimerism$inv_probit(stats::predict(lme4::lmer(
-    utils_chimerism$probit(pct_donor) ~ t_trans + cat_cell_sep_lf + cat_method_lf + (t | entity_id),
+    utils_chimerism$probit(pct_donor) ~ t_trans + cat_source_lf + cat_method_lf + (t | entity_id),
     data = dt[dt$delta_donor < 5,]
   ), newdata = dt[dt$delta_donor >= 5,]))
   # Predict host
   pred_host <- utils_chimerism$inv_probit(stats::predict(lme4::lmer(
-    utils_chimerism$probit(pct_host) ~ t_trans + cat_cell_sep_lf + cat_method_lf + (t | entity_id),
+    utils_chimerism$probit(pct_host) ~ t_trans + cat_source_lf + cat_method_lf + (t | entity_id),
     data = dt[dt$delta_host < 5,]
   ), newdata = dt[dt$delta_host >= 5,]))
 
@@ -226,15 +226,15 @@ dm_chimerism_transform <- function(dm_local) {
   dt[dist_swap < dist_keep, c("pct_donor", "pct_host") := list(pct_host, tmp_donor)]
 
   # Remove modeling variables
-  dt[, c("delta_donor", "delta_host", "cat_cell_sep_lf", "cat_method_lf") := NULL]
+  dt[, c("delta_donor", "delta_host", "cat_source_lf", "cat_method_lf") := NULL]
   dt[, c("t", "t_trans", "dist_keep", "dist_swap", "tmp_donor") := NULL]
 
   # Remove missing cell type
-  dt <- dt[!is.na(cat_cell_sep)]
+  dt <- dt[!is.na(cat_source)]
 
   # Prefer highest ranked method available in group (ranked in factor definition)
   dt[, "cat_method_explicit" := forcats::fct_explicit_na(cat_method)]
-  dt[, "cat_method1" := cat_method_explicit[[1L]], by = c(pk, "cat_cell_sep")]
+  dt[, "cat_method1" := cat_method_explicit[[1L]], by = pk]
   dt <- dt[cat_method_explicit == cat_method1]
   dt[, c("cat_method_explicit", "cat_method1") := NULL]
 
@@ -242,7 +242,7 @@ dm_chimerism_transform <- function(dm_local) {
   dt <- dt[, list(
     cat_method = cat_method[[1L]],
     pct_donor = mean(c(pct_donor, 100 - pct_host))
-  ), by = c(pk, "cat_cell_sep")]
+  ), by = pk]
 
   # Logic (derived from Akshay's response on 2022-09-02 and call on 2022-09-08)
   # - Bone marrow and peripheral blood are separate X
@@ -261,7 +261,9 @@ dm_chimerism_transform <- function(dm_local) {
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("chimerism") %>%
-    dm::dm_add_tbl(chimerism = dt[])
+    dm::dm_add_tbl(chimerism = dt[]) %>%
+    # Add primary key
+    dm::dm_add_pk("chimerism", !!data.table::key(dt), check = TRUE)
 }
 
 #' Utility Functions for Chimerism Table ELT
