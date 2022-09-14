@@ -5,7 +5,7 @@ Authors@R:
     person("Jesse", "Smith", , "jesse.smith@stjude.org", role = c("aut", "cre"))
 Description: Extracts, Loads, and Transforms data from the SQL Server containing
     HCT data to a `dm` object with cleaned tables.
-License: MIT + file LICENSE
+License: AGPL (>= 3)
 Imports: 
     checkmate,
     data.table,
