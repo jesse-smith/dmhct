@@ -16,7 +16,6 @@ Imports:
     janitor,
     lme4,
     lubridate,
-    magrittr,
     odbc,
     qs,
     R6

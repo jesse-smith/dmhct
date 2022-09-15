@@ -8,6 +8,14 @@
 \description{
 Extracts, Loads, and Transforms data from the SQL Server containing HCT data to a `dm` object with cleaned tables.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/jesse-smith/dmhct}
+  \item Report bugs at \url{https://github.com/jesse-smith/dmhct/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Jesse Smith \email{jesse.smith@stjude.org}
 
