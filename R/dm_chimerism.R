@@ -67,6 +67,7 @@ dm_chimerism_transform <- function(dm_local) {
   pct_donor_tmp <- pct_host_tmp <- dt_trans <- dt_chimerism <- NULL
   delta_donor <- delta_host <- ..pred_donor <- ..pred_host <- NULL
   dist_keep <- dist_swap <- tmp_donor <- cat_method1 <- NULL
+  cat_method_explicit <- NULL
 
   # Dates
   dt_cols <- c("dt_trans", "dt_chimerism")

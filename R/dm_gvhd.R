@@ -46,7 +46,7 @@ dm_gvhd_transform <- function(dm_local) {
   dt <- data.table::as.data.table(dt)
 
   # Silence R CMD CHECK Notes
-  cat_grade <- NULL
+  dt_onset <- dt_trans <- cat_grade <- cat_site <- cat_type <- NULL
 
   # Dates
   dt_cols <- c("dt_trans", "dt_onset")

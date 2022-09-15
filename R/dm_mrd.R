@@ -82,7 +82,7 @@ dm_mrd_transform <- function(dm_local) {
   # Silence R CMD CHECK Notes
   cat_source <- cat_method <- cat_source1 <- cat_method1 <- cat_units <- NULL
   num_actual_value <- pct_result <- num_denom <- chr_comments <- NULL
-  lgl_result <- dt_mrd <- NULL
+  lgl_result <- dt_mrd <- cat_dx_grp <- cat_method_explicit <- NULL
 
   # Dates
   dt_cols <- c("dt_trans", "dt_mrd")

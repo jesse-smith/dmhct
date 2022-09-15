@@ -59,7 +59,7 @@ dm_master_transform <- function(dm_local) {
   dt_donor_birth <- dt_dx <- dt_trans <- lgl_death <- lgl_donor_related <- NULL
   is_mm <- is_mm06 <- is_mm08 <- is_mm10 <- lgl_malignant <- NULL
   lgl_survival <- num_age <- num_age_donor <- num_n_trans <- NULL
-  num_degree_match <- NULL
+  num_degree_match <- N <- NULL
   num_degree_match06 <- num_degree_match08 <- num_degree_match10 <- NULL
 
   # Convert datetimes to dates
