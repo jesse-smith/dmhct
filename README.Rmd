@@ -1,0 +1,130 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# dmhct
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+`{dmhct}` extracts, loads, and transforms data for the MLinHCT project. The main
+functionality is wrapped into a single function, `dm_elt()`, that produces a
+`dm` object (from the [`{dm}` package](https://cynkra.github.io/dm/)) containing
+cleaned data tables from an SQL Server database.
+
+## Installation and Setup
+
+`{dmhct}` exists only on Github and is currently a private repository. This means
+that you will need to verify your identity to install it, which is most easily
+done by setting up a Github PAT for your local machine. See
+[`usethis::gh_token_help()`](https://usethis.r-lib.org/reference/github-token.html)
+for more information.
+
+Once your token is set up, you can install `{dmhct}` with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("jesse-smith/dmhct")
+```
+
+To use the package, you will need access to the SQL Server instance containing
+the data. THis is provided by St. Jude IT; contact
+[Jesse Smith](mailto:jesse.smith@stjude.org) to learn how to gain access.
+
+
+## Introduction
+
+The main functionality in the package is in `dm_elt()`; this function combines
+two sub-functions, `dm_extract()` and `dm_transform()`, into a small pipeline.
+
+```{r example}
+library(dmhct)
+dm <- dm_elt()
+dm2 <- dm_extract() %>% dm_transform()
+identical(dm, dm2)
+```
+
+```{r delete-dm2, include=FALSE}
+rm(dm2)
+```
+
+The `dm_extract()` function is itself a wrapper for a pipeline used to extract
+the necessary data from the SQL Server and load it onto your local machine. The
+`dm_transform()` function provides a second pipeline that cleans each table in
+the database and outputs tables ready for analysis
+(as [`data.table`s](https://rdatatable.gitlab.io/data.table/)).
+
+Both functions cache their results by default and compare a checksum of their
+inputs to a cached checksum to determine whether re-calculation is necessary.
+This allows the functions to simply read the cached outputs, rather than repeat
+costly computations, if the input is unchanged. Each function also allows the
+user to force re-computation and cache overwriting via a `reset` argument. This
+caching behavior (and the control arguments) are made available in the `dm_elt()`
+wrapper as well.
+
+## Tables
+
+The data used in the project consists of `r length(dm)` tables:
+
+```{r dm-summary}
+summary(dm)[, -3L]
+```
+
+The entry point to this data is the `master` table, which contains one row per
+patient and includes baseline variables such as transplant date,
+patient demographics, and donor characteristics. It also contains unique IDs for
+patients (`entity_id`) and donors (`donor_id`).
+
+```{r master-summary}
+skimr::skim(dm$master, setdiff(colnames(dm$master), c("entity_id", "donor_id")))
+```
+
+All tables are keyed by one or more columns that are (jointly) unique to each
+row. Each table contains `entity_id` as a primary key; most tables except `master`
+then define additional keys specific to the data contained in that table (for
+example, many tables contain repeated observations for a patient and thus add a
+`date` key).
+
+```{dm-pks}
+dm::dm_get_all_pks(dm) %>% dplyr::mutate(pk_col = format(.data$pk_col))
+```
+
+Here's a list of data (non-key) columns in each table (excluding `master`):
+
+```{r dm-data}
+tibble::tibble(
+  table = names(dm::dm_select_tbl(dm, -"master")),
+  cols = sapply(dm::dm_select_tbl(dm, -"master"), function(x) {
+    paste0(setdiff(colnames(x), data.table::key(x)), collapse = ", ")
+  })
+)
+```
+
+## Development
+
+You can find code generating results for each table in a corresponding file
+named `"dm_[table-name]"`. Changes should not be committed directly to the `main`
+branch; going forward, all changes should be made in a feature/bug fix/etc. branch
+and reviewed by another team member before merging. The Github repository is set
+up to dis-allow pushing direct commits to `main`.
+
+## Using with `{predHCT}`
+
+`{dmhct}` was created to de-couple data cleaning code from modeling code for the
+MLinHCT project. However, it is a required dependency for the main modeling package,
+`{predHCT}`. While it is possible to install your local development version for
+use with `{predHCT}`, this is not recommended. Instead, please install from the
+`main` Github branch using the installation instructions at the beginning of
+this document. Note that you will need to set up a Github account and Github PAT
+to do so, since this repository is currently private.
