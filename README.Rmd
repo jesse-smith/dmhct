@@ -25,13 +25,7 @@ cleaned data tables from an SQL Server database.
 
 ## Installation and Setup
 
-`{dmhct}` exists only on Github and is currently a private repository. This means
-that you will need to verify your identity to install it, which is most easily
-done by setting up a Github PAT for your local machine. See
-[`usethis::gh_token_help()`](https://usethis.r-lib.org/reference/github-token.html)
-for more information.
-
-Once your token is set up, you can install `{dmhct}` with:
+You can install `{dmhct}` from Github with:
 
 ``` r
 # install.packages("remotes")
@@ -39,7 +33,7 @@ remotes::install_github("jesse-smith/dmhct")
 ```
 
 To use the package, you will need access to the SQL Server instance containing
-the data. THis is provided by St. Jude IT; contact
+the data. This is provided by St. Jude IT; contact
 [Jesse Smith](mailto:jesse.smith@stjude.org) to learn how to gain access.
 
 
@@ -126,5 +120,4 @@ MLinHCT project. However, it is a required dependency for the main modeling pack
 `{predHCT}`. While it is possible to install your local development version for
 use with `{predHCT}`, this is not recommended. Instead, please install from the
 `main` Github branch using the installation instructions at the beginning of
-this document. Note that you will need to set up a Github account and Github PAT
-to do so, since this repository is currently private.
+this document.
