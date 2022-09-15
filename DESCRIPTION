@@ -21,6 +21,8 @@ Imports:
     R6
 Suggests:
     DBI,
+    DiagrammeR,
+    DiagrammeRsvg,
     dplyr,
     purrr,
     rlang,
