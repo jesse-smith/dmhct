@@ -12,6 +12,7 @@ Extracts, Loads, and Transforms data from the SQL Server containing HCT data to 
 Useful links:
 \itemize{
   \item \url{https://github.com/jesse-smith/dmhct}
+  \item \url{https://jesse-smith.github.io/dmhct/}
   \item Report bugs at \url{https://github.com/jesse-smith/dmhct/issues}
 }
 

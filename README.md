@@ -4,6 +4,8 @@
 # dmhct
 
 <!-- badges: start -->
+
+[![R-CMD-check](https://github.com/jesse-smith/dmhct/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jesse-smith/dmhct/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `{dmhct}` extracts, loads, and transforms data for the MLinHCT project.
