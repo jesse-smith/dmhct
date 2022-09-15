@@ -21,7 +21,7 @@ dm_mrd_extract <- function(dm_remote) {
     dplyr::transmute(
       .data$entity_id,
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
-      dt_mrd = dbplyr::sql("CONVERT(DATETIME, [MRD_DAT])"),
+      date = dbplyr::sql("CONVERT(DATETIME, [MRD_DAT])"),
       cat_source = toupper(trimws(as.character(.data[["MRD Source"]]))),
       cat_source = dplyr::if_else(
         .data$cat_source %in% {{ na_src }}, NA_character_, .data$cat_source
@@ -60,7 +60,7 @@ dm_mrd_extract <- function(dm_remote) {
     dplyr::filter(
       !is.na(.data$entity_id),
       !is.na(.data$dt_trans),
-      !is.na(.data$dt_mrd),
+      !is.na(.data$date),
       !(is.na(.data$pct_result) & is.na(.data$num_actual_value) & is.na(.data$chr_comments))
     ) %>%
     dm::dm_update_zoomed()
@@ -82,10 +82,10 @@ dm_mrd_transform <- function(dm_local) {
   # Silence R CMD CHECK Notes
   cat_source <- cat_method <- cat_source1 <- cat_method1 <- cat_units <- NULL
   num_actual_value <- pct_result <- num_denom <- chr_comments <- NULL
-  lgl_result <- dt_mrd <- cat_dx_grp <- cat_method_explicit <- NULL
+  lgl_result <- date <- cat_dx_grp <- cat_method_explicit <- NULL
 
   # Dates
-  dt_cols <- c("dt_trans", "dt_mrd")
+  dt_cols <- c("dt_trans", "date")
   dt[, c(dt_cols) := lapply(.SD, lubridate::as_date), .SDcols = dt_cols]
 
   # Filter unused patients and patients that should not have MRD w/ master
@@ -211,7 +211,7 @@ dm_mrd_transform <- function(dm_local) {
   dt <- dt[!(is.na(pct_result) & is.na(lgl_result))]
 
   # Fill source where possible, assuming missings before the first PB sample are all BM
-  dt[is.na(cat_source) & dt_mrd < min(dt[cat_source == "Peripheral Blood"]$dt_mrd),
+  dt[is.na(cat_source) & date < min(dt[cat_source == "Peripheral Blood"]$date),
      "cat_source" := factor("Bone Marrow", levels = levels(cat_source))]
 
   # Drop non-BM source
@@ -255,7 +255,7 @@ dm_mrd_transform <- function(dm_local) {
   # dt <- dt[, "lgl_result" := NULL][!is.na(pct_result)]
 
   # Set primary key
-  pk <- c("entity_id", "dt_mrd")
+  pk <- c("entity_id", "date")
   data.table::setkeyv(dt, pk)
 
   # Sort

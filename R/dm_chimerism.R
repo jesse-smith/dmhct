@@ -20,7 +20,7 @@ dm_chimerism_extract <- function(dm_remote) {
     dplyr::transmute(
       .data$entity_id,
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
-      dt_chimerism = dbplyr::sql("CONVERT(DATETIME, [Chimerism_Date])"),
+      date = dbplyr::sql("CONVERT(DATETIME, [Chimerism_Date])"),
       cat_source = trimws(as.character(.data[["Cell Separation"]])),
       cat_source = dplyr::if_else(
         .data$cat_source %in% {{ na }}, NA_character_, .data$cat_source
@@ -41,9 +41,9 @@ dm_chimerism_extract <- function(dm_remote) {
     dplyr::filter(
       !is.na(.data$entity_id),
       !is.na(.data$dt_trans),
-      !is.na(.data$dt_chimerism),
+      !is.na(.data$date),
       !(is.na(.data$pct_donor) & is.na(.data$pct_host)),
-      .data$dt_chimerism >= .data$dt_trans
+      .data$date >= .data$dt_trans
     ) %>%
     dm::dm_update_zoomed()
 }
@@ -64,13 +64,13 @@ dm_chimerism_transform <- function(dm_local) {
 
   # Silence R CMD CHECK Notes
   cat_source <- cat_method <- pct_donor <- pct_host <- NULL
-  pct_donor_tmp <- pct_host_tmp <- dt_trans <- dt_chimerism <- NULL
+  pct_donor_tmp <- pct_host_tmp <- dt_trans <- date <- NULL
   delta_donor <- delta_host <- ..pred_donor <- ..pred_host <- NULL
   dist_keep <- dist_swap <- tmp_donor <- cat_method1 <- NULL
   cat_method_explicit <- NULL
 
   # Dates
-  dt_cols <- c("dt_trans", "dt_chimerism")
+  dt_cols <- c("dt_trans", "date")
   dt[, c(dt_cols) := lapply(.SD, lubridate::as_date), .SDcols = dt_cols]
 
   # Filter unused patients w/ master
@@ -173,7 +173,7 @@ dm_chimerism_transform <- function(dm_local) {
   data.table::setorderv(dt, na.last = TRUE)
 
   # Set primary key
-  pk <- c("entity_id", "dt_chimerism", "cat_source")
+  pk <- c("entity_id", "date", "cat_source")
   data.table::setkeyv(dt, pk)
 
   # Handle mirrored duplicates in pct_donor and pct_host -----------------------
@@ -191,7 +191,7 @@ dm_chimerism_transform <- function(dm_local) {
   # Add normalized predictors for modeling
   dt[, c("t_trans", "t") := list(
     utils_chimerism$normalize(dt_trans),
-    utils_chimerism$normalize(dt_chimerism - dt_trans)
+    utils_chimerism$normalize(date - dt_trans)
   )]
 
   # Convert to data.frame for lme4

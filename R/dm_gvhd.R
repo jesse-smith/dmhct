@@ -14,7 +14,7 @@ dm_gvhd_extract <- function(dm_remote) {
     dplyr::transmute(
       .data$entity_id,
       dt_trans = dbplyr::sql("CONVERT(DATETIME, DOT)"),
-      dt_onset = dbplyr::sql("CONVERT(DATETIME, [Onset Date])"),
+      date = dbplyr::sql("CONVERT(DATETIME, [Onset Date])"),
       cat_grade = toupper(trimws(as.character(.data$Overall_Grade))),
       cat_grade = dplyr::if_else(
         .data$cat_grade %in% {{ na }},
@@ -26,7 +26,7 @@ dm_gvhd_extract <- function(dm_remote) {
     dplyr::filter(
       !is.na(.data$entity_id),
       !is.na(.data$dt_trans),
-      !is.na(.data$dt_onset),
+      !is.na(.data$date),
       !(is.na(.data$cat_grade) & is.na(.data$cat_site))
     ) %>%
     dm::dm_update_zoomed()
@@ -46,14 +46,14 @@ dm_gvhd_transform <- function(dm_local) {
   dt <- data.table::as.data.table(dt)
 
   # Silence R CMD CHECK Notes
-  dt_onset <- dt_trans <- cat_grade <- cat_site <- cat_type <- NULL
+  date <- dt_trans <- cat_grade <- cat_site <- cat_type <- NULL
 
   # Dates
-  dt_cols <- c("dt_trans", "dt_onset")
+  dt_cols <- c("dt_trans", "date")
   dt[, c(dt_cols) := lapply(.SD, lubridate::as_date), .SDcols = dt_cols]
 
   # Filter by time
-  dt <- dt[as.numeric(dt_onset - dt_trans) >= 0]
+  dt <- dt[as.numeric(date - dt_trans) >= 0]
 
   # Filter unused patients w/ master
   dt_master <- data.table::as.data.table(dm_local$master)
@@ -120,7 +120,7 @@ dm_gvhd_transform <- function(dm_local) {
      "cat_type" := factor("Acute", levels = levels(cat_type))]
 
   # Primary key
-  pk <- c("entity_id", "dt_onset", "cat_site")
+  pk <- c("entity_id", "date", "cat_site")
 
   # If multiple w/ same time, keep highest grade
   data.table::setorderv(dt, order = -1L, na.last = TRUE)

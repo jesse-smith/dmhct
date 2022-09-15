@@ -13,7 +13,7 @@ dm_relapse_extract <- function(dm_remote) {
     dplyr::semi_join("master", by = "entity_id") %>%
     dplyr::transmute(
       .data$entity_id,
-      dt_relapse = dbplyr::sql("CONVERT(DATETIME, Relapse_Date)"),
+      date = dbplyr::sql("CONVERT(DATETIME, Relapse_Date)"),
       lgl_remission = trimws(as.character(.data[["After treatment, did patient achieve remission?"]])),
       lgl_remission = dplyr::if_else(
         .data$lgl_remission %in% {{ na }}, NA_character_, .data$lgl_remission
@@ -32,7 +32,7 @@ dm_relapse_extract <- function(dm_remote) {
       # )
     ) %>%
     # Filter
-    dplyr::filter(!is.na(.data$entity_id), !is.na(.data$dt_relapse)) %>%
+    dplyr::filter(!is.na(.data$entity_id), !is.na(.data$date)) %>%
     dm::dm_update_zoomed()
 }
 
@@ -50,14 +50,14 @@ dm_relapse_transform <- function(dm_local) {
   dt <- data.table::as.data.table(dt)
 
   # Silence R CMD CHECK Notes
-  entity_id <- dt_relapse <- dt_remission <- lgl_remission <- NULL
+  entity_id <- date <- dt_remission <- lgl_remission <- NULL
   ..yes <- ..no <- NULL
 
   # Filter unused patients w/ master
   dt <- dt[entity_id %in% dm_local$master$entity_id]
 
   # Relapse date
-  dt[, "dt_relapse" := lubridate::as_date(dt_relapse)]
+  dt[, "date" := lubridate::as_date(date)]
   # Remission Date
   dt[, "dt_remission" := lubridate::as_date(lubridate::mdy_hm(dt_remission))]
   # Remission Lgl
@@ -74,7 +74,7 @@ dm_relapse_transform <- function(dm_local) {
   data.table::setorderv(dt, "lgl_remission", order = -1L, na.last = TRUE)
 
   # Set primary keys
-  pk <- c("entity_id", "dt_relapse")
+  pk <- c("entity_id", "date")
 
   # Remove duplicates
   dt <- unique(dt, by = pk)
