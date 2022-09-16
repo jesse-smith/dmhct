@@ -21,7 +21,8 @@ jobs:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
-          # Use 3.6 to trigger use of RTools35
+          # Build against oldest supported version of R
+          # 3.6 also triggers use of RTools35
           - {os: windows-latest, r: '3.6'}
           # Build against upcoming version of R
           - {os: ubuntu-latest,  r: 'devel'}
