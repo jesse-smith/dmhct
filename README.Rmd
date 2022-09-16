@@ -91,7 +91,7 @@ then define additional keys specific to the data contained in that table (for
 example, many tables contain repeated observations for a patient and thus add a
 `date` key).
 
-```{dm-pks}
+```{r dm-pks}
 dm::dm_get_all_pks(dm) %>% dplyr::mutate(pk_col = format(.data$pk_col))
 ```
 
