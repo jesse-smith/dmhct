@@ -2,7 +2,7 @@ pandoc: 2.14.2
 pkgdown: 2.0.6
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-09-16T19:10Z
+last_built: 2022-09-16T19:26Z
 urls:
   reference: https://jesse-smith.github.io/dmhct/reference
   article: https://jesse-smith.github.io/dmhct/articles
