@@ -20,9 +20,11 @@ jobs:
         config:
           - {os: macOS-latest,   r: 'release'}
           - {os: windows-latest, r: 'release'}
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu-latest,  r: 'release'}
+          # Use 3.6 to trigger use of RTools35
+          - {os: windows-latest, r: '3.6'}
+          # Build against upcoming version of R
+          - {os: ubuntu-latest,  r: 'devel'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
