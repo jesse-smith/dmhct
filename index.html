@@ -80,7 +80,11 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a></span><span class="op">)</span></span>
 <span><span class="va">dm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dm_elt.html">dm_elt</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
 <span><span class="va">dm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dm_extract.html">dm_extract</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/dm_transform.html">dm_transform</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">dm</span>, <span class="va">dm2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>The <code><a href="reference/dm_extract.html">dm_extract()</a></code> function is itself a wrapper for a pipeline used to extract the necessary data from the SQL Server and load it onto your local machine. The <code><a href="reference/dm_transform.html">dm_transform()</a></code> function provides a second pipeline that cleans each table in the database and outputs tables ready for analysis (as <a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><code>data.table</code>s</a>).</p>
@@ -92,6 +96,16 @@
 <p>The data used in the project consists of 10 tables:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dm</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="fl">3L</span><span class="op">]</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
 <span><span class="co">#&gt;                Length Class     </span></span>
 <span><span class="co">#&gt; hla            14     data.table</span></span>
 <span><span class="co">#&gt; master         26     data.table</span></span>
@@ -105,7 +119,11 @@
 <span><span class="co">#&gt; relapse         4     data.table</span></span></code></pre></div>
 <p>The entry point to this data is the <code>master</code> table, which contains one row per patient and includes baseline variables such as transplant date, patient demographics, and donor characteristics. It also contains unique IDs for patients (<code>entity_id</code>) and donors (<code>donor_id</code>).</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">skimr</span><span class="fu">::</span><span class="fu">skim</span><span class="op">(</span><span class="va">dm</span><span class="op">$</span><span class="va">master</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dm</span><span class="op">$</span><span class="va">master</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"donor_id"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">skimr</span><span class="fu">::</span><span class="fu">skim</span><span class="op">(</span><span class="va">dm</span><span class="op">$</span><span class="va">master</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dm</span><span class="op">$</span><span class="va">master</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"donor_id"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span></code></pre></div>
 <table class="table"><tbody>
 <tr class="odd">
 <td align="left">Name</td>
@@ -113,7 +131,7 @@
 </tr>
 <tr class="even">
 <td align="left">Number of rows</td>
-<td align="left">841</td>
+<td align="left">852</td>
 </tr>
 <tr class="odd">
 <td align="left">Number of columns</td>
@@ -175,7 +193,7 @@
 </tr></thead>
 <tbody><tr class="odd">
 <td align="left">cat_donor_relation</td>
-<td align="right">274</td>
+<td align="right">285</td>
 <td align="right">0.67</td>
 <td align="right">4</td>
 <td align="right">11</td>
@@ -200,9 +218,9 @@
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="left">2000-01-15</td>
-<td align="left">2022-06-16</td>
-<td align="left">2011-12-08</td>
-<td align="right">796</td>
+<td align="left">2022-09-06</td>
+<td align="left">2012-02-02</td>
+<td align="right">807</td>
 </tr></tbody>
 </table>
 <p><strong>Variable type: factor</strong></p>
@@ -218,11 +236,11 @@
 <tbody>
 <tr class="odd">
 <td align="left">cat_degree_match06</td>
-<td align="right">54</td>
-<td align="right">0.94</td>
+<td align="right">62</td>
+<td align="right">0.93</td>
 <td align="left">TRUE</td>
 <td align="right">4</td>
-<td align="left">6: 496, 3: 138, 4: 83, 5: 70</td>
+<td align="left">6: 499, 3: 138, 4: 83, 5: 70</td>
 </tr>
 <tr class="even">
 <td align="left">cat_degree_match08</td>
@@ -230,47 +248,47 @@
 <td align="right">0.73</td>
 <td align="left">TRUE</td>
 <td align="right">5</td>
-<td align="left">8: 337, 4: 110, 5: 83, 7: 43</td>
+<td align="left">8: 340, 4: 116, 5: 85, 7: 43</td>
 </tr>
 <tr class="odd">
 <td align="left">cat_degree_match10</td>
 <td align="right">234</td>
-<td align="right">0.72</td>
+<td align="right">0.73</td>
 <td align="left">TRUE</td>
 <td align="right">6</td>
-<td align="left">10: 317, 6: 84, 5: 77, 7: 52</td>
+<td align="left">10: 320, 6: 86, 5: 82, 7: 53</td>
 </tr>
 <tr class="even">
 <td align="left">cat_disease_status_at_trans</td>
-<td align="right">186</td>
+<td align="right">188</td>
 <td align="right">0.78</td>
 <td align="left">FALSE</td>
 <td align="right">3</td>
-<td align="left">Rem: 408, Act: 173, Rel: 74</td>
+<td align="left">Rem: 411, Act: 179, Rel: 74</td>
 </tr>
 <tr class="odd">
 <td align="left">cat_donor_race</td>
-<td align="right">174</td>
+<td align="right">182</td>
 <td align="right">0.79</td>
 <td align="left">FALSE</td>
 <td align="right">3</td>
-<td align="left">Whi: 434, Bla: 144, Oth: 89</td>
+<td align="left">Whi: 434, Bla: 146, Oth: 90</td>
 </tr>
 <tr class="even">
 <td align="left">cat_donor_sex</td>
-<td align="right">40</td>
+<td align="right">43</td>
 <td align="right">0.95</td>
 <td align="left">FALSE</td>
 <td align="right">2</td>
-<td align="left">Mal: 416, Fem: 385</td>
+<td align="left">Mal: 419, Fem: 390</td>
 </tr>
 <tr class="odd">
 <td align="left">cat_dx_grp</td>
-<td align="right">8</td>
+<td align="right">10</td>
 <td align="right">0.99</td>
 <td align="left">FALSE</td>
 <td align="right">9</td>
-<td align="left">AML: 279, ALL: 266, Oth: 93, Apl: 56</td>
+<td align="left">AML: 283, ALL: 267, Oth: 94, Apl: 58</td>
 </tr>
 <tr class="even">
 <td align="left">cat_ethnicity</td>
@@ -278,31 +296,31 @@
 <td align="right">0.99</td>
 <td align="left">FALSE</td>
 <td align="right">2</td>
-<td align="left">Not: 659, His: 174</td>
+<td align="left">Not: 669, His: 175</td>
 </tr>
 <tr class="odd">
 <td align="left">cat_matched_related</td>
-<td align="right">357</td>
-<td align="right">0.58</td>
+<td align="right">368</td>
+<td align="right">0.57</td>
 <td align="left">FALSE</td>
 <td align="right">4</td>
 <td align="left">mis: 177, mat: 149, mat: 127, mis: 31</td>
 </tr>
 <tr class="even">
 <td align="left">cat_prep_type</td>
-<td align="right">223</td>
-<td align="right">0.73</td>
+<td align="right">224</td>
+<td align="right">0.74</td>
 <td align="left">TRUE</td>
 <td align="right">3</td>
-<td align="left">Mye: 372, Red: 212, Non: 34</td>
+<td align="left">Mye: 373, Red: 219, Non: 36</td>
 </tr>
 <tr class="odd">
 <td align="left">cat_product_type</td>
-<td align="right">2</td>
+<td align="right">4</td>
 <td align="right">1.00</td>
 <td align="left">FALSE</td>
 <td align="right">2</td>
-<td align="left">Mar: 479, PBS: 360, Cor: 0, Mar: 0</td>
+<td align="left">Mar: 481, PBS: 367, Cor: 0, Mar: 0</td>
 </tr>
 <tr class="even">
 <td align="left">cat_race</td>
@@ -310,7 +328,7 @@
 <td align="right">1.00</td>
 <td align="left">FALSE</td>
 <td align="right">3</td>
-<td align="left">Whi: 591, Bla: 161, Oth: 88</td>
+<td align="left">Whi: 597, Bla: 165, Oth: 89</td>
 </tr>
 <tr class="odd">
 <td align="left">cat_sex</td>
@@ -318,7 +336,7 @@
 <td align="right">1.00</td>
 <td align="left">FALSE</td>
 <td align="right">2</td>
-<td align="left">Mal: 481, Fem: 360</td>
+<td align="left">Mal: 487, Fem: 365</td>
 </tr>
 </tbody>
 </table>
@@ -336,22 +354,22 @@
 <td align="left">lgl_death</td>
 <td align="right">0</td>
 <td align="right">1.00</td>
-<td align="right">0.36</td>
-<td align="left">FAL: 542, TRU: 299</td>
+<td align="right">0.35</td>
+<td align="left">FAL: 551, TRU: 301</td>
 </tr>
 <tr class="even">
 <td align="left">lgl_donor_related</td>
-<td align="right">274</td>
+<td align="right">285</td>
 <td align="right">0.67</td>
 <td align="right">0.58</td>
 <td align="left">TRU: 328, FAL: 239</td>
 </tr>
 <tr class="odd">
 <td align="left">lgl_malignant</td>
-<td align="right">8</td>
+<td align="right">10</td>
 <td align="right">0.99</td>
 <td align="right">0.78</td>
-<td align="left">TRU: 651, FAL: 182</td>
+<td align="left">TRU: 657, FAL: 185</td>
 </tr>
 </tbody>
 </table>
@@ -375,25 +393,25 @@
 <td align="left">num_age</td>
 <td align="right">0</td>
 <td align="right">1.00</td>
-<td align="right">9.59</td>
+<td align="right">9.61</td>
 <td align="right">5.98</td>
 <td align="right">0.07</td>
-<td align="right">4.13</td>
-<td align="right">9.76</td>
+<td align="right">4.19</td>
+<td align="right">9.77</td>
 <td align="right">14.97</td>
 <td align="right">20.88</td>
 <td align="left">▇▆▆▇▅</td>
 </tr>
 <tr class="even">
 <td align="left">num_age_donor</td>
-<td align="right">46</td>
-<td align="right">0.95</td>
-<td align="right">27.97</td>
-<td align="right">12.61</td>
+<td align="right">49</td>
+<td align="right">0.94</td>
+<td align="right">28.06</td>
+<td align="right">12.64</td>
 <td align="right">0.60</td>
-<td align="right">19.87</td>
-<td align="right">28.17</td>
-<td align="right">37.51</td>
+<td align="right">20.02</td>
+<td align="right">28.19</td>
+<td align="right">37.71</td>
 <td align="right">65.72</td>
 <td align="left">▃▇▇▅▁</td>
 </tr>
@@ -401,13 +419,13 @@
 <td align="left">num_dt_trans</td>
 <td align="right">0</td>
 <td align="right">1.00</td>
-<td align="right">2011.64</td>
-<td align="right">6.58</td>
+<td align="right">2011.78</td>
+<td align="right">6.65</td>
 <td align="right">2000.04</td>
-<td align="right">2005.58</td>
-<td align="right">2011.93</td>
-<td align="right">2017.62</td>
-<td align="right">2022.45</td>
+<td align="right">2005.71</td>
+<td align="right">2012.09</td>
+<td align="right">2017.87</td>
+<td align="right">2022.68</td>
 <td align="left">▆▇▆▆▇</td>
 </tr>
 <tr class="even">
@@ -427,32 +445,47 @@
 <td align="left">num_t_surv</td>
 <td align="right">0</td>
 <td align="right">1.00</td>
-<td align="right">2373.45</td>
-<td align="right">2410.55</td>
-<td align="right">2.00</td>
-<td align="right">287.00</td>
-<td align="right">1360.00</td>
-<td align="right">4130.00</td>
+<td align="right">2342.64</td>
+<td align="right">2410.06</td>
+<td align="right">-48.00</td>
+<td align="right">271.75</td>
+<td align="right">1283.00</td>
+<td align="right">4044.00</td>
 <td align="right">8216.00</td>
 <td align="left">▇▂▂▂▁</td>
 </tr>
 <tr class="even">
 <td align="left">num_t_trans</td>
-<td align="right">9</td>
+<td align="right">11</td>
 <td align="right">0.99</td>
-<td align="right">691.64</td>
-<td align="right">1064.03</td>
+<td align="right">692.43</td>
+<td align="right">1060.01</td>
 <td align="right">16.00</td>
-<td align="right">122.00</td>
-<td align="right">231.50</td>
-<td align="right">730.25</td>
+<td align="right">123.00</td>
+<td align="right">232.00</td>
+<td align="right">748.00</td>
 <td align="right">6668.00</td>
 <td align="left">▇▁▁▁▁</td>
 </tr>
 </tbody>
 </table>
 <p>All tables are keyed by one or more columns that are (jointly) unique to each row. Each table contains <code>entity_id</code> as a primary key; most tables except <code>master</code> then define additional keys specific to the data contained in that table (for example, many tables contain repeated observations for a patient and thus add a <code>date</code> key).</p>
-<pre class="{dm-pks}"><code><span><span class="fu">dm</span><span class="fu">::</span><span class="fu"><a href="https://cynkra.github.io/dm/reference/dm_get_all_pks.html" class="external-link">dm_get_all_pks</a></span><span class="op">(</span><span class="va">dm</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pk_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">pk_col</span><span class="op">)</span><span class="op">)</span></span></code></pre>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">dm</span><span class="fu">::</span><span class="fu"><a href="https://cynkra.github.io/dm/reference/dm_get_all_pks.html" class="external-link">dm_get_all_pks</a></span><span class="op">(</span><span class="va">dm</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pk_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">pk_col</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; # A tibble: 10 × 2</span></span>
+<span><span class="co">#&gt;    table          pk_col                      </span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;          &lt;chr&gt;                       </span></span>
+<span><span class="co">#&gt;  1 hla            entity_id, donor_id         </span></span>
+<span><span class="co">#&gt;  2 master         entity_id                   </span></span>
+<span><span class="co">#&gt;  3 cerner         entity_id, test, date, n_obs</span></span>
+<span><span class="co">#&gt;  4 chimerism      entity_id, date, cat_source </span></span>
+<span><span class="co">#&gt;  5 death          entity_id, n_id             </span></span>
+<span><span class="co">#&gt;  6 disease_status entity_id, date, n_status   </span></span>
+<span><span class="co">#&gt;  7 engraftment    entity_id, date             </span></span>
+<span><span class="co">#&gt;  8 gvhd           entity_id, date, cat_site   </span></span>
+<span><span class="co">#&gt;  9 mrd            entity_id, date             </span></span>
+<span><span class="co">#&gt; 10 relapse        entity_id, date</span></span></code></pre></div>
 <p>Here’s a list of data (non-key) columns in each table (excluding <code>master</code>):</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -461,6 +494,12 @@
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html" class="external-link">key</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span></span>
 <span>  <span class="op">}</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
+<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
 <span><span class="co">#&gt; # A tibble: 9 × 2</span></span>
 <span><span class="co">#&gt;   table          cols                                                           </span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;                                                          </span></span>
