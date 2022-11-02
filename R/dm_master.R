@@ -74,7 +74,7 @@ dm_master_transform <- function(dm_local) {
   dt <- data.table::as.data.table(dt)
 
   # Silence R CMD CHECK Notes
-  ..hla_cols <- ..mm_cols <- cat_disease_status_at_trans <- NULL
+  ..hla_cols <- ..mm_cols <- ..time_stamp <- cat_disease_status_at_trans <- NULL
   cat_degree_match06 <- cat_degree_match08 <- cat_degree_match10 <- NULL
   cat_donor_race <- cat_donor_relation <- cat_donor_sex <- NULL
   cat_donor_type <- cat_dx_grp <- cat_ethnicity <- cat_prep_type <- NULL
