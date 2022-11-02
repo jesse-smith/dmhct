@@ -266,6 +266,9 @@ dm_chimerism_transform <- function(dm_local) {
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
 
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$chimerism, "timestamp")
+
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("chimerism") %>%

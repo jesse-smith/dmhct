@@ -17,7 +17,7 @@ dm_cerner_extract <- function(
     return(dm_remote)
   }
   # Select cerner tables
-  dm_cerner <- dm::dm_select_tbl(dm_remote, dplyr::matches("(?i)cerner"))
+  dm_cerner <- dm::dm_select_tbl(dm_remote, dplyr::matches("(?i)cerner[0-9]"))
   # Create list of names for removal
   nm_list   <- as.list(names(dm_cerner))
   # Row bind to single table
@@ -26,6 +26,14 @@ dm_cerner_extract <- function(
     ~ dplyr::union_all(.x, utils_cerner$std_cerner_tbl(.y, dm_remote$master)),
     .init = utils_cerner$std_cerner_tbl(dm_cerner[[1L]], dm_remote$master)
   )
+  # Add timestamp (max timestamp of individual tables)
+  attr(tbl_cerner, "timestamp") <- dm_cerner %>%
+    dm::dm_get_tables() %>%
+    purrr::map(attr, "timestamp") %>%
+    dplyr::as_tibble() %>%
+    as.matrix() %>%
+    max(na.rm = TRUE) %>%
+    lubridate::as_datetime()
 
   dm_remote %>%
     # Add combined table
@@ -273,6 +281,9 @@ dm_cerner_transform <- function(
 
   # Convert back to tibble if input was not data.table
   dt <- dt_cast(dt, to = class)
+
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$cerner, "timestamp")
 
   dm <- dm_local %>%
     dm::dm_rm_tbl("cerner") %>%

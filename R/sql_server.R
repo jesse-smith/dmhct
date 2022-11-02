@@ -55,27 +55,70 @@ dm_sql_server <- function(con = con_sql_server()) {
   ) %>% stringr::str_subset("(?i)_pivot$", negate = TRUE)
 
   # Create data model
-  dm <- con %>%
-    dm::dm_from_src(learn_keys = TRUE, table_names = tbl_nms) %>%
-    dm::dm_rename_tbl(
-      adverse_events_v2 = "AdverseEvents_V2",
-      adverse_events_v3 = "AdverseEvents_V3",
-      adverse_events_v4 = "AdverseEvents_V4_1",
-      adverse_events_v5 = "AdverseEvents_V4_2",
-      cerner1 = "legacy_Cerner_Test_Results",
-      cerner2 = "Legacy Cerner Test Results-2",
-      cerner3 = "Legacy Cerner Test Results-3",
-      chimerism = "Chimerism",
-      death = "Death_Info",
-      disease_status = "DiseaseStatus",
-      engraftment = "Engraftment_Info",
-      gvhd = "Acute_Chronic_GVHD_Data",
-      hla_donor = "Donor_HLA_Typing",
-      hla_patient = "Patient_HLA_Typing",
-      master = "Master_Transplant_Info",
-      mrd = "MRD",
-      relapse = "Relapse_Info"
+  dm <- dm::dm_from_con(con, learn_keys = FALSE, table_names = tbl_nms)
+
+  # Get sys.tables timestamps
+  tbl_ts <- dplyr::tbl(con, dbplyr::in_schema("sys", "tables")) %>%
+    dplyr::filter(.data$name %in% {{ tbl_nms }}) %>%
+    dplyr::select("name", "time_stamp" = "modify_date") %>%
+    dplyr::mutate(time_stamp = dbplyr::sql("CONVERT(DATETIME, time_stamp)")) %>%
+    dplyr::collect() %>%
+    dplyr::mutate(time_stamp = lubridate::as_datetime(.data$time_stamp))
+
+  # Replace with TimeStamp or Dataload_Timestamp, if present
+  tbl_ts <- purrr::map(dm::dm_get_tables(dm), function(x) {
+    # Dataload_Timestamp preferred - sort puts it first
+    ts <- sort(stringr::str_subset(colnames(x), "(?i)timestamp"))
+    if (length(ts) == 0L) {
+      return(lubridate::NA_POSIXct_)
+    } else {
+      ts <- ts[[1L]]
+    }
+    x %>%
+      dplyr::select(time_stamp = {{ ts }}) %>%
+      dplyr::summarize(time_stamp = max(.data$time_stamp, na.rm = TRUE)) %>%
+      dplyr::collect() %>%
+      dplyr::pull(1L) %>%
+      lubridate::as_datetime()
+  }) %>%
+    dplyr::as_tibble() %>%
+    tidyr::pivot_longer(dplyr::everything(), values_to = "time_stamp") %>%
+    dplyr::full_join(tbl_ts, by = "name", suffix = c("_col", "_sys")) %>%
+    dplyr::transmute(
+      .data$name,
+      time_stamp = dplyr::coalesce(.data$time_stamp_col, .data$time_stamp_sys)
     )
+
+  # Add timestamp attributes
+  for (tbl_nm in tbl_nms) {
+    tbl <- dm[[tbl_nm]]
+    attr(tbl, "timestamp") <- tbl_ts[tbl_ts$name == tbl_nm,]$time_stamp
+    dm <- dm %>%
+      dm::dm_select_tbl(-{{ tbl_nm }}) %>%
+      dm::dm({{ tbl_nm }} := tbl)
+  }
+
+  dm <- dm::dm_rename_tbl(
+    dm,
+    adverse_events_v2 = "AdverseEvents_V2",
+    adverse_events_v3 = "AdverseEvents_V3",
+    adverse_events_v4 = "AdverseEvents_V4_1",
+    adverse_events_v5 = "AdverseEvents_V4_2",
+    cerner1 = "legacy_Cerner_Test_Results",
+    cerner2 = "Legacy Cerner Test Results-2",
+    cerner3 = "Legacy Cerner Test Results-3",
+    cerner_obs = "Observations",
+    chimerism = "Chimerism",
+    death = "Death_Info",
+    disease_status = "DiseaseStatus",
+    engraftment = "Engraftment_Info",
+    gvhd = "Acute_Chronic_GVHD_Data",
+    hla_donor = "Donor_HLA_Typing",
+    hla_patient = "Patient_HLA_Typing",
+    master = "Master_Transplant_Info",
+    mrd = "MRD",
+    relapse = "Relapse_Info"
+  )
 
   # Add attribute for default connection argument
   attr(dm, "con_is_default") <- con_is_default

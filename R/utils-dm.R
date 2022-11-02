@@ -6,14 +6,12 @@
 #'
 #' @export
 dm_collect <- function(dm_remote) {
-  nms <- names(dm_remote)
-  tbl_list <- purrr::map(
-    nms,
-    ~ data.table::setDT(dplyr::collect(dm_remote[[.x]]))
-  )
-  names(tbl_list) <- nms
-
-  dm::as_dm(tbl_list)
+  purrr::map(dm::dm_get_tables(dm_remote), function(x) {
+    ts <- attr(x, "timestamp")
+    x <- data.table::setDT(dplyr::collect(x))
+    attr(x, "timestamp") <- ts
+    x
+  }) %>% dm::as_dm()
 }
 
 
@@ -28,11 +26,15 @@ dm_collect <- function(dm_remote) {
 dm_compute <- function(dm_remote, quiet = TRUE) {
   compute <- dm::compute
   if (quiet) compute <- function(x, ...) suppressMessages(dm::compute(x, ...))
-  for (table in names(dm_remote)) {
+
+  for (tbl_nm in names(dm_remote)) {
+    tbl <- dm_remote[[tbl_nm]]
+    ts <- attr(tbl, "timestamp")
+    tbl <- compute(tbl)
+    attr(tbl, "timestamp") <- ts
     dm_remote <- dm_remote %>%
-      dm::dm_zoom_to({{ table }}) %>%
-      compute() %>%
-      dm::dm_update_zoomed()
+      dm::dm_select_tbl(-{{ tbl_nm }}) %>%
+      dm::dm({{ tbl_nm }} := tbl)
   }
 
   dm_remote

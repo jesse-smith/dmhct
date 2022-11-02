@@ -85,6 +85,9 @@ dm_relapse_transform <- function(dm_local) {
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
 
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$relapse, "timestamp")
+
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("relapse") %>%

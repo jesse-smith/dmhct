@@ -132,9 +132,11 @@ dm_gvhd_transform <- function(dm_local) {
   # Set key
   data.table::setkeyv(dt, pk)
 
-
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
+
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$gvhd, "timestamp")
 
   # Add to dm
   dm_local %>%

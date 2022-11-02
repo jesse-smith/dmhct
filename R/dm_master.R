@@ -6,7 +6,7 @@
 #'
 #' @export
 dm_master_extract <- function(dm_remote) {
-  dm_remote %>%
+  dm <- dm_remote %>%
     dm::dm_zoom_to("master") %>%
     dplyr::transmute(
       entity_id = as.integer(.data$EntityID),
@@ -14,25 +14,48 @@ dm_master_extract <- function(dm_remote) {
       num_n_trans = as.integer(.data[["Transplant Number"]]),
       dt_birth = dbplyr::sql("CONVERT(DATETIME, DOB)"),
       dt_dx = dbplyr::sql("CONVERT(DATETIME, Diagnosis_Date)"),
+      # dt_prep = trimws(as.character(.data[["Date peparative regimen was initiated"]])),
+      # dt_prep2 = trimws(as.character(.data[["Date Conditioning Began"]])),
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
       dt_death = dbplyr::sql("CONVERT(DATETIME, DeathDate)"),
+      # dt_mrd = trimws(as.character(.data[["MRD Date"]])),
+      # dt_marrow_blast = trimws(as.character(.data[["Marrow blast date"]])),
       dt_donor_birth = dbplyr::sql("CONVERT(DATETIME, DonorDateofBirth)"),
-      # protocol = trimws(as.character(.data$Protocol)),
       lgl_survival = trimws(as.character(.data$SurvialStatus)),
       lgl_malignant = trimws(as.character(.data$Mailgnant)),
+      # lgl_seq_treat = trimws(as.character(.data[["Planned sequential treatment"]])),
+      # lgl_rep_trans = trimws(as.character(.data[["Is this a repeat transplant (HCT)?"]])),
+      # lgl_post_therapy = trimws(as.character(.data[["Is additional Post Transplant Therapy Planned"]])),
+      # lgl_cmv = trimws(as.character(.data[["Recipient CMV Status"]])),
+      # lgl_ebv = trimws(as.character(.data[["Recipient EBV Status"]])),
+      # lgl_hsv = trimws(as.character(.data[["Recipient HSV Status"]])),
       num_degree_match = trimws(as.character(.data[["Degree of Match"]])),
+      # pct_mrd_at_trans = trimws(as.character(.data[["MRD Result Percentage at Transplant"]])),
+      # pct_marrow_blast = trimws(as.character(.data[["Marrow blast percentage"]])),
       cat_sex = trimws(as.character(.data$Sex)),
       cat_race = trimws(as.character(.data$Race)),
       cat_ethnicity = trimws(as.character(.data$Ethnicity)),
       # cat_dx = trimws(as.character(.data$Diagnosis)),
       cat_dx_grp = trimws(as.character(.data[["Diagnosis Group"]])),
+      # cat_protocol = trimws(as.character(.data[["Protocol"]])),
       cat_product_type = trimws(as.character(.data[["Product Type"]])),
       cat_prep_type = trimws(as.character(.data[["If yes, preparative regimen type:"]])),
       cat_disease_status_at_trans = trimws(as.character(.data[["Disease Status at Transplant"]])),
       cat_donor_type = trimws(as.character(.data$Transplant_type_2)),
       cat_donor_relation = trimws(as.character(.data[["Donor Type"]])),
       cat_donor_sex = trimws(as.character(.data$Donor_Gender)),
-      cat_donor_race = trimws(as.character(.data$donor_race))
+      cat_donor_race = trimws(as.character(.data$donor_race)),
+      # cat_indication = trimws(as.character(.data[["Indication for HCT for hematologic Malignancy"]])),
+      # cat_indication2 = trimws(as.character(.data[["Specify indication"]])),
+      # cat_rep_reason = trimws(as.character(.data[["Repeat reason:"]])),
+      # cat_rep_reason2 = trimws(as.character(.data[["Specify reason"]])),
+      # cat_post_therapy = trimws(as.character(.data[["Specify additional therapy"]]))
+      # NOTES ON EXCLUDED COLUMNS
+      #   "Transplant/Donor Type": "Transplant_type_2" is same info but standardized
+      #   "Did the patient die prior to cellular infusion...": "No" for all patients (they received a transplant)
+      #   "Donor source": "Donor Type" is more specific
+      #   "Allogenic, related": HLA Degree of Match is more specific
+      #   "Was a preparative regimen prescribed?": "If yes, preparative regimen type:" is more specific
     ) %>%
     dm::dm_update_zoomed()
 }
@@ -63,7 +86,7 @@ dm_master_transform <- function(dm_local) {
   num_degree_match06 <- num_degree_match08 <- num_degree_match10 <- NULL
 
   # Convert datetimes to dates
-  dt_cols <- colnames(dt)[vapply(dt, lubridate::is.POSIXct, logical(1L))]
+  dt_cols <- colnames(dt)[vapply(dt, lubridate::is.POSIXt, logical(1L))]
   dt[, c(dt_cols) := lapply(.SD, lubridate::as_date), .SDcols = dt_cols]
 
   # Age
@@ -74,9 +97,10 @@ dm_master_transform <- function(dm_local) {
   dt[, "lgl_survival" := NULL]
 
   # Survival time - endpoint comes from timestamp of upload in SQL Server
+  time_stamp <- lubridate::as_date(attr(dm_local$master, "timestamp"))
   dt[, "num_t_surv" := as.numeric(data.table::fifelse(
     !lgl_death,
-    as.Date("2022-07-20") - dt_trans,
+    ..time_stamp - dt_trans,
     dt_death - dt_trans
   ))]
 
@@ -278,6 +302,9 @@ dm_master_transform <- function(dm_local) {
 
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
+
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$master, "timestamp")
 
   # Add to dm
   dm_local %>%

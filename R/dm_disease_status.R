@@ -78,6 +78,9 @@ dm_disease_status_transform <- function(dm_local) {
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
 
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$disease_status, "timestamp")
+
   # Add to dm
   dm_local %>%
     dm::dm_rm_tbl("disease_status") %>%

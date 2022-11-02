@@ -22,6 +22,12 @@ dm_hla_extract <- function(dm_remote, quiet = TRUE) {
     suffix = c("_donor", "_entity")
   )
 
+  # Add timestamp
+  attr(hla, "timestamp") <- max(
+    attr(dm_remote$hla_donor, "timestamp"),
+    attr(dm_remote$hla_patient, "timestamp")
+  ) %>% lubridate::as_datetime()
+
   dm_remote %>%
     # Add new table
     dm::dm_add_tbl(hla = hla) %>%
@@ -105,6 +111,9 @@ dm_hla_transform <- function(dm_local) {
 
   # Convert back to original class
   dt <- dt_cast(dt, to = class)
+
+  # Ensure timestamp is retained
+  attr(dt, "timestamp") <- attr(dm_local$hla, "timestamp")
 
   # Add to dm
   dm_local %>%
