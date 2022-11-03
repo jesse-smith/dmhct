@@ -259,10 +259,53 @@ dm_master_transform <- function(dm_local) {
   # Remove duplicates
   dt <- unique(dt)
 
-  # Only use 1st transplant and kids
-  dt <- dt[num_n_trans == 1L & num_age < 21]
+  # Remove duplicates w/ missings
+  data.table::setorderv(dt, na.last = TRUE)
+  dt[, c("N", ".ID") := list(.N, seq_len(.N)), keyby = c("entity_id", "donor_id", "num_n_trans")]
+  dt_dedup <- dt[N > 1L] %>%
+    data.table::setDF() %>%
+    dplyr::group_by(.data$entity_id) %>%
+    tidyr::fill(dplyr::everything(), .direction = "downup") %>%
+    data.table::setDT() %>%
+    unique(by = setdiff(colnames(dt), ".ID"))
+  dt_dedup <- dt[N > 1L][dt_dedup[, c("entity_id", ".ID")], on = c("entity_id", ".ID")]
+  dt <- rbind(dt[N == 1L], dt_dedup)
+  dt[, c("N", ".ID") := NULL]
+
+  # Initial cohort
+  n_init_trans <- NROW(dt)
+  n_init_pat <- data.table::uniqueN(dt$entity_id)
+  message(cli::style_bold("Initial Cohort"))
+  message("  ", cli::symbol$info, " ", n_init_trans, " transplants, ", n_init_pat, " patients")
+  message("")
+  # Only use 1st transplant
+  dt <- dt[num_n_trans == 1L]
+  n_first_trans <- NROW(dt)
+  message(cli::style_bold("1st Transplant"))
+  message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_init_trans - n_first_trans, " transplants, ", n_init_pat - n_first_trans, " patients removed")
+  message("  ", cli::symbol$tick, " ", n_first_trans, " transplants/patients retained")
+  message("")
+  # Only use pedatric transplants
+  dt <- dt[num_age < 21]
+  n_ped_trans <- NROW(dt)
+  message(cli::style_bold("Pediatric"))
+  message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_first_trans - n_ped_trans, " transplants/patients removed")
+  message("  ", cli::symbol$tick, " ", n_ped_trans, " transplants/patients retained")
+  message("")
   # Only use marrow and PBSC transplants
   dt <- dt[cat_product_type %in% c("Marrow", "PBSC", NA_character_)]
+  n_product_trans <- NROW(dt)
+  message(cli::style_bold("BM/PBSC"))
+  message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_ped_trans - n_product_trans, " transplants/patients")
+  message("  ", cli::symbol$tick, " ", n_product_trans, " transplants/patients retained")
+  message("")
+  # Don't use solid tumor transplants
+  dt <- dt[!cat_dx_grp %in% "Solid Tumor"]
+  n_nonsolid_trans <- NROW(dt)
+  message(cli::style_bold("Non-Solid Tumor"))
+  message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_product_trans - n_nonsolid_trans, " transplants/patients")
+  message("  ", cli::symbol$tick, " ", n_nonsolid_trans, " transplants/patients retained")
+  message("")
   # Don't use mismatched donors
   dt[, "is_mm06" := tidyr::replace_na(cat_degree_match06 < 3L, FALSE)]
   dt[, "is_mm08" := tidyr::replace_na(cat_degree_match08 < 4L, FALSE)]
@@ -272,8 +315,14 @@ dm_master_transform <- function(dm_local) {
   dt <- dt[is_mm == FALSE]
   mm_cols <- stringr::str_subset(colnames(dt), "^is_mm")
   dt[, c(mm_cols) := rep(list(NULL), NROW(..mm_cols))]
-  # Don't use solid tumor transplants
-  dt <- dt[!cat_dx_grp %in% "Solid Tumor"]
+  n_matched_trans <- NROW(dt)
+  message(cli::style_bold("HLA Match >= 50%"))
+  message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_nonsolid_trans - n_matched_trans, " transplants/patients")
+  message("  ", cli::symbol$tick, " ", n_matched_trans, " transplants/patients retained")
+  message("")
+  # Final
+  message(cli::style_bold("Final cohort"))
+  message("  ", cli::symbol$info, " ", NROW(dt), " transplants/patients")
 
   # Remove unneeded variables
   rm_vars <- c(
