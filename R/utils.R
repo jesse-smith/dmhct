@@ -52,3 +52,34 @@ dt_cast <- function(data, to) {
   if (to == "tibble") data <- tibble::as_tibble(data)
   data
 }
+
+
+std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inner_newlines = TRUE) {
+  if (!is.null(case)) case <- rlang::arg_match(case)[[1L]]
+  # Convert to ASCII
+  x <- x %>%
+    stringi::stri_trans_general("Any-Latin;Latin-ASCII") %>%
+    stringi::stri_enc_toascii()
+
+  # Squish
+  if (keep_inner_newlines) {
+    x <- x %>%
+      # Condense all whitespace except newlines
+      stringr::str_replace_all("[^\\S\\r\\n]+", " ") %>%
+      # Remove leading & training whitespace
+      stringr::str_trim() %>%
+      # Condense newlines, including those separated by whitespace
+      stringr::str_replace_all("(?:[^\\S\\r\\n]*[\\r\\n][^\\S\\r\\n]*)+", "\n")
+  } else {
+    x <- stringr::str_squish(x)
+  }
+
+  if (is.null(case)) return(x)
+  switch(
+    case,
+    "lower" = stringr::str_to_lower(x),
+    "upper" = stringr::str_to_upper(x),
+    "title" = stringr::str_to_title(x),
+    "sentence" = stringr::str_to_sentence(x)
+  )
+}
