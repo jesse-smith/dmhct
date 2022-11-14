@@ -2,7 +2,7 @@
 % Please edit documentation in R/dm_relapse.R
 \name{dm_relapse_transform}
 \alias{dm_relapse_transform}
-\title{Transform the Relapse Table in a Local \code{dm}}
+\title{Temporary Aggregation of Standardize/Clean/Filter Workflow}
 \usage{
 dm_relapse_transform(dm_local)
 }
@@ -10,8 +10,13 @@ dm_relapse_transform(dm_local)
 \item{dm_local}{\verb{[dm]} Local \code{dm} with HCT data}
 }
 \value{
-\verb{[dm]} The \code{dm} object w/ transformed \code{relapse} table
+\verb{[dm]} The \code{dm} object with transformed relapse table
 }
 \description{
-Transform the Relapse Table in a Local \code{dm}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}
+
+Runs \code{dm_relapse_std()}, \code{dm_relapse_clean()}, and \code{dm_relapse_filter()}
+sequentially to maintain compatibility with previous API. Please use these
+functions instead.
 }
+\keyword{internal}
