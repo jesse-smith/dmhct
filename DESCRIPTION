@@ -22,6 +22,7 @@ Imports:
     forcats,
     fs,
     janitor,
+    lifecycle,
     lme4,
     lubridate,
     odbc,

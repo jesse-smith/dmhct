@@ -18,6 +18,7 @@
 #' @importFrom data.table .SD
 #' @importFrom data.table :=
 #' @importFrom data.table data.table
+#' @importFrom lifecycle deprecated
 #' @importFrom qs qread
 #' @importFrom qs qsave
 #' @importFrom R6 R6Class
