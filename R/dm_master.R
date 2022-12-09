@@ -16,6 +16,7 @@ dm_master_extract <- function(dm_remote) {
       dt_dx = dbplyr::sql("CONVERT(DATETIME, Diagnosis_Date)"),
       # dt_prep = trimws(as.character(.data[["Date peparative regimen was initiated"]])),
       # dt_prep2 = trimws(as.character(.data[["Date Conditioning Began"]])),
+      dt_last_contact = dbplyr::sql("CONVERT(DATETIME, DateofLastContact)"),
       dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
       dt_death = dbplyr::sql("CONVERT(DATETIME, DeathDate)"),
       # dt_mrd = trimws(as.character(.data[["MRD Date"]])),
@@ -96,11 +97,12 @@ dm_master_transform <- function(dm_local) {
   dt[, "lgl_death" := lgl_survival != "Alive"]
   dt[, "lgl_survival" := NULL]
 
-  # Survival time - endpoint comes from timestamp of upload in SQL Server
+  # Survival time - endpoint comes from date of last contact, if present, or
+  # timestamp of upload in SQL Server, if not
   time_stamp <- lubridate::as_date(attr(dm_local$master, "timestamp"))
   dt[, "num_t_surv" := as.numeric(data.table::fifelse(
     !lgl_death,
-    ..time_stamp - dt_trans,
+    data.table::fcoalesce(dt_last_contact, ..time_stamp) - dt_trans,
     dt_death - dt_trans
   ))]
 
