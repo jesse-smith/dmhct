@@ -5,10 +5,12 @@
 #' @return `[dm]` A new `dm` object containing the collected (local) tables
 #'
 #' @export
-dm_collect <- function(dm_remote) {
+dm_collect <- function(dm_remote, data_table = FALSE) {
+  checkmate::assert_flag(data_table)
   purrr::map(dm::dm_get_tables(dm_remote), function(x) {
     ts <- attr(x, "timestamp")
-    x <- data.table::setDT(dplyr::collect(x))
+    x <- dplyr::collect(x)
+    if (data_table) x <- data.table::setDT(x)
     attr(x, "timestamp") <- ts
     x
   }) %>% dm::as_dm()
