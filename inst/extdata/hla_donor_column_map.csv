@@ -1,0 +1,7 @@
+﻿Old_Name,New_Name
+DonorID,donor_id
+EntityID,entity_id
+Date,date
+result_val,chr_allele
+display,cat_gene
+units,cat_units

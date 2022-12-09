@@ -1,0 +1,51 @@
+﻿Old_Name,New_Name
+EntityID,id_entity
+Protocol,cat_protocol
+DOB,dt_birth
+Sex,cat_sex
+Race,cat_race
+Ethnicity,cat_ethnicity
+Transplant Number,num_n_trans
+Date of Transplant,dt_trans
+Transplant/Donor Type,cat_donor_type
+Product Type,cat_product_type
+Did the patient die prior to cellular infusion...,lgl_death_during_prep
+What is the donor source: ,cat_donor_source
+"Allogeneic, related",cat_donor_match_relation
+Donor Type,cat_donor_relation
+Degree of Match,num_degree_match
+Was a preparative regimen prescribed?,lgl_prep
+"If yes, preparative regimen type:",cat_prep_type
+Date peparative regimen was initiated,dt_prep
+Indication for HCT for hematologic Malignancy,cat_indication
+Specify indication,chr_indication_specify
+Date Conditioning Began,dt_prep2
+Disease Status at Transplant,cat_disease_status_at_trans
+MRD Result Percentage at Transplant,pct_mrd_at_trans
+MRD Date,dt_mrd
+Marrow blast percentage,pct_marrow_blast
+Marrow blast date,dt_marrow_blast
+Planned sequential treatment,lgl_seq_treat
+Is this a repeat transplant (HCT)?,lgl_rep_trans
+Repeat reason:,cat_rep_reason
+Specify reason,chr_rep_reason_specify
+Is additional Post Transplant Therapy Planned,lgl_post_therapy
+Specify additional therapy,cat_post_therapy_specify
+Recipient CMV Status,lgl_cmv
+Recipient EBV Status,lgl_ebv
+Recipient HSV Status,lgl_hsv
+DeathDate,dt_death
+SurvialStatus,lgl_survival
+TimeStamp,dt_timestamp
+Transplant_type_2,cat_donor_type_std
+Diagnosis_Date,dt_dx
+Diagnosis,cat_dx
+Diagnosis Group,cat_dx_grp
+Mailgnant,lgl_malignant
+DonorID,id_donor
+Donor_Gender,cat_donor_sex
+DonorDateofBirth,dt_donor_birth
+donor_race,cat_donor_race
+donor_Ethnicity,cat_donor_ethnicity
+DateofLastContact,dt_last_contact
+Dataload_Timestamp,dt_data_timestamp

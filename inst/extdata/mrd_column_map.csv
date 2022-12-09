@@ -1,0 +1,16 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+MRD_DAT,date
+MRD Source,cat_source
+MRD Test,cat_method
+MRD Result,pct_result
+Actual Value,num_actual_value
+Units,cat_units
+Genomic Abnormality,cat_genomic_abnormality
+CD Group,cat_cd_group
+CD Group%,pct_cd_group
+Comments,chr_comments
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp

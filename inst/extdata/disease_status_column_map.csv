@@ -1,0 +1,16 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Disease_Status_DATE,date
+BM Blast %,pct_marrow_blast
+Disease Status,cat_disease_status
+Number,num_test_number
+CSF date,dt_csf
+CNS Status,cat_cns_status
+Extramedullary Disease Detected,lgl_extramedullary_detected
+Site,cat_site
+Comments,chr_comments
+Was disease testing at the molecular level performed?,lgl_molecular_test
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp

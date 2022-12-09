@@ -49,13 +49,61 @@ dm_sql_server <- function(con = con_sql_server()) {
   con_fml_nm <- rlang::call_name(rlang::fn_fmls()$con)
   con_is_default <- rlang::is_true(con_quo_nm == con_fml_nm)
 
-  # Get table names (user tables only, exclude pivot tables)
+  # Get table names (user tables only, exclude pivot and missing tables)
   tbl_nms <- odbc::dbListTables(
     con, catalog = "IRB_MLinHCT", schema = "dbo", table_type = "table"
-  ) %>% stringr::str_subset("(?i)_pivot$", negate = TRUE)
+  ) %>% stringr::str_subset("(?i)(^missing)|(_pivot$)", negate = TRUE)
 
   # Create data model
   dm <- dm::dm_from_con(con, learn_keys = FALSE, table_names = tbl_nms)
+
+  # Find columns with large data types
+  # According to T-SQL documentation:
+  #   Large value types: varchar(max), nvarchar(max)
+  #   Large object types: text, ntext, image, varbinary(max), xml
+  # Source: https://learn.microsoft.com/en-us/sql/t-sql/data-types/data-types-transact-sql?view=sql-server-ver16
+  large_types_maybe <- "varbinary"
+  large_types <- c("text", "ntext", "image", "xml")
+  large_types_chr <- c("varchar", "nvarchar")
+  large_cols <- con %>%
+    dplyr::tbl(dbplyr::in_schema("INFORMATION_SCHEMA", "COLUMNS")) %>%
+    dplyr::filter(
+      .data$TABLE_NAME %in% {{ tbl_nms }},
+      (.data$DATA_TYPE %in% {{ large_types }}
+      | .data$DATA_TYPE %in% {{ large_types_maybe }}
+      | (.data$DATA_TYPE %in% {{ large_types_chr }} & .data$CHARACTER_MAXIMUM_LENGTH == -1L))
+    ) %>%
+    dplyr::mutate(
+      dtype_position_ = dplyr::case_when(
+        .data$DATA_TYPE %in% {{ large_types }} ~ 4L,
+        .data$DATA_TYPE %in% {{ large_types_chr }} ~ 3L,
+        .data$DATA_TYPE %in% {{ large_types_maybe }} ~ 2L,
+        TRUE ~ 1L
+      )
+    ) %>%
+    dplyr::select("TABLE_NAME", "COLUMN_NAME", "dtype_position_", "ORDINAL_POSITION") %>%
+    dplyr::arrange(.data$TABLE_NAME, .data$dtype_position_, .data$ORDINAL_POSITION) %>%
+    dplyr::collect() %>%
+    dplyr::select("TABLE_NAME", "COLUMN_NAME")
+  # Ensure large data are at end of table
+  for (tbl in tbl_nms) {
+    # Get columns for table
+    relocate_cols <- dplyr::filter(
+      large_cols, .data$TABLE_NAME == {{ tbl }}
+    )$COLUMN_NAME
+    # Skip if no columns to relocate
+    if (length(relocate_cols) == 0L) next
+    # Move to end
+    dm <- dm %>%
+      dm::dm_zoom_to({{ tbl }}) %>%
+      dplyr::relocate(
+        {{ relocate_cols }},
+        .after = tail(colnames(dm[[tbl]]), 1L)
+      ) %>%
+      # Compute updates eagerly
+      {suppressMessages(dplyr::compute(.))} %>%
+      dm::dm_update_zoomed()
+  }
 
   # Get sys.tables timestamps
   tbl_ts <- dplyr::tbl(con, dbplyr::in_schema("sys", "tables")) %>%
@@ -98,27 +146,41 @@ dm_sql_server <- function(con = con_sql_server()) {
       dm::dm({{ tbl_nm }} := tbl)
   }
 
+  # Standardize table names
+  tbl_new_nms <- janitor::make_clean_names(tbl_nms)
+  nms_diff <- tbl_nms != tbl_new_nms
+  if (any(nms_diff)) {
+    rename_inputs <- paste0(
+      tbl_new_nms[nms_diff], " = `", tbl_nms[nms_diff], "`",
+      collapse = ", "
+    )
+    dm <- paste0("dm::dm_rename_tbl(dm, ", rename_inputs, ")") %>%
+      rlang::parse_expr() %>%
+      eval()
+  }
+
+  # Use additional standardization for some tables
   dm <- dm::dm_rename_tbl(
     dm,
-    adverse_events_v2 = "AdverseEvents_V2",
-    adverse_events_v3 = "AdverseEvents_V3",
-    adverse_events_v4 = "AdverseEvents_V4_1",
-    adverse_events_v5 = "AdverseEvents_V4_2",
-    cerner1 = "legacy_Cerner_Test_Results",
-    cerner2 = "Legacy Cerner Test Results-2",
-    cerner3 = "Legacy Cerner Test Results-3",
-    cerner_obs = "Observations",
-    chimerism = "Chimerism",
-    death = "Death_Info",
-    disease_status = "DiseaseStatus",
-    engraftment = "Engraftment_Info",
-    gvhd = "Acute_Chronic_GVHD_Data",
-    hla_donor = "Donor_HLA_Typing",
-    hla_patient = "Patient_HLA_Typing",
-    master = "Master_Transplant_Info",
-    mrd = "MRD",
-    relapse = "Relapse_Info"
+    cerner1 = "legacy_cerner_test_results",
+    cerner2 = "legacy_cerner_test_results_2",
+    cerner3 = "legacy_cerner_test_results_3",
+    cerner_obs = "observations",
+    death = "death_info",
+    engraftment = "engraftment_info",
+    gvhd = "acute_chronic_gvhd_data",
+    hla_donor = "donor_hla_typing",
+    hla_patient = "patient_hla_typing",
+    master = "master_transplant_info",
+    relapse = "relapse_info"
   )
+
+  # Re-order tables alphabetically
+  dm <- paste0(
+    "dm::dm_select_tbl(dm, ", paste0(sort(names(dm)), collapse = ", "), ")"
+  ) %>%
+    rlang::parse_expr() %>%
+    eval()
 
   # Add attribute for default connection argument
   attr(dm, "con_is_default") <- con_is_default

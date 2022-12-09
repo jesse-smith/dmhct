@@ -13,10 +13,11 @@ dm_relapse_transform(dm_local)
 \verb{[dm]} The \code{dm} object with transformed relapse table
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
 
 Runs \code{dm_relapse_std()}, \code{dm_relapse_clean()}, and \code{dm_relapse_filter()}
 sequentially to maintain compatibility with previous API. Please use these
-functions instead.
+functions individually instead, as they provided finer-grained control over
+where your data is in the pipeline.
 }
 \keyword{internal}

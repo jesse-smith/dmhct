@@ -1,0 +1,28 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Event Category,cat_ae_type
+Adverse Event Description (SNOMED Code),cat_ae_desc_snomed
+Symptoms Intermittent?,lgl_intermittent_symptoms
+Stem Cell Reaction?,lgl_stell_cell_reaction
+NCI Grade,num_nci_grade
+Acute GvHD Max Stage,num_agvhd_max_stage
+Acute GvHD Max Overall Grade,num_agvhd_max_grade
+Chronic GvHD Grade,num_cgvhd_grade
+NIHCriteriaChronicGvHD,cat_cgvhd_grade_nih
+Event Onset Date,dt_ae_onset
+Event Resolve Date,dt_ae_resolve
+Days to Resolution of Event,num_days_to_resolve
+Event Ongoing?,lgl_ongoing
+Classification of Event,cat_ae_class
+Patient Outcome,cat_outcome
+Relation to Tx,cat_ae_tx_related
+Related to Clinimacs Device,cat_ae_clinimacs_related
+SAE?,lgl_sae
+Comments,chr_comments
+Acute Gvhd Diagnosis Determined By,cat_agvhd_dx_method
+Chronic Gvhd Diagnosis Determined By,cat_cgvhd_dx_method
+Action Taken Tgt Code,cat_action_taken
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp

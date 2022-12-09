@@ -1,0 +1,11 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Engraftment_Date,date
+Recovery type,cat_recovery_type
+Is there evidence of Hematopoietic Recovery?,lgl_recovery
+Day post HCT,num_days_post_hct
+Comments,chr_comments
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp
