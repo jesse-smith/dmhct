@@ -25,6 +25,9 @@
     <loc>https://jesse-smith.github.io/dmhct/reference/UtilsChimerism.html</loc>
   </url>
   <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsDate.html</loc>
+  </url>
+  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/UtilsHLA.html</loc>
   </url>
   <url>
@@ -32,6 +35,9 @@
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/UtilsMaster.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsRelapse.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/con_sql_server.html</loc>
@@ -112,7 +118,16 @@
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_mrd_transform.html</loc>
   </url>
   <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_clean.html</loc>
+  </url>
+  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_extract.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_filter.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_std.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_transform.html</loc>
