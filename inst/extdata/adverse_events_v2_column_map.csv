@@ -3,7 +3,7 @@ EntityID,entity_id
 Date of Transplant,dt_trans
 Transplant_type_2,cat_donor_type
 Event Category,cat_ae_type
-Adverse Event Description (Snomed Code),cat_ae_desc_snomed
+Adverse Event Description (Snomed Code),chr_ae_desc_snomed
 SAE?,lgl_sae
 Stem Cell Reaction?,lgl_stell_cell_reaction
 NCI Grade,num_nci_grade

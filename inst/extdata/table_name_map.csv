@@ -1,0 +1,12 @@
+﻿Old_Name,New_Name
+legacy_Cerner_Test_Results,cerner1
+Legacy Cerner Test Results-2,cerner2
+Legacy Cerner Test Results-3,cerner3
+Observations,cerner_obs
+Death_Info,death
+Engraftment_Info,engraftment
+Acute_Chronic_GVHD_Data,gvhd
+Donor_HLA_Typing,hla_donor
+Patient_HLA_Typing,hla_patient
+Master_Transplant_Info,master
+Relapse_Info,relapse

@@ -55,9 +55,26 @@ dm_sql_server <- function(con = con_sql_server()) {
   ) %>% stringr::str_subset("(?i)(^missing)|(_pivot$)", negate = TRUE)
 
   # Create data model
-  dm <- dm::dm_from_con(con, learn_keys = FALSE, table_names = tbl_nms)
+  dm_remote <- con %>%
+    # Create data model
+    dm::dm_from_con(con, learn_keys = FALSE, table_names = tbl_nms) %>%
+    # Move large column types to end of tables to avoid ODBC error
+    dm_relocate_large_cols() %>%
+    # Add timestamps to tables
+    dm_add_timestamps()
 
-  # Find columns with large data types
+  # Add attribute for default connection argument
+  attr(dm_remote, "con_is_default") <- con_is_default
+
+  # Return
+  dm_remote
+}
+
+
+dm_relocate_large_cols <- function(dm_remote) {
+  # Get table names
+  tbl_nms <- names(dm_remote)
+
   # According to T-SQL documentation:
   #   Large value types: varchar(max), nvarchar(max)
   #   Large object types: text, ntext, image, varbinary(max), xml
@@ -65,13 +82,16 @@ dm_sql_server <- function(con = con_sql_server()) {
   large_types_maybe <- "varbinary"
   large_types <- c("text", "ntext", "image", "xml")
   large_types_chr <- c("varchar", "nvarchar")
-  large_cols <- con %>%
+
+  large_cols <- dm::dm_get_con(dm_remote) %>%
+    # Column info
     dplyr::tbl(dbplyr::in_schema("INFORMATION_SCHEMA", "COLUMNS")) %>%
+    # Restrict to tables in dm & large columns
     dplyr::filter(
       .data$TABLE_NAME %in% {{ tbl_nms }},
       (.data$DATA_TYPE %in% {{ large_types }}
-      | .data$DATA_TYPE %in% {{ large_types_maybe }}
-      | (.data$DATA_TYPE %in% {{ large_types_chr }} & .data$CHARACTER_MAXIMUM_LENGTH == -1L))
+       | .data$DATA_TYPE %in% {{ large_types_maybe }}
+       | (.data$DATA_TYPE %in% {{ large_types_chr }} & .data$CHARACTER_MAXIMUM_LENGTH == -1L))
     ) %>%
     dplyr::mutate(
       dtype_position_ = dplyr::case_when(
@@ -81,10 +101,12 @@ dm_sql_server <- function(con = con_sql_server()) {
         TRUE ~ 1L
       )
     ) %>%
-    dplyr::select("TABLE_NAME", "COLUMN_NAME", "dtype_position_", "ORDINAL_POSITION") %>%
+    # Sort by table, then variable type, then original position
     dplyr::arrange(.data$TABLE_NAME, .data$dtype_position_, .data$ORDINAL_POSITION) %>%
     dplyr::collect() %>%
+    # Only keep table and column names
     dplyr::select("TABLE_NAME", "COLUMN_NAME")
+
   # Ensure large data are at end of table
   for (tbl in tbl_nms) {
     # Get columns for table
@@ -94,19 +116,26 @@ dm_sql_server <- function(con = con_sql_server()) {
     # Skip if no columns to relocate
     if (length(relocate_cols) == 0L) next
     # Move to end
-    dm <- dm %>%
+    dm_remote <- dm_remote %>%
       dm::dm_zoom_to({{ tbl }}) %>%
       dplyr::relocate(
         {{ relocate_cols }},
-        .after = tail(colnames(dm[[tbl]]), 1L)
+        .after = tail(colnames(dm_remote[[tbl]]), 1L)
       ) %>%
       # Compute updates eagerly
       {suppressMessages(dplyr::compute(.))} %>%
       dm::dm_update_zoomed()
   }
 
+  dm_remote
+}
+
+
+dm_add_timestamps <- function(dm_remote) {
+  tbl_nms <- names(dm_remote)
   # Get sys.tables timestamps
-  tbl_ts <- dplyr::tbl(con, dbplyr::in_schema("sys", "tables")) %>%
+  tbl_ts <- dm::dm_get_con(dm_remote) %>%
+    dplyr::tbl(dbplyr::in_schema("sys", "tables")) %>%
     dplyr::filter(.data$name %in% {{ tbl_nms }}) %>%
     dplyr::select("name", "time_stamp" = "modify_date") %>%
     dplyr::mutate(time_stamp = dbplyr::sql("CONVERT(DATETIME, time_stamp)")) %>%
@@ -114,7 +143,7 @@ dm_sql_server <- function(con = con_sql_server()) {
     dplyr::mutate(time_stamp = lubridate::as_datetime(.data$time_stamp))
 
   # Replace with TimeStamp or Dataload_Timestamp, if present
-  tbl_ts <- purrr::map(dm::dm_get_tables(dm), function(x) {
+  tbl_ts <- purrr::map(dm::dm_get_tables(dm_remote), function(x) {
     # Dataload_Timestamp preferred - sort puts it first
     ts <- sort(stringr::str_subset(colnames(x), "(?i)timestamp"))
     if (length(ts) == 0L) {
@@ -139,51 +168,12 @@ dm_sql_server <- function(con = con_sql_server()) {
 
   # Add timestamp attributes
   for (tbl_nm in tbl_nms) {
-    tbl <- dm[[tbl_nm]]
+    tbl <- dm_remote[[tbl_nm]]
     attr(tbl, "timestamp") <- tbl_ts[tbl_ts$name == tbl_nm,]$time_stamp
-    dm <- dm %>%
+    dm_remote <- dm_remote %>%
       dm::dm_select_tbl(-{{ tbl_nm }}) %>%
       dm::dm({{ tbl_nm }} := tbl)
   }
 
-  # Standardize table names
-  tbl_new_nms <- janitor::make_clean_names(tbl_nms)
-  nms_diff <- tbl_nms != tbl_new_nms
-  if (any(nms_diff)) {
-    rename_inputs <- paste0(
-      tbl_new_nms[nms_diff], " = `", tbl_nms[nms_diff], "`",
-      collapse = ", "
-    )
-    dm <- paste0("dm::dm_rename_tbl(dm, ", rename_inputs, ")") %>%
-      rlang::parse_expr() %>%
-      eval()
-  }
-
-  # Use additional standardization for some tables
-  dm <- dm::dm_rename_tbl(
-    dm,
-    cerner1 = "legacy_cerner_test_results",
-    cerner2 = "legacy_cerner_test_results_2",
-    cerner3 = "legacy_cerner_test_results_3",
-    cerner_obs = "observations",
-    death = "death_info",
-    engraftment = "engraftment_info",
-    gvhd = "acute_chronic_gvhd_data",
-    hla_donor = "donor_hla_typing",
-    hla_patient = "patient_hla_typing",
-    master = "master_transplant_info",
-    relapse = "relapse_info"
-  )
-
-  # Re-order tables alphabetically
-  dm <- paste0(
-    "dm::dm_select_tbl(dm, ", paste0(sort(names(dm)), collapse = ", "), ")"
-  ) %>%
-    rlang::parse_expr() %>%
-    eval()
-
-  # Add attribute for default connection argument
-  attr(dm, "con_is_default") <- con_is_default
-
-  dm
+  dm_remote
 }
