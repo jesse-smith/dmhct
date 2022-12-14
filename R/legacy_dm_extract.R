@@ -45,13 +45,13 @@ dm_extract_legacy <- function(
     # Create file name
     cache_file <- "dm_extract"
     # Compute checksum
-    checksum <- eval(dm_cache$checksum(dm_remote))
+    checksum <- eval(DMCache$checksum(dm_remote))
   }
 
   # Cache
   if (collect && !reset) {
-    no_change <- dm_cache$check(checksum, cache_file)
-    if (no_change) return(dm_cache$read("data",  cache_file))
+    no_change <- DMCache$check(checksum, cache_file)
+    if (no_change) return(DMCache$read("data",  cache_file))
   }
 
   # Extract tables
@@ -76,10 +76,10 @@ dm_extract_legacy <- function(
 
   # Collect/compute
   dm <- dm_remote
-  if (collect) dm <- dm_collect(dm_remote)
+  if (collect) dm <- dm_collect(dm_remote, data_table = TRUE)
 
   # Cache
-  if (collect || reset) dm_cache$write(dm, checksum, cache_file)
+  if (collect || reset) DMCache$write(dm, checksum, cache_file)
 
   # Return
   dm
