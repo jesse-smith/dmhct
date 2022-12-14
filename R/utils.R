@@ -43,7 +43,7 @@ path_create <- function(..., abs = FALSE) {
 df_class <- function(data) {
   if (data.table::is.data.table(data)) {
     "data.table"
-  } else if (tibble::is_tibble(data)) {
+  } else if (is_tibble(data)) {
     "tibble"
   } else if (is.data.frame(data)) {
     "data.frame"
@@ -65,7 +65,7 @@ df_class <- function(data) {
 dt_cast <- function(data, to) {
   if (to == "data.table") return(data)
   data.table::setDF(data)
-  if (to == "tibble") data <- tibble::as_tibble(data)
+  if (to == "tibble") data <- dplyr::as_tibble(data)
   data
 }
 
@@ -109,6 +109,16 @@ as_rlang_error <- function(error_expr) {
   err <- rlang::catch_cnd(error_expr)
   if (is.null(err)) return(invisible(NULL))
   rlang::abort(err$message)
+}
+
+
+as_tibble_col <- function(x, column_name = "value") {
+  dplyr::tibble(`:=`(!!column_name, x))
+}
+
+
+is_tibble <- function(x) {
+  inherits(x, "tbl_df")
 }
 
 

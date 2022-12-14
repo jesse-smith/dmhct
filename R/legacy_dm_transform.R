@@ -23,10 +23,8 @@ dm_transform_legacy <- function(dm_local = dm_extract_legacy(), reset = FALSE) {
   stopifnot(dm::is_dm(dm_local))
   checkmate::assert_logical(reset, any.missing = FALSE, len = 1L)
 
-  if (reset) {
-    cache_file <- "dm_transform"
-    checksum <- DMCache$checksum(dm_local)
-  }
+  cache_file <- "dm_transform"
+  checksum <- DMCache$checksum(dm_local)
 
   # Cache
   if (!reset) {
@@ -1169,40 +1167,56 @@ DMTransformLegacy <- R6Class(
       dt <- rbind(dt[N == 1L], dt_dedup)
       dt[, c("N", ".ID") := NULL]
 
+      cli_installed <- rlang::is_installed("cli")
+
       # Initial cohort
-      n_init_trans <- NROW(dt)
-      n_init_pat <- data.table::uniqueN(dt$entity_id)
-      message(cli::style_bold("Initial Cohort"))
-      message("  ", cli::symbol$info, " ", n_init_trans, " transplants, ", n_init_pat, " patients")
-      message("")
+      if (cli_installed) {
+        n_init_trans <- NROW(dt)
+        n_init_pat <- data.table::uniqueN(dt$entity_id)
+        message(cli::style_bold("Initial Cohort"))
+        message("  ", cli::symbol$info, " ", n_init_trans, " transplants, ", n_init_pat, " patients")
+        message("")
+      }
       # Only use 1st transplant
       dt <- dt[num_n_trans == 1L]
-      n_first_trans <- NROW(dt)
-      message(cli::style_bold("1st Transplant"))
-      message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_init_trans - n_first_trans, " transplants, ", n_init_pat - n_first_trans, " patients removed")
-      message("  ", cli::symbol$tick, " ", n_first_trans, " transplants/patients retained")
-      message("")
+      if (cli_installed) {
+        n_first_trans <- NROW(dt)
+        message(cli::style_bold("1st Transplant"))
+        message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_init_trans - n_first_trans, " transplants, ", n_init_pat - n_first_trans, " patients removed")
+        message("  ", cli::symbol$tick, " ", n_first_trans, " transplants/patients retained")
+        message("")
+      }
+
       # Only use pedatric transplants
       dt <- dt[num_age < 21]
-      n_ped_trans <- NROW(dt)
-      message(cli::style_bold("Pediatric"))
-      message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_first_trans - n_ped_trans, " transplants/patients removed")
-      message("  ", cli::symbol$tick, " ", n_ped_trans, " transplants/patients retained")
-      message("")
+      if (cli_installed) {
+        n_ped_trans <- NROW(dt)
+        message(cli::style_bold("Pediatric"))
+        message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_first_trans - n_ped_trans, " transplants/patients removed")
+        message("  ", cli::symbol$tick, " ", n_ped_trans, " transplants/patients retained")
+        message("")
+      }
+
       # Only use marrow and PBSC transplants
       dt <- dt[cat_product_type %in% c("Marrow", "PBSC", NA_character_)]
-      n_product_trans <- NROW(dt)
-      message(cli::style_bold("BM/PBSC"))
-      message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_ped_trans - n_product_trans, " transplants/patients")
-      message("  ", cli::symbol$tick, " ", n_product_trans, " transplants/patients retained")
-      message("")
+      if (cli_installed) {
+        n_product_trans <- NROW(dt)
+        message(cli::style_bold("BM/PBSC"))
+        message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_ped_trans - n_product_trans, " transplants/patients")
+        message("  ", cli::symbol$tick, " ", n_product_trans, " transplants/patients retained")
+        message("")
+      }
+
       # Don't use solid tumor transplants
       dt <- dt[!cat_dx_grp %in% "Solid Tumor"]
-      n_nonsolid_trans <- NROW(dt)
-      message(cli::style_bold("Non-Solid Tumor"))
-      message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_product_trans - n_nonsolid_trans, " transplants/patients")
-      message("  ", cli::symbol$tick, " ", n_nonsolid_trans, " transplants/patients retained")
-      message("")
+      if (cli_installed) {
+        n_nonsolid_trans <- NROW(dt)
+        message(cli::style_bold("Non-Solid Tumor"))
+        message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_product_trans - n_nonsolid_trans, " transplants/patients")
+        message("  ", cli::symbol$tick, " ", n_nonsolid_trans, " transplants/patients retained")
+        message("")
+      }
+
       # Don't use mismatched donors
       dt[, "is_mm06" := tidyr::replace_na(cat_degree_match06 < 3L, FALSE)]
       dt[, "is_mm08" := tidyr::replace_na(cat_degree_match08 < 4L, FALSE)]
@@ -1212,14 +1226,19 @@ DMTransformLegacy <- R6Class(
       dt <- dt[is_mm == FALSE]
       mm_cols <- stringr::str_subset(colnames(dt), "^is_mm")
       dt[, c(mm_cols) := rep(list(NULL), NROW(..mm_cols))]
-      n_matched_trans <- NROW(dt)
-      message(cli::style_bold("HLA Match >= 50%"))
-      message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_nonsolid_trans - n_matched_trans, " transplants/patients")
-      message("  ", cli::symbol$tick, " ", n_matched_trans, " transplants/patients retained")
-      message("")
+      if (cli_installed) {
+        n_matched_trans <- NROW(dt)
+        message(cli::style_bold("HLA Match >= 50%"))
+        message("  ", cli::symbol$cross, " ", rep(cli::symbol$line, 10L), cli::symbol$play, " ", n_nonsolid_trans - n_matched_trans, " transplants/patients")
+        message("  ", cli::symbol$tick, " ", n_matched_trans, " transplants/patients retained")
+        message("")
+      }
+
       # Final
-      message(cli::style_bold("Final cohort"))
-      message("  ", cli::symbol$info, " ", NROW(dt), " transplants/patients")
+      if (cli_installed) {
+        message(cli::style_bold("Final cohort"))
+        message("  ", cli::symbol$info, " ", NROW(dt), " transplants/patients")
+      }
 
       # Remove unneeded variables
       rm_vars <- c(
@@ -1850,7 +1869,7 @@ DMTransformLegacy <- R6Class(
           x,
           paste0("^[^", delim, "]*[\\s\\b]AND[\\s\\b][^", delim, "]*$")
         )
-        x[is_and] <- private$str_replace_parenthetic_delim(x[is_and], "[\\s\\b]+AND[\\s\\b]+", replace_parenthetic)
+        x[is_and] <- str_replace_parenthetic_delim(x[is_and], "[\\s\\b]+AND[\\s\\b]+", replace_parenthetic)
         x[is_and] <- stringr::str_replace_all(x[is_and], "[\\s\\b]+AND[\\s\\b]+", replace)
         x
       }

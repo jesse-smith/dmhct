@@ -146,8 +146,8 @@ DMExtractLegacy <- R6::R6Class(
         dplyr::semi_join("master", by = "entity_id") %>%
         dplyr::transmute(
           .data$entity_id,
-          dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
-          date = dbplyr::sql("CONVERT(DATETIME, [Chimerism_Date])"),
+          dt_trans = sql("CONVERT(DATETIME, [Date of Transplant])"),
+          date = sql("CONVERT(DATETIME, [Chimerism_Date])"),
           cat_source = trimws(as.character(.data[["Cell Separation"]])),
           cat_source = dplyr::if_else(
             .data$cat_source %in% {{ na }}, NA_character_, .data$cat_source
@@ -184,8 +184,8 @@ DMExtractLegacy <- R6::R6Class(
         dplyr::semi_join("master", by = "entity_id") %>%
         dplyr::transmute(
           .data$entity_id,
-          dt_death = dbplyr::sql("CONVERT(DATETIME, Date)"),
-          dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
+          dt_death = sql("CONVERT(DATETIME, Date)"),
+          dt_trans = sql("CONVERT(DATETIME, [Date of Transplant])"),
           lgl_on_therapy = trimws(as.character(.data$Timing)),
           cat_death_location = trimws(as.character(.data[["Death Location"]])),
           cat_cod_primary1 = trimws(as.character(.data[["Primary cause of death"]])),
@@ -216,7 +216,7 @@ DMExtractLegacy <- R6::R6Class(
         dplyr::semi_join("master", by = "entity_id") %>%
         dplyr::transmute(
           .data$entity_id,
-          date = dbplyr::sql("CONVERT(DATETIME, Disease_Status_DATE)"),
+          date = sql("CONVERT(DATETIME, Disease_Status_DATE)"),
           disease_status = trimws(as.character(.data[["Disease Status"]])),
           disease_status = dplyr::if_else(
             .data$disease_status %in% {{ na }}, NA_character_, .data$disease_status
@@ -249,7 +249,7 @@ DMExtractLegacy <- R6::R6Class(
         dplyr::semi_join("master", by = "entity_id") %>%
         dplyr::transmute(
           .data$entity_id,
-          date = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
+          date = sql("CONVERT(DATETIME, [Date of Transplant])"),
           cat_recovery_type = trimws(as.character(.data[["Recovery type"]])),
           lgl_recovery = trimws(as.character(.data[["Is there evidence of Hematopoietic Recovery?"]])),
           lgl_recovery = dplyr::if_else(
@@ -275,8 +275,8 @@ DMExtractLegacy <- R6::R6Class(
         dplyr::semi_join("master", by = "entity_id") %>%
         dplyr::transmute(
           .data$entity_id,
-          dt_trans = dbplyr::sql("CONVERT(DATETIME, DOT)"),
-          date = dbplyr::sql("CONVERT(DATETIME, [Onset Date])"),
+          dt_trans = sql("CONVERT(DATETIME, DOT)"),
+          date = sql("CONVERT(DATETIME, [Onset Date])"),
           cat_grade = toupper(trimws(as.character(.data$Overall_Grade))),
           cat_grade = dplyr::if_else(
             .data$cat_grade %in% {{ na }},
@@ -332,11 +332,11 @@ DMExtractLegacy <- R6::R6Class(
           entity_id = as.integer(.data$EntityID),
           donor_id = as.integer(.data$DonorID),
           num_n_trans = as.integer(.data[["Transplant Number"]]),
-          dt_birth = dbplyr::sql("CONVERT(DATETIME, DOB)"),
-          dt_dx = dbplyr::sql("CONVERT(DATETIME, Diagnosis_Date)"),
-          dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
-          dt_death = dbplyr::sql("CONVERT(DATETIME, DeathDate)"),
-          dt_donor_birth = dbplyr::sql("CONVERT(DATETIME, DonorDateofBirth)"),
+          dt_birth = sql("CONVERT(DATETIME, DOB)"),
+          dt_dx = sql("CONVERT(DATETIME, Diagnosis_Date)"),
+          dt_trans = sql("CONVERT(DATETIME, [Date of Transplant])"),
+          dt_death = sql("CONVERT(DATETIME, DeathDate)"),
+          dt_donor_birth = sql("CONVERT(DATETIME, DonorDateofBirth)"),
           lgl_survival = trimws(as.character(.data$SurvialStatus)),
           lgl_malignant = trimws(as.character(.data$Mailgnant)),
           num_degree_match = trimws(as.character(.data[["Degree of Match"]])),
@@ -362,7 +362,7 @@ DMExtractLegacy <- R6::R6Class(
         dm::dm_zoom_to("mrd") %>%
         dplyr::transmute(
           entity_id = as.integer(.data$EntityID),
-          date = dbplyr::sql("CONVERT(DATETIME, [MRD_DAT])"),
+          date = sql("CONVERT(DATETIME, [MRD_DAT])"),
           cat_source = trimws(as.character(.data[["MRD Source"]])),
           cat_method = trimws(as.character(.data[["MRD Test"]])),
           pct_result = trimws(as.character(.data[["MRD Result"]])),
@@ -383,7 +383,7 @@ DMExtractLegacy <- R6::R6Class(
         dm::dm_zoom_to("relapse") %>%
         dplyr::transmute(
           entity_id = as.integer(.data$EntityID),
-          date = dbplyr::sql("CONVERT(DATETIME, Relapse_Date)"),
+          date = sql("CONVERT(DATETIME, Relapse_Date)"),
           dt_remission = trimws(as.character(.data[["If yes, specify date"]])),
           lgl_remission = trimws(as.character(.data[["After treatment, did patient achieve remission?"]])),
           lgl_add_tx = trimws(as.character(.data[["Was additional treatment given?"]])),
@@ -424,7 +424,7 @@ DMExtractLegacy <- R6::R6Class(
         ) %>%
         # Ensure columns are of expected type
         dplyr::mutate(
-          date = dbplyr::sql("CONVERT(DATETIME, date)"),
+          date = sql("CONVERT(DATETIME, date)"),
           test = trimws(as.character(.data$test)),
           result = trimws(as.character(.data$result))
         ) %>%

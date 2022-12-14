@@ -73,7 +73,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
   }
 
   # Use additional standardization for some tables
-  nm_map <- read.csv(
+  nm_map <- utils::read.csv(
     system.file("extdata/table_name_map.csv", package = "dmhct"),
     colClasses = "character",
     na.strings = NULL
@@ -106,7 +106,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
       package = "dmhct"
     )
     if (map_file == "") {
-      col_map <- tibble::tibble(Old_Name = character(), New_Name = character())
+      col_map <- dplyr::tibble(Old_Name = character(), New_Name = character())
     } else {
       col_map <- utils::read.csv(
         map_file,
@@ -116,7 +116,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
     }
     # Combine and standardize old and new names
     nms <- colnames(dm_remote[[tbl_nm]]) %>%
-      tibble::as_tibble_col("Old_Name") %>%
+      as_tibble_col("Old_Name") %>%
       dplyr::left_join(col_map, "Old_Name") %>%
       dplyr::mutate(New_Name = janitor::make_clean_names(
         dplyr::coalesce(.data$New_Name, .data$Old_Name)

@@ -13,9 +13,7 @@ Depends:
     R (>= 3.6)
 Imports: 
     checkmate,
-    cli,
     data.table,
-    DBI,
     dbplyr,
     dm,
     dplyr,
@@ -33,9 +31,9 @@ Imports:
     stats,
     stringi,
     stringr,
-    tibble,
     tidyr
 Suggests: 
+    cli,
     DiagrammeR,
     DiagrammeRsvg
 Encoding: UTF-8

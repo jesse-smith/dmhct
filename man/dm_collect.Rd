@@ -8,6 +8,9 @@ dm_collect(dm_remote, data_table = FALSE)
 }
 \arguments{
 \item{dm_remote}{\verb{[dm]} A \code{dm} object connected to a remote source}
+
+\item{data_table}{\verb{[lgl]} Whether to return a \code{data.table}. If \code{FALSE},
+(the default), will return a \code{tibble} instead.}
 }
 \value{
 \verb{[dm]} A new \code{dm} object containing the collected (local) tables

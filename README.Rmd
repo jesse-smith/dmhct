@@ -42,6 +42,7 @@ the data. This is provided by St. Jude IT; contact
 
 The main functionality in the package is in `dm_elt()`; this function combines
 two sub-functions, `dm_extract()` and `dm_transform()`, into a small pipeline.
+(Note that this is in the process of being deprecated.)
 
 ```{r example}
 library(dmhct)
@@ -98,7 +99,7 @@ dm::dm_get_all_pks(dm) %>% dplyr::mutate(pk_col = format(.data$pk_col))
 Here's a list of data (non-key) columns in each table (excluding `master`):
 
 ```{r dm-data}
-tibble::tibble(
+dplyr::tibble(
   table = names(dm::dm_select_tbl(dm, -"master")),
   cols = sapply(dm::dm_select_tbl(dm, -"master"), function(x) {
     paste0(setdiff(colnames(x), data.table::key(x)), collapse = ", ")

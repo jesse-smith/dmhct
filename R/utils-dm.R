@@ -1,6 +1,8 @@
 #' Collect All Tables in a `dm` Object
 #'
 #' @param dm_remote `[dm]` A `dm` object connected to a remote source
+#' @param data_table `[lgl]` Whether to return a `data.table`. If `FALSE`,
+#'   (the default), will return a `tibble` instead.
 #'
 #' @return `[dm]` A new `dm` object containing the collected (local) tables
 #'
@@ -66,7 +68,7 @@ dm_is_remote <- function(dm) {
 #'
 #' @export
 dm_disconnect <- function(dm) {
-  if (dm_is_remote(dm)) DBI::dbDisconnect(dm::dm_get_con(dm))
+  if (dm_is_remote(dm)) odbc::dbDisconnect(dm::dm_get_con(dm))
   invisible(dm)
 }
 
@@ -202,7 +204,7 @@ DMCache <- R6Class(
       tbl_chksm <- if (dm_is_remote(dm)) private$tbl_checksum_remote else private$tbl_checksum_local
       dm %>%
         as.list() %>%
-        purrr::imap_dfr(~ tibble::tibble(name = .y, checksum = tbl_chksm(.x))) %>%
+        purrr::imap_dfr(~ dplyr::tibble(name = .y, checksum = tbl_chksm(.x))) %>%
         dplyr::arrange(.data$name) %>%
         rlang::hash()
     }
@@ -211,13 +213,13 @@ DMCache <- R6Class(
     # Hash a Remote Table on SQL Server
     tbl_checksum_remote = function(tbl_remote) {
       tbl_remote %>%
-        dplyr::summarize(cs = dbplyr::sql("CHECKSUM_AGG(BINARY_CHECKSUM(*))")) %>%
+        dplyr::summarize(cs = sql("CHECKSUM_AGG(BINARY_CHECKSUM(*))")) %>%
         dplyr::pull("cs")
     },
     # Hash a Local Table
     tbl_checksum_local = function(tbl_local) {
       tbl_local %>%
-        tibble::as_tibble() %>%
+        dplyr::as_tibble() %>%
         rlang::hash()
     }
   )
