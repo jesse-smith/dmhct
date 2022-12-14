@@ -4,7 +4,7 @@
 \alias{dm_collect}
 \title{Collect All Tables in a \code{dm} Object}
 \usage{
-dm_collect(dm_remote)
+dm_collect(dm_remote, data_table = FALSE)
 }
 \arguments{
 \item{dm_remote}{\verb{[dm]} A \code{dm} object connected to a remote source}

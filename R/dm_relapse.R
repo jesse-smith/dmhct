@@ -1,30 +1,3 @@
-#' Extract Relapse Table from SQL Server
-#'
-#' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HLA data
-#'
-#' @return `[dm]` The `dm` object w/ instructions for updating `relapse` table
-#'
-#' @export
-dm_relapse_extract <- function(dm_remote) {
-  dm_remote %>%
-    dm::dm_zoom_to("relapse") %>%
-    dplyr::transmute(
-      entity_id = as.integer(.data$EntityID),
-      date = dbplyr::sql("CONVERT(DATETIME, Relapse_Date)"),
-      dt_remission = trimws(as.character(.data[["If yes, specify date"]])),
-      lgl_remission = trimws(as.character(.data[["After treatment, did patient achieve remission?"]])),
-      lgl_add_tx = trimws(as.character(.data[["Was additional treatment given?"]])),
-      mcat_add_tx = trimws(as.character(.data$Method_of_Treatment)),
-      mcat_site = trimws(as.character(.data$Site)),
-      txt_comments = trimws(as.character(.data$Comments))
-      # # NOTES ON EXCLUDED COLUMNS
-      #   Date of Transplant: Redundant - present in master
-      #   Transplant_type_2: Redundant - present in master
-    ) %>%
-    dm::dm_update_zoomed()
-}
-
-
 #' Standardize Relapse Table Column Types
 #'
 #' Ensures that all columns are of the expected `class`, that all `character`

@@ -1,8 +1,22 @@
 #' Extract Remote Tables from SQL Server for MLinHCT
 #'
 #' `dm_extract()` extracts and (optionally) loads the remote database housing
-#' the MLinHCT into the current R session. Column names are standardized during
-#' extraction, but no other operations are performed.
+#' the MLinHCT into the current R session. Unless `.legacy = TRUE`, column and
+#' table names are standardized during extraction, but no other operations are
+#' performed. When `.legacy = TRUE`, the legacy version of `dm_extract()` is
+#' used; see details for this behavior. Note that legacy behavior will be
+#' deprecated and eventually removed in future releases, so it is strongly
+#' recommended that any new code use `.legacy = FALSE`.
+#'
+#' Legacy behavior is more opinionated than the current version of `dm_extract()`.
+#' First, only a subset of tables and columns are extracted. Second, HLA tables
+#' and Cerner tables are combined into a single HLA table and a single Cerner
+#' table. Third, some column standardization occurs (though it is limited to
+#' simple `as()` transformations, `trimws(toupper(x))` on character variables,
+#' and replacement of implicit missing values with explicit `NA`s.) Finally,
+#' some filtering of "uninformative" observations may occur. In the current
+#' pipeline, these changes are deferred to later steps to give more control
+#' to the user.
 #'
 #' @param dm_remote `[dm]` A `dm` object connected to the remote SQL server
 #'   database
@@ -10,13 +24,39 @@
 #'   extracted
 #' @param .collect `[lgl]` Indicates whether the extracted data should be loaded
 #'   onto the local machine (`TRUE` by default)
+#' @param .legacy `[lgl]` Should the legacy version of `dm_extract()` be used? The
+#'   default is currently `TRUE` but will switch to `FALSE` in a subsequent update.
+#'   Will be deprecated in a future release, along with `.reset`.
+#' @param .reset `[lgl]` Should the legacy cache be forced to reset? Only applicable
+#'   if `.legacy = TRUE`; ignore otherwise. Will be deprecated in a future release,
+#'   along with `.legacy`.
+#' @param reset `[lgl]` `r lifecycle::badge("deprecated")` Please use
+#'   `.reset` instead. Current behavior will only consider this argument if
+#'   `.reset` is unchanged from the default.
 #'
 #' @return `[dm]` A `dm` object with all tables and columns extracted from the
 #'   remote source.
 #'
 #' @export
-dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE) {
+dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legacy = TRUE, .reset = FALSE, reset = reset) {
+  # Deprecated arguments
+  call_arg_nms <- rlang::call_args_names(rlang::caller_call(0L))
+  if ("reset" %in% call_arg_nms) {
+    lifecycle::deprecate_soft("1.0.0", "dm_extract(reset)", with = "dm_extract(.reset)")
+    if (!".reset" %in% call_arg_nms) .reset <- reset
+  }
+
+  # Check arguments - make sure that removal doesn't cause error
   as_rlang_error(checkmate::assert_flag(.collect))
+  if (exists(".legacy")) as_rlang_error(checkmate::assert_flag(.legacy))
+  if (exists(".reset")) as_rlang_error(checkmate::assert_flag(.reset))
+
+  # Use legacy version if desired, but give deprecation message once `.legacy` default is FALSE
+  if (rlang::is_false(rlang::fn_fmls()$.legacy)) {
+    if (".legacy" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.1", "dm_extract(.legacy)")
+    if (".reset" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.1", "dm_extract(.reset)")
+  }
+  if (.legacy) return(dm_extract_legacy(dm_remote, collect = .collect, reset = .reset))
 
   # Standardize table names
   tbl_nms <- names(dm_remote)

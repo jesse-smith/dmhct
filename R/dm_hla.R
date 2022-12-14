@@ -1,41 +1,4 @@
 #' Extract and Unite HLA Tables in SQL Server
-#'
-#' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HCT data
-#' @param quiet `[lgl(1)]` Should the function return quietly if an HLA table is
-#'   already present?
-#'
-#' @return `[dm]` The `dm` w/ instructions to create a combined `hla` table
-#'
-#' @export
-dm_hla_extract <- function(dm_remote, quiet = TRUE) {
-  tbls_are_missing <- !all(c("hla_donor", "hla_patient") %in% names(dm_remote))
-
-  if ("hla" %in% names(dm_remote)) {
-    if (!quiet) rlang::inform("`hla` table already created")
-    return(dm_remote)
-  }
-
-  hla <- dplyr::full_join(
-    utils_hla$std_hla_tbl(dm_remote$hla_donor),
-    utils_hla$std_hla_tbl(dm_remote$hla_patient),
-    by = c("entity_id", "gene"),
-    suffix = c("_donor", "_entity")
-  )
-
-  # Add timestamp
-  attr(hla, "timestamp") <- max(
-    attr(dm_remote$hla_donor, "timestamp"),
-    attr(dm_remote$hla_patient, "timestamp")
-  ) %>% lubridate::as_datetime()
-
-  dm_remote %>%
-    # Add new table
-    dm::dm_add_tbl(hla = hla) %>%
-    # Remove individual tables
-    dm::dm_rm_tbl("hla_donor", "hla_patient")
-}
-
-
 #' Transform an HLA Table in a Local `dm`
 #'
 #' @param dm_local `[dm]` Local `dm` w/ HCT data
@@ -136,43 +99,6 @@ UtilsHLA <- R6Class(
   "UtilsHLA",
   cloneable = FALSE,
   public = list(
-    #' Standardize an HLA Table
-    #'
-    #' @param tbl `[tbl_dbi]` A table containing HLA data
-    #' @param na `[chr]` Vector of values to interpret as `NA`
-    #'
-    #' @return `[tbl_dbi]` The standardized table
-    std_hla_tbl = function(
-    tbl, na = c("", "NT", "Blank", "-", "Not Interpretable")
-    ) {
-      tbl <- tbl %>%
-        dplyr::mutate(
-          entity_id = as.integer(.data$EntityID),
-          gene = trimws(.data$display),
-          allele = trimws(.data$result_val),
-          allele = dplyr::if_else(
-            .data$allele %in% {{ na }},
-            NA_character_,
-            .data$allele
-          )
-        ) %>%
-        dplyr::filter(
-          !is.na(.data$entity_id),
-          !is.na(.data$gene),
-          !is.na(.data$allele)
-        )
-
-      if ("DonorID" %in% colnames(tbl)) {
-        tbl <- tbl %>%
-          dplyr::mutate(donor_id = as.integer(.data$DonorID)) %>%
-          dplyr::filter(!is.na(.data$donor_id))
-      }
-
-      dplyr::select(
-        tbl,
-        dplyr::starts_with("donor_id"), "entity_id", "gene", "allele"
-      )
-    },
     #' Standardize HLA Allele Representations
     #'
     #' @param x `[chr]` A vector of allele IDs

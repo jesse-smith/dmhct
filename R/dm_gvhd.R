@@ -1,38 +1,3 @@
-#' Extract GVHD Table from SQL Server
-#'
-#' @param dm_remote `[dm]` Remote `dm` connected to a SQL Server w/ HCT data
-#'
-#' @return `[dm]` The `dm` w/ instructions to update the `gvhd` table
-#'
-#' @export
-dm_gvhd_extract <- function(dm_remote) {
-  na <- c("-9996", "-9999", "NULL", "", "NA")
-  dm_remote %>%
-    dm::dm_zoom_to("gvhd") %>%
-    dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
-    dplyr::semi_join("master", by = "entity_id") %>%
-    dplyr::transmute(
-      .data$entity_id,
-      dt_trans = dbplyr::sql("CONVERT(DATETIME, DOT)"),
-      date = dbplyr::sql("CONVERT(DATETIME, [Onset Date])"),
-      cat_grade = toupper(trimws(as.character(.data$Overall_Grade))),
-      cat_grade = dplyr::if_else(
-        .data$cat_grade %in% {{ na }},
-        NA_character_,
-        .data$cat_grade
-      ),
-      cat_site = toupper(trimws(as.character(.data$Term)))
-    ) %>%
-    dplyr::filter(
-      !is.na(.data$entity_id),
-      !is.na(.data$dt_trans),
-      !is.na(.data$date),
-      !(is.na(.data$cat_grade) & is.na(.data$cat_site))
-    ) %>%
-    dm::dm_update_zoomed()
-}
-
-
 #' Transform the GVHD Table in a Local `dm`
 #'
 #' @param dm_local `[dm]` Local `dm` w/ HCT data

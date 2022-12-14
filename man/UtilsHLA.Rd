@@ -8,38 +8,15 @@
 \description{
 Collection of utility functions for HLA data
 }
+\keyword{Allele}
 \keyword{HLA}
+\keyword{Representations}
 \keyword{Standardize}
-\keyword{Table}
-\keyword{an}
 \keyword{internal}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
-\item \href{#method-UtilsHLA-std_hla_tbl}{\code{UtilsHLA$std_hla_tbl()}}
 \item \href{#method-UtilsHLA-std_hla_allele}{\code{UtilsHLA$std_hla_allele()}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-UtilsHLA-std_hla_tbl"></a>}}
-\if{latex}{\out{\hypertarget{method-UtilsHLA-std_hla_tbl}{}}}
-\subsection{Method \code{std_hla_tbl()}}{
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{UtilsHLA$std_hla_tbl(tbl, na = c("", "NT", "Blank", "-", "Not Interpretable"))}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{tbl}}{\verb{[tbl_dbi]} A table containing HLA data}
-
-\item{\code{na}}{\verb{[chr]} Vector of values to interpret as \code{NA}}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-\verb{[tbl_dbi]} The standardized table
-Standardize HLA Allele Representations
 }
 }
 \if{html}{\out{<hr>}}

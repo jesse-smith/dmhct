@@ -1,32 +1,3 @@
-#' Extract Death Table from SQL Server
-#'
-#' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HCT data
-#'
-#' @return `[dm]` The `dm` with instructions for updating the `death` table
-#'
-#' @export
-dm_death_extract <- function(dm_remote) {
-  dm_remote %>%
-    dm::dm_zoom_to("death") %>%
-    dplyr::mutate(entity_id = as.integer(.data$EntityID)) %>%
-    dplyr::semi_join("master", by = "entity_id") %>%
-    dplyr::transmute(
-      .data$entity_id,
-      dt_death = dbplyr::sql("CONVERT(DATETIME, Date)"),
-      dt_trans = dbplyr::sql("CONVERT(DATETIME, [Date of Transplant])"),
-      lgl_on_therapy = trimws(as.character(.data$Timing)),
-      cat_death_location = trimws(as.character(.data[["Death Location"]])),
-      cat_cod_primary1 = trimws(as.character(.data[["Primary cause of death"]])),
-      cat_cod_primary2 = trimws(as.character(.data[["Other specify: Primay Cause of Death"]])),
-      cat_cod_contrib1 = trimws(as.character(.data[["Contributing cause of death"]])),
-      cat_cod_contrib2 = trimws(as.character(.data[["Other specify: Contributing Cause of Death"]])),
-      cat_death_class = trimws(as.character(.data[["Classification of Death"]]))
-    ) %>%
-    dplyr::filter(!is.na(.data$entity_id)) %>%
-    dm::dm_update_zoomed()
-}
-
-
 #' Transform the Death Table in a Local `dm`
 #'
 #' @param dm_local `[dm]` Local `dm` with HCT data

@@ -21,6 +21,11 @@ Collection of utility functions for MRD data
 \item \href{#method-UtilsMRD-str_detect_fct}{\code{UtilsMRD$str_detect_fct()}}
 \item \href{#method-UtilsMRD-str_range_to_num}{\code{UtilsMRD$str_range_to_num()}}
 \item \href{#method-UtilsMRD-str_excel_dt_to_num}{\code{UtilsMRD$str_excel_dt_to_num()}}
+\item \href{#method-UtilsMRD-str_sci_to_dec}{\code{UtilsMRD$str_sci_to_dec()}}
+\item \href{#method-UtilsMRD-str_frac_to_dec}{\code{UtilsMRD$str_frac_to_dec()}}
+\item \href{#method-UtilsMRD-str_dt_na}{\code{UtilsMRD$str_dt_na()}}
+\item \href{#method-UtilsMRD-str_to_range_list}{\code{UtilsMRD$str_to_range_list()}}
+\item \href{#method-UtilsMRD-convert_range_units}{\code{UtilsMRD$convert_range_units()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -89,5 +94,50 @@ Converts Excel dates in MDY format to a number using an origin of
 \subsection{Returns}{
 \verb{[chr]} Numeric representation of Excel date, where available
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsMRD-str_sci_to_dec"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsMRD-str_sci_to_dec}{}}}
+\subsection{Method \code{str_sci_to_dec()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsMRD$str_sci_to_dec(x)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsMRD-str_frac_to_dec"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsMRD-str_frac_to_dec}{}}}
+\subsection{Method \code{str_frac_to_dec()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsMRD$str_frac_to_dec(x)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsMRD-str_dt_na"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsMRD-str_dt_na}{}}}
+\subsection{Method \code{str_dt_na()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsMRD$str_dt_na(x)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsMRD-str_to_range_list"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsMRD-str_to_range_list}{}}}
+\subsection{Method \code{str_to_range_list()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsMRD$str_to_range_list(x)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-UtilsMRD-convert_range_units"></a>}}
+\if{latex}{\out{\hypertarget{method-UtilsMRD-convert_range_units}{}}}
+\subsection{Method \code{convert_range_units()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{UtilsMRD$convert_range_units(value, units)}\if{html}{\out{</div>}}
+}
+
 }
 }

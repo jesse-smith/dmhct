@@ -2,7 +2,8 @@
 % Please edit documentation in R/dm_hla.R
 \name{dm_hla_transform}
 \alias{dm_hla_transform}
-\title{Transform an HLA Table in a Local \code{dm}}
+\title{Extract and Unite HLA Tables in SQL Server
+Transform an HLA Table in a Local \code{dm}}
 \usage{
 dm_hla_transform(dm_local)
 }
@@ -13,5 +14,6 @@ dm_hla_transform(dm_local)
 \verb{[dm]} The \code{dm} w/ transformed \code{hla} table
 }
 \description{
+Extract and Unite HLA Tables in SQL Server
 Transform an HLA Table in a Local \code{dm}
 }

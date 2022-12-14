@@ -1,33 +1,3 @@
-#' Extract MRD Table from SQL Server
-#'
-#' @param dm_remote `[dm]` Remote `dm` connected to SQL Server w/ HCT data
-#'
-#' @return `[dm]` The `dm` with instructions for updating the `mrd` table
-#'
-#' @export
-dm_mrd_extract <- function(dm_remote) {
-  dm_remote %>%
-    dm::dm_zoom_to("mrd") %>%
-    dplyr::transmute(
-      entity_id = as.integer(.data$EntityID),
-      date = dbplyr::sql("CONVERT(DATETIME, [MRD_DAT])"),
-      cat_source = trimws(as.character(.data[["MRD Source"]])),
-      cat_method = trimws(as.character(.data[["MRD Test"]])),
-      pct_result = trimws(as.character(.data[["MRD Result"]])),
-      num_actual_value = trimws(as.character(.data[["Actual Value"]])),
-      cat_units = toupper(trimws(as.character(.data$Units))),
-      cat_cd_group = trimws(as.character(.data[["CD Group"]])),
-      pct_cd_group = trimws(as.character(.data[["CD Group%"]])),
-      mcat_genomic_abnormality = trimws(as.character(.data[["Genomic Abnormality"]])),
-      txt_comments = toupper(trimws(as.character(.data$Comments)))
-      # NOTES ON EXCLUDED COLUMNS
-      #   Date of Transplant: Redundant - present in master
-      #   Transplant_type_2: Redundant - present in master
-    ) %>%
-    dm::dm_update_zoomed()
-}
-
-
 dm_mrd_std <- function(dm_local) {
   dt <- dm_local$mrd
   class <- df_class(dt)
@@ -579,6 +549,7 @@ UtilsMRD <- R6Class(
         dt_chr %like% "1/[0-9]+/1900", stringr::str_extract(dt_chr, "(?<=1/)[0-9]+(?=/1900)")
       ))
     },
+
     str_sci_to_dec = function(x) {
       # Standardize scientific notation
       x <- stringr::str_replace_all(x, "\\^", "E")

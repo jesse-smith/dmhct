@@ -4,7 +4,7 @@
 \alias{dm_transform}
 \title{Transform Tables to Analysis-Friendly Format}
 \usage{
-dm_transform(dm_local = dm_extract(), cache = TRUE, reset = FALSE)
+dm_transform(dm_local = dm_extract_legacy(), cache = TRUE, reset = FALSE)
 }
 \arguments{
 \item{dm_local}{\verb{[dm]} A local \code{dm} object from \code{dm_extract()}}
