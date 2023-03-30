@@ -4,6 +4,7 @@ Legacy Cerner Test Results-2,cerner2
 Legacy Cerner Test Results-3,cerner3
 Observations,cerner_obs
 Death_Info,death
+Encounters_Inpatient,encounters
 Engraftment_Info,engraftment
 Acute_Chronic_GVHD_Data,gvhd
 Donor_HLA_Typing,hla_donor

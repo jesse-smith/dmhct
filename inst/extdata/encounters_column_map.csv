@@ -1,0 +1,9 @@
+﻿Old_Name,New_Name
+MRN,mrn
+EntityID,entity_id
+Med_Service,cat_med_service
+Nurse Unit Location,cat_nurse_unit_location
+Encounter_Type,cat_encounter_type
+REG_DT_TM,dt_register
+DISCH_DT_TM,dt_discharge
+Dataload_Timestamp,dt_dataload_timestamp
