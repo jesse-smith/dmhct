@@ -30,6 +30,10 @@
 #' @param .reset `[lgl]` Should the legacy cache be forced to reset? Only applicable
 #'   if `.legacy = TRUE`; ignore otherwise. Will be deprecated in a future release,
 #'   along with `.legacy`.
+#' @param .excl_dsmb `[lgl]` Should patients marked as part of an active DSMB-monitored
+#'   study be excluded from the dataset? The default is `TRUE`; this should only
+#'   be changed if you are sure that your use case has been approved by the St.
+#'   Jude DSMB.
 #' @param reset `[lgl]` `r lifecycle::badge("deprecated")` Please use
 #'   `.reset` instead. Current behavior will only consider this argument if
 #'   `.reset` is unchanged from the default.
@@ -38,7 +42,7 @@
 #'   remote source.
 #'
 #' @export
-dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legacy = TRUE, .reset = FALSE, reset = reset) {
+dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legacy = TRUE, .reset = FALSE, .excl_dsmb = TRUE, reset = .reset) {
   # Deprecated arguments
   call_arg_nms <- rlang::call_args_names(rlang::caller_call(0L))
   if ("reset" %in% call_arg_nms) {
@@ -48,6 +52,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
 
   # Check arguments - make sure that removal doesn't cause error
   as_rlang_error(checkmate::assert_flag(.collect))
+  as_rlang_error(checkmate::assert_flag(.excl_dsmb))
   if (exists(".legacy")) as_rlang_error(checkmate::assert_flag(.legacy))
   if (exists(".reset")) as_rlang_error(checkmate::assert_flag(.reset))
 
@@ -57,6 +62,9 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
     if (".reset" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.1", "dm_extract(.reset)")
   }
   if (.legacy) return(dm_extract_legacy(dm_remote, collect = .collect, reset = .reset))
+
+  # Inform user if `.excl_dsmb` is FALSE
+  if (!.excl_dsmb) rlang::inform("`.excl_dsmb = FALSE`; DSMB-monitored patients will be included in the dataset.")
 
   # Standardize table names
   tbl_nms <- names(dm_remote)
@@ -91,6 +99,28 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
   ) %>%
     rlang::parse_expr() %>%
     eval()
+
+  # Remove patients who are part of an active DSMB-monitored trial
+  dsmb_entity_ids <- integer()
+  if (.excl_dsmb) {
+    dsmb_protocols <- utils::read.csv(
+      system.file("extdata/dsmb_protocols.csv", package = "dmhct"),
+      colClasses = "character",
+      na.strings = NULL
+    ) %>%
+      dplyr::pull("Protocol") %>%
+      trimws() %>%
+      toupper()
+    dsmb_entity_ids <- dm_remote$master %>%
+      dplyr::select("EntityID", "Protocol") %>%
+      dplyr::mutate(Protocol = toupper(trimws(.data$Protocol))) %>%
+      dplyr::filter(.data$Protocol %in% {{ dsmb_protocols }}) %>%
+      dplyr::collect() %>%
+      dplyr::pull("EntityID") %>%
+      as.integer() %>%
+      unique() %>%
+      sort()
+  }
 
   # Optionally select tables
   dots <- rlang::ensyms(...)
@@ -128,6 +158,13 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
     ) %>%
       rlang::parse_expr() %>%
       eval()
+    # Remove DSMB patients from table
+    if (.excl_dsmb) {
+      dm_remote <- dm_remote %>%
+        dm::dm_zoom_to(!!tbl_nm) %>%
+        dplyr::filter(!.data$entity_id %in% {{ dsmb_entity_ids }}) %>%
+        dm::dm_update_zoomed()
+    }
   }
 
   # Load data onto local machine
