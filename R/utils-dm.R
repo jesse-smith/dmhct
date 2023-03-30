@@ -73,6 +73,14 @@ dm_disconnect <- function(dm) {
 }
 
 
+dm_sort <- function(dm) {
+  lst <- dm::dm_get_tables(dm)
+  nms <- sort(names(lst))
+  lst <- lst[nms]
+  dm::as_dm(lst)
+}
+
+
 #' `dm` Cache Functions
 #'
 #' @description
