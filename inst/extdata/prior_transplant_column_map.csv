@@ -7,7 +7,7 @@ Location/Facility where transplant was done,cat_trans_location
 Product Type,cat_product_type
 "If Allogeneic, related",cat_donor_match_relation
 "If related, relationship",cat_donor_relation
-Specify HLA Match,num_degree_match
+Specify HLA Match,cat_degree_match
 Dataload_Timestamp,dt_dataload_timestamp
 ,
 ,

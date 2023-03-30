@@ -17,7 +17,7 @@ Days to Resolution of Event,num_days_to_resolve
 Classification of Event,cat_ae_class
 Relationship to Tx,cat_ae_tx_related
 Relation to CliniMACs Device,cat_ae_clinimacs_related
-Primary Key,id_primary_key
+Primary Key,num_primary_key
 Comments,chr_comments
 Acute GvHD Max Stage,num_agvhd_max_stage
 Acute GvHD Max Overall Grade,num_agvhd_max_grade

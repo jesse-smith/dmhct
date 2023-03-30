@@ -2,6 +2,6 @@
 DonorID,donor_id
 EntityID,entity_id
 Date,date
-result_val,chr_allele
+result_val,cat_allele
 display,cat_gene
 units,cat_units

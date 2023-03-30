@@ -1,7 +1,7 @@
 ﻿Old_Name,New_Name
 EntityID,entity_id
-St Jude Cerner Code,num_cerner_code
-Test Name,cat_test
-Date Performed,dt_test
-Result,chr_result
-Units,cat_units
+SJ Cerner Code,cerner_code
+Test Name,test
+Date Performed,date
+Result,result
+Units,units
