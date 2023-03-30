@@ -428,10 +428,6 @@ UtilsDate <- R6Class(
     #' @param orders The orders to use when parsing character vector with
     #'   \code{\link[lubridate:parse_date_time]{parse_date_time()}}
     #'
-    #' @param na A character vector of values to consider equivalent to `NA`
-    #'
-    #' @inheritParams lubridate::parse_date_time
-    #'
     #' @param ... Additional arguments to pass to
     #'   \code{\link[lubridate:parse_date_time]{parse_date_time()}}
     #'

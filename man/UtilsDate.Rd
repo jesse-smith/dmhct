@@ -11,94 +11,91 @@ An object of class \code{UtilsDate} (inherits from \code{R6}) of length 3.
 UtilsDate
 }
 \arguments{
-\item{orders}{A \code{character} vector of date-time formats. Each order
-string is a series of formatting characters as listed in
-\code{\link[base:strptime]{base::strptime()}} but might not include the
-"\%" prefix. For example, "ymd" will match all the possible dates in
-year, month, day order. Formatting orders might include arbitrary
-separators. These are discarded. See details of
-\code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}
-for the implemented formats. If multiple order strings are supplied,
-the order of applied formats is determined by the \code{select_formats}
-parameter in
-\code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}
-(if passed via dots).}
-
-\item{warn}{Should warnings be thrown when necessary? \code{FALSE} will
-suppress all warnings in the conversion process.}
-
-\item{train}{\code{logical}, default \code{TRUE}. Whether to train formats on a
-subset of the input vector. The result of this is that supplied orders
-are sorted according to performance on this training set, which
-commonly results in increased performance. Please note that even
-when \code{train = FALSE} (and \code{exact = FALSE}, if passed via dots)
-guessing of the actual formats is still performed on a pseudo-random
-subset of the original input vector. This might result in
-\verb{⁠All formats failed to parse}⁠ error.See notes
-in \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}.}
-
-\item{...}{Additional arguments to pass to
-\code{\link[janitor:convert_to_date]{convert_to_datetime()}}. These
-will, in turn, be passed to further methods, including
-\code{\link[janitor:excel_numeric_to_date]{excel_numeric_to_date()}},
-\code{\link[lubridate:parse_date_time]{parse_date_time()}}, and
-\code{\link[base:as.POSIXct]{as.POSIXct()}}.}
-
-\item{x}{A \code{Date}, \code{POSIXct} or \code{POSIXlt} (i.e. a datetime) vector}
-
 \item{force}{Whether to force conversion to \code{Date} (\code{force = "dt"}) or
 \code{POSIXct} (\code{force = "dttm"}). The default is no forcing (\code{force = "none"}).}
 
 \item{tz_heuristic}{Hours to consider in determining presence of sub-daily
 information. Only exact hours (i.e. 5:00:00) will be combined. The default
 corresponds to accidental encoding of the CST-UTC offset as hours.}
+
+\item{x}{A vector of character dates}
+
+\item{tz}{Optional timezone}
+
+\item{orders}{The orders to use when parsing character vector with
+\code{\link[lubridate:parse_date_time]{parse_date_time()}}}
+
+\item{...}{Additional arguments to pass to
+\code{\link[lubridate:parse_date_time]{parse_date_time()}}}
 }
 \value{
-A \code{Date} or \code{POSIXct} vector
-Coerce Datetimes to Dates if No Information is Lost
-
-\code{dttm_to_dt()} converts \code{POSIXt} objects to \code{Date} objects when there is no
-additional information contained in the \code{POSIXt} format (i.e. there is no
-sub-daily information).
-
-Specifically, \code{dttm_to_dt} checks whether all sub-daily information is the
-same for each value in the datetime vector. If so, no additional information
-is gained by using a \code{POSIXt} format over the simpler \code{Date} format, and
-the data is coerced.
-
-If the input is scalar (i.e. has length \code{1L}), then no conversion is
-attempted
-
 Either a \code{POSIXct} vector or a \code{Date} vector
+Parse Dates in Character Format to Datetime Format
+
+\code{chr_to_dttm} standardizes a datetime vector in character format and returns
+a vector in \code{POSIXct} format. It is intended for use in \code{janitor::convert_to_datetime};
+it thus muffles certain warnings that are duplicated by that function.
+
+A \code{POSIXct} vector
 }
 \description{
 Contains utilities for standardizing dates and datetimes
 }
+\keyword{(i.e.}
+\keyword{Coerce}
 \keyword{Dates}
-\keyword{Format}
-\keyword{Parse}
-\keyword{Standard}
+\keyword{Datetimes}
+\keyword{If}
+\keyword{Information}
+\keyword{Lost}
+\keyword{No}
+\keyword{Specifically,}
+\keyword{`1L`),}
 \keyword{`Date`}
-\keyword{`POSIXct`}
-\keyword{`std_dates`}
+\keyword{`POSIXt`}
+\keyword{`dttm_to_dt()`}
+\keyword{`dttm_to_dt`}
 \keyword{a}
+\keyword{additional}
+\keyword{all}
 \keyword{and}
-\keyword{available}
-\keyword{data.}
-\keyword{date}
-\keyword{depending}
+\keyword{attempted}
+\keyword{by}
+\keyword{checks}
+\keyword{coerced.}
+\keyword{contained}
+\keyword{conversion}
+\keyword{converts}
+\keyword{data}
+\keyword{datetime}
+\keyword{each}
+\keyword{for}
+\keyword{format}
 \keyword{format,}
+\keyword{gained}
+\keyword{has}
+\keyword{if}
 \keyword{in}
 \keyword{information}
+\keyword{information).}
+\keyword{input}
 \keyword{internal}
 \keyword{is}
-\keyword{on}
-\keyword{or}
-\keyword{returns}
-\keyword{standardizes}
+\keyword{length}
+\keyword{no}
+\keyword{objects}
+\keyword{over}
+\keyword{same}
+\keyword{scalar}
+\keyword{simpler}
+\keyword{so,}
 \keyword{sub-daily}
 \keyword{the}
+\keyword{then}
 \keyword{there}
 \keyword{to}
-\keyword{vector}
+\keyword{using}
+\keyword{value}
+\keyword{vector.}
+\keyword{when}
 \keyword{whether}
