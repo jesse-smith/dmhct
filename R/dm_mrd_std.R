@@ -22,7 +22,7 @@ dm_mrd_std <- function(dm_local) {
   dt[cat_source %in% na_src, "cat_source" := NA_character_]
 
   # Ensure `date` is `Date` (NOTE: MAY CHANGE TO DATETIME/POSIXct IN THE FUTURE)
-  dt[, "date" := UtilsDate$std_date(date, force = "dt")]
+  dt[, "date" := std_date(date, force = "dt")]
 
   # Convert `cat_source` to factor w/ no info loss
   dt[, "cat_source" := factor(data.table::fcase(

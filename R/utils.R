@@ -105,6 +105,202 @@ std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inn
 }
 
 
+std_num <- function(x, std_chr = TRUE, warn = TRUE) {
+  if (is.integer(x) || bit64::is.integer64(x)) {
+    return(x)
+  } else if (is.double(x)) {
+    return(try(vctrs::vec_cast(x, integer()), silent = TRUE))
+  } else if (is.character(x) || is.factor(x)) {
+    return(chr_to_num(x, std = std_chr, warn = warn))
+  } else if (lubridate::is.Date(x)) {
+    return(as.integer(x))
+  } else if (lubridate::is.POSIXt(x)) {
+    return(as.double(x))
+  } else {
+    rlang::abort(paste0("Cannot convert object of class", class(x)[[1L]], " to numeric"))
+  }
+}
+
+
+chr_to_num <- function(x, std = TRUE, warn = TRUE) {
+  as_rlang_error(checkmate::assert_flag(std))
+  as_rlang_error(checkmate::assert_flag(warn))
+  if (std) x <- std_chr(x)
+  # Extract potential numeric values
+  x_chr <- data.table::fifelse(
+    x %like% "[0-9]",
+    stringr::str_extract(x, "(?:(?:LESS|GREATER) THAN )?[0-9.\\- <>=/]+"),
+    NA_character_
+  )
+  # Trim whitespace
+  x_chr <- trimws(x_chr, whitespace = "[ \t\v\f\r\n]")
+  # Handle missings coded as numeric values
+  x_chr[x_chr %like% "-999[0-9]"] <- NA_character_
+  # Handle numeric values coded as dates in Excel
+  x_chr <- stringr::str_replace(x_chr, "^0?1/([0-9]{1,2})/1900$", "\\1")
+  # Convert to numeric
+  x_num <- suppressWarnings(std_num(as.numeric(x_chr), std_chr = FALSE, warn = FALSE))
+  if (warn) {
+    not_converted <- unique(x_chr[!is.na(x_chr) & is.na(x_num)])
+    if (length(not_converted) > 0L) {
+      not_converted <- paste0(
+        '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
+        collapse = ", "
+      )
+      rlang::warn(paste0(
+        "Not all character strings converted to class numeric.",
+        " Values not converted were: ", not_converted
+      ))
+    }
+  }
+  return(x_num)
+}
+
+
+std_lgl <- function(
+    x,
+    true = c("YES", "POS", "ALIVE", "ON THERAPY"),
+    false = c("NO", "NEG", "EXPIRED", "DECEASED", "OFF THERAPY"),
+    na = c("^$", "N/?A", "-999[0-9]", "UNSPEC", "NO DATA", "UNKN?",
+           "INCONCLUSIVE", "NOT? (?:EVAL|APPL|DONE|DETER)", "EQUIVOCAL",
+           "NEVER DROPPED BELOW"),
+    std_chr = TRUE,
+    warn = TRUE
+) {
+  checkmate::assert_flag(std_chr)
+  if (std_chr && (is.character(x) || is.factor(x))) x <- std_chr(x)
+  if (is.character(x)) {
+    x[stringr::str_starts(x, paste0(na, collapse = "|"))] <- NA_character_
+    x[stringr::str_starts(x, paste0(true, collapse = "|"))] <- "TRUE"
+    x[stringr::str_starts(x, paste0(false, collapse = "|"))] <- "FALSE"
+    not_converted <- unique(x[!x %in% c("TRUE", "FALSE", NA_character_)])
+    if (length(not_converted) > 0L) {
+      if (warn) {
+        not_converted <- paste0(
+          '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
+          collapse = ", "
+        )
+        rlang::warn(paste0(
+          "Not all character strings converted to class logical.",
+          " Values not converted were: ", not_converted
+        ))
+      }
+      return(suppressWarnings(as.logical(x)))
+    }
+  }
+  return(as.logical(x))
+}
+
+
+#' Parse Dates to Standard Format
+#'
+#' `std_date` standardizes a date vector and returns a vector in `Date` or
+#' `POSIXct` format, depending on whether there is sub-daily information
+#' available in the data.
+#'
+#' @param x A vector of `character` dates, `Date`s, or `POSIXt`s
+#'
+#' @param force Whether to force conversion to `Date` (`force = "dt"`) or
+#'   `POSIXct` (`force = "dttm"`). The default is no forcing (`force = "none"`).
+#'
+#' @param orders A `character` vector of date-time formats. Each order
+#'   string is a series of formatting characters as listed in
+#'   \code{\link[base:strptime]{base::strptime()}} but might not include the
+#'   "%" prefix. For example, "ymd" will match all the possible dates in
+#'   year, month, day order. Formatting orders might include arbitrary
+#'   separators. These are discarded. See details of
+#'   \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}
+#'   for the implemented formats. If multiple order strings are supplied,
+#'   the order of applied formats is determined by the `select_formats`
+#'   parameter in
+#'   \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}
+#'   (if passed via dots).
+#'
+#' @param tz_heuristic Hours to consider in determining presence of sub-daily
+#'   information. Only exact hours (i.e. 5:00:00) will be combined. The default
+#'   corresponds to accidental encoding of the CST-UTC offset as hours.
+#'
+#' @param warn Should warnings be thrown when necessary? `FALSE` will
+#'   suppress all warnings in the conversion process.
+#'
+#' @param train `logical`, default `TRUE`. Whether to train formats on a
+#'   subset of the input vector. The result of this is that supplied orders
+#'   are sorted according to performance on this training set, which
+#'   commonly results in increased performance. Please note that even
+#'   when `train = FALSE` (and `exact = FALSE`, if passed via dots)
+#'   guessing of the actual formats is still performed on a pseudo-random
+#'   subset of the original input vector. This might result in
+#'   `⁠All formats failed to parse`⁠ error.See notes
+#'   in \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}.
+#'
+#' @param ... Additional arguments to pass to
+#'   \code{\link[janitor:convert_to_date]{convert_to_datetime()}}. These
+#'   will, in turn, be passed to further methods, including
+#'   \code{\link[janitor:excel_numeric_to_date]{excel_numeric_to_date()}},
+#'   \code{\link[lubridate:parse_date_time]{parse_date_time()}}, and
+#'   \code{\link[base:as.POSIXct]{as.POSIXct()}}.
+#'
+#' @return A `Date` or `POSIXct` vector
+std_date = function(
+    x,
+    force = c("none", "dt", "dttm"),
+    orders = c("mdy",  "dmy",  "ymd",
+               "mdyr", "dmyr", "ymdr",
+               "mdyR", "dmyR", "ymdR",
+               "mdyT", "dmyT", "ymdT",
+               "mdyTz", "dmyTz", "ymdTz", "Tmdyz", "Tdmyz", "Tymdz",
+               "mdyRz", "dmyRz", "ymdRz", "mdyrz", "dmyrz", "ymdrz",
+               "Tmdy",  "Tdmy",  "Tymd",  "Tmdyz", "Tdmyz", "Tymdz"),
+    tz_heuristic = c(5L, 6L),
+    warn = TRUE,
+    train = TRUE,
+    na = c("^$", "N/?A", "ONGOING"),
+    range_value = c("start", "end", "na"),
+    range_sep = c("-", "to", ","),
+    ...
+) {
+  checkmate::assert_flag(warn)
+  if (!warn) {
+    suppressWarnings(std_date(
+      x, force = force, orders = orders, tz_heuristic = tz_heuristic,
+      warn = TRUE, train = train, na = na, range_value = range_value,
+      range_sep = range_sep, ...
+    ))
+  }
+  # as_rlang_error(checkmate::assert_character(na))
+  range_value <- rlang::arg_match(range_value)[[1L]]
+  # as_rlang_error(checkmate::assert_character(range_sep))
+  if (is.character(x)) {
+    # Handle missings
+    x[stringr::str_starts(x, paste0(na, collapse = "|"))] <- NA_character_
+    # Handle ranges
+    if (range_value != "na") {
+      x_split <- stringr::str_split(x, paste0("\\s*(?:", paste0(range_sep, collapse = "|"), ")\\s*"))
+      is_range <- purrr::map_lgl(x_split, ~ length(.x) == 2L)
+      i <- switch(range_value, "start" = 1L, "end" = 2L)
+      map_fn <- function(x, ...) {
+        as.character(tryCatch(std_date(x, ...)[[i]], warning = function(x) x[[i]]))
+      }
+      x[is_range] <- purrr::map_chr(
+        x_split[is_range], map_fn,
+        force = "dttm", orders = orders, tz_heuristic = NULL,
+        warn = TRUE, train = train, na = na, range_value = "na",
+        range_sep = "-", ...
+      )
+    }
+  }
+  x <- janitor::convert_to_datetime(
+    x,
+    orders = orders,
+    train = train,
+    ...,
+    character_fun = UtilsDate$chr_to_dttm,
+    string_conversion_failure = "warning"
+  )
+  UtilsDate$dttm_to_dt(x, force = force)
+}
+
+
 as_rlang_error <- function(error_expr) {
   err <- rlang::catch_cnd(error_expr)
   if (is.null(err)) return(invisible(NULL))
@@ -122,6 +318,28 @@ is_tibble <- function(x) {
 }
 
 
+#' Select Column Names Using Tidyselect Specifications
+#'
+#' `select_colnames()` selects the names of columns specified in `...`. It is
+#' useful for standardizing a function's interface while providing a link to
+#' underlying functions that may take a variety of column specifications.
+#'
+#' @param .data A data frame or data frame extension (e.g. a `tibble`)
+#'
+#' @param ... `<tidy-select>` One or more tidyselect specifications for the
+#'   desired column names (including simply using those column names)
+#'
+#' @return A character vector of column names
+#'
+#' @keywords internal
+#'
+#' @export
+select_colnames <- function(data, ...) {
+  checkmate::assert_data_frame(data)
+  colnames(dplyr::select(data, ...))
+}
+
+
 #' Date Conversion Utilities
 #'
 #' @description
@@ -133,89 +351,6 @@ UtilsDate <- R6Class(
   "UtilsDate",
   cloneable = FALSE,
   public = list(
-    #' Parse Dates to Standard Format
-    #'
-    #' `std_dates` standardizes a date vector and returns a vector in `Date` or
-    #' `POSIXct` format, depending on whether there is sub-daily information
-    #' available in the data.
-    #'
-    #' @param x A vector of `character` dates, `Date`s, or `POSIXt`s
-    #'
-    #' @param force Whether to force conversion to `Date` (`force = "dt"`) or
-    #'   `POSIXct` (`force = "dttm"`). The default is no forcing (`force = "none"`).
-    #'
-    #' @param orders A `character` vector of date-time formats. Each order
-    #'   string is a series of formatting characters as listed in
-    #'   \code{\link[base:strptime]{base::strptime()}} but might not include the
-    #'   "%" prefix. For example, "ymd" will match all the possible dates in
-    #'   year, month, day order. Formatting orders might include arbitrary
-    #'   separators. These are discarded. See details of
-    #'   \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}
-    #'   for the implemented formats. If multiple order strings are supplied,
-    #'   the order of applied formats is determined by the `select_formats`
-    #'   parameter in
-    #'   \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}
-    #'   (if passed via dots).
-    #'
-    #' @param tz_heuristic Hours to consider in determining presence of sub-daily
-    #'   information. Only exact hours (i.e. 5:00:00) will be combined. The default
-    #'   corresponds to accidental encoding of the CST-UTC offset as hours.
-    #'
-    #' @param warn Should warnings be thrown when necessary? `FALSE` will
-    #'   suppress all warnings in the conversion process.
-    #'
-    #' @param train `logical`, default `TRUE`. Whether to train formats on a
-    #'   subset of the input vector. The result of this is that supplied orders
-    #'   are sorted according to performance on this training set, which
-    #'   commonly results in increased performance. Please note that even
-    #'   when `train = FALSE` (and `exact = FALSE`, if passed via dots)
-    #'   guessing of the actual formats is still performed on a pseudo-random
-    #'   subset of the original input vector. This might result in
-    #'   `⁠All formats failed to parse`⁠ error.See notes
-    #'   in \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}.
-    #'
-    #' @param ... Additional arguments to pass to
-    #'   \code{\link[janitor:convert_to_date]{convert_to_datetime()}}. These
-    #'   will, in turn, be passed to further methods, including
-    #'   \code{\link[janitor:excel_numeric_to_date]{excel_numeric_to_date()}},
-    #'   \code{\link[lubridate:parse_date_time]{parse_date_time()}}, and
-    #'   \code{\link[base:as.POSIXct]{as.POSIXct()}}.
-    #'
-    #' @return A `Date` or `POSIXct` vector
-    std_date = function(
-    x,
-    force = c("none", "dt", "dttm"),
-    orders = c("mdy",  "dmy",  "ymd",
-               "mdyr", "dmyr", "ymdr",
-               "mdyR", "dmyR", "ymdR",
-               "mdyT", "dmyT", "ymdT",
-               "mdyTz", "dmyTz", "ymdTz", "Tmdyz", "Tdmyz", "Tymdz",
-               "mdyRz", "dmyRz", "ymdRz", "mdyrz", "dmyrz", "ymdrz",
-               "Tmdy",  "Tdmy",  "Tymd",  "Tmdyz", "Tdmyz", "Tymdz"),
-    tz_heuristic = c(5L, 6L),
-    warn = TRUE,
-    train = TRUE,
-    ...
-    ) {
-      checkmate::assert_flag(warn)
-      if (warn) {
-        x <- janitor::convert_to_datetime(
-          x,
-          orders = orders,
-          train = train,
-          ...,
-          character_fun = private$chr_to_dttm,
-          string_conversion_failure = "warning"
-        )
-        self$dttm_to_dt(x, force = force)
-      } else {
-        suppressWarnings(self$std_date(
-          x, force = force, tz_heuristic = tz_heuristic, warn = TRUE,
-          train = train, orders = orders, ...
-        ))
-      }
-    },
-
     #' Coerce Datetimes to Dates if No Information is Lost
     #'
     #' `dttm_to_dt()` converts `POSIXt` objects to `Date` objects when there is no
@@ -279,6 +414,51 @@ UtilsDate <- R6Class(
       } else {
         lubridate::as_datetime(x)
       }
+    },
+    #' Parse Dates in Character Format to Datetime Format
+    #'
+    #' `chr_to_dttm` standardizes a datetime vector in character format and returns
+    #' a vector in `POSIXct` format. It is intended for use in `janitor::convert_to_datetime`;
+    #' it thus muffles certain warnings that are duplicated by that function.
+    #'
+    #' @param x A vector of character dates
+    #'
+    #' @param tz Optional timezone
+    #'
+    #' @param orders The orders to use when parsing character vector with
+    #'   \code{\link[lubridate:parse_date_time]{parse_date_time()}}
+    #'
+    #' @param na A character vector of values to consider equivalent to `NA`
+    #'
+    #' @inheritParams lubridate::parse_date_time
+    #'
+    #' @param ... Additional arguments to pass to
+    #'   \code{\link[lubridate:parse_date_time]{parse_date_time()}}
+    #'
+    #' @return A `POSIXct` vector
+    chr_to_dttm = function(
+    x,
+    tz = "UTC",
+    orders = c("mdy",  "dmy",  "ymd",
+               "mdyT", "dmyT", "ymdT",
+               "mdyR", "dmyR", "ymdR",
+               "mdyr", "dmyr", "ymdr",
+               "mdyTz", "dmyTz", "ymdTz", "Tmdyz", "Tdmyz", "Tymdz",
+               "mdyRz", "dmyRz", "ymdRz", "mdyrz", "dmyrz", "ymdrz",
+               "Tmdy",  "Tdmy",  "Tymd",  "Tmdyz", "Tdmyz", "Tymdz"),
+    train = TRUE,
+    ...
+    ) {
+      withCallingHandlers(
+        lubridate::parse_date_time(x, orders = orders, train = train, tz = tz, ...),
+        warning = function(w) {
+          if (stringr::str_detect(w$message, "failed to parse")) {
+            rlang::cnd_muffle(w)
+          } else {
+            w
+          }
+        }
+      )
     }
   ),
   private = list(
@@ -293,43 +473,6 @@ UtilsDate <- R6Class(
       lubridate::hour(x) +
         lubridate::minute(x) / 60 +
         lubridate::second(x) / 3600
-    },
-
-    # Parse Dates in Character Format to Datetime Format
-    #
-    # `chr_to_dttm` standardizes a datetime vector in character format and returns
-    # a vector in `POSIXct` format.
-    #
-    # @param x A vector of character dates
-    #
-    # @param tz Optional timezone
-    #
-    # @param orders The orders to use when parsing character vector with
-    #   \code{\link[lubridate:parse_date_time]{parse_date_time()}}
-    #
-    # @inheritParams lubridate::parse_date_time
-    #
-    # @param ... Additional arguments to pass to
-    #   \code{\link[lubridate:parse_date_time]{parse_date_time()}}
-    #
-    # @return A `POSIXct` vector
-    chr_to_dttm = function(
-    x,
-    tz = "UTC",
-    orders = c("mdy",  "dmy",  "ymd",
-               "mdyT", "dmyT", "ymdT",
-               "mdyR", "dmyR", "ymdR",
-               "mdyr", "dmyr", "ymdr",
-               "mdyTz", "dmyTz", "ymdTz", "Tmdyz", "Tdmyz", "Tymdz",
-               "mdyRz", "dmyRz", "ymdRz", "mdyrz", "dmyrz", "ymdrz",
-               "Tmdy",  "Tdmy",  "Tymd",  "Tmdyz", "Tdmyz", "Tymdz"),
-    train = TRUE,
-    ...
-    ) {
-      x %>%
-        stringr::str_replace(pattern = "^$", replacement = NA_character_) %>%
-        lubridate::parse_date_time(orders = orders, train = train, tz = tz, ...) %>%
-        lubridate::as_datetime()
     }
   )
 )$new()

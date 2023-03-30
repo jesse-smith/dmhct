@@ -1531,9 +1531,9 @@ DMTransformLegacy <- R6Class(
       }), .SDcols = chr_cols]
 
       # Ensure `date` is `Date` (NOTE: MAY CHANGE TO DATETIME/POSIXct IN THE FUTURE)
-      dt[, "date" := UtilsDate$std_date(date, force = "dt", warn = FALSE)]
+      dt[, "date" := std_date(date, force = "dt", warn = FALSE)]
       # Ensure `dt_remission` is date (warn if info loss results)
-      dt[, "dt_remission" := UtilsDate$std_date(dt_remission, force = "dt")]
+      dt[, "dt_remission" := std_date(dt_remission, force = "dt")]
 
       # Ensure `lgl_remission` is `logical`
       dt[, "lgl_remission" := data.table::fcase(
