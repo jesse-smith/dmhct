@@ -10,6 +10,7 @@ dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE
     )
     # Add cerner result columns if absent
     if (tbl_nm %like% "cerner[0-9]") chr_cols <- union(chr_cols, "result")
+    # Standardize character columns
     dt[, (chr_cols) := lapply(.SD, std_chr), .SDcols = chr_cols]
 
     # Handle logical columns
@@ -63,6 +64,9 @@ dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE
     dm_local <- dm_local %>%
       dm::dm_select_tbl(-{{ tbl_nm }}) %>%
       dm::dm({{ tbl_nm }} := dplyr::as_tibble(dt))
+
+    # Force cleanup
+    gc(verbose = FALSE)
   }
 
   if (!quiet) rlang::inform("Done.")
