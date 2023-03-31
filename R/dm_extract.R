@@ -80,7 +80,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
       eval()
   }
 
-  # Use additional standardization for some tables
+  # Use additional table name standardization for some tables
   nm_map <- utils::read.csv(
     system.file("extdata/table_name_map.csv", package = "dmhct"),
     colClasses = "character",
@@ -111,15 +111,26 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
       dplyr::pull("Protocol") %>%
       trimws() %>%
       toupper()
-    dsmb_entity_ids <- dm_remote$master %>%
-      dplyr::select("EntityID", "Protocol") %>%
-      dplyr::mutate(Protocol = toupper(trimws(.data$Protocol))) %>%
-      dplyr::filter(.data$Protocol %in% {{ dsmb_protocols }}) %>%
-      dplyr::collect() %>%
-      dplyr::pull("EntityID") %>%
-      as.integer() %>%
-      unique() %>%
-      sort()
+    protocol_colname <- utils::read.csv(
+      system.file("extdata/master_column_map.csv", package = "dmhct"),
+      colClasses = "character",
+      na.strings = NULL
+    ) %>%
+      dplyr::filter(New_Name == "cat_protocol") %>%
+      dplyr::pull("Old_Name")
+    if (!protocol_colname %in% colnames(dm_remote$master)) {
+      rlang::warn("Protocol information is not available; DSMB-monitored patients will be included in the dataset.")
+    } else {
+      dsmb_entity_ids <- dm_remote$master %>%
+        dplyr::select("EntityID", Protocol = {{ protocol_colname }}) %>%
+        dplyr::mutate(Protocol = toupper(trimws(.data$Protocol))) %>%
+        dplyr::filter(.data$Protocol %in% {{ dsmb_protocols }}) %>%
+        dplyr::collect() %>%
+        dplyr::pull("EntityID") %>%
+        as.integer() %>%
+        unique() %>%
+        sort()
+    }
   }
 
   # Optionally select tables
@@ -128,9 +139,9 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
     if (any(names(dots) != "")) rlang::abort("Tables cannot be renamed in `dm_extract()`")
     dm_remote <- dm::dm_select_tbl(dm_remote, ...)
   }
-  # Standardize names for each table
+  # Standardize column names for each table
   for (tbl_nm in names(dm_remote)) {
-    # Get standardized names from name mappings, if available
+    # Get standardized column names from name mappings, if available
     map_file <- system.file(
       paste0("extdata/", tbl_nm, "_column_map.csv"),
       package = "dmhct"
@@ -159,14 +170,23 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
       rlang::parse_expr() %>%
       eval()
     # Remove DSMB patients from table
-    if (.excl_dsmb) {
+    if (.excl_dsmb && length(dsmb_entity_ids) > 0L) {
       dm_remote <- dm_remote %>%
         dm::dm_zoom_to(!!tbl_nm) %>%
         dplyr::filter(!.data$entity_id %in% {{ dsmb_entity_ids }}) %>%
         dm::dm_update_zoomed()
     }
   }
+  # Force cleanup afterwards
+  gc(verbose = FALSE)
 
   # Load data onto local machine
-  if (.collect) dm_collect(dm_remote) else dm_remote
+  if (.collect) {
+    dm_local <- dm_collect(dm_remote)
+    rm(dm_remote)
+    gc(verbose = FALSE)
+    return(dm_local)
+  } else {
+    return(dm_remote)
+  }
 }
