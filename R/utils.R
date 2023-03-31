@@ -106,10 +106,12 @@ std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inn
 
 
 std_num <- function(x, std_chr = TRUE, warn = TRUE) {
-  if (is.integer(x) || bit64::is.integer64(x)) {
+  if (is.integer(x)) {
     return(x)
+  } else if (bit64::is.integer64(x)) {
+    return(tryCatch(as.integer(x), warning = function(w) x))
   } else if (is.double(x)) {
-    return(try(vctrs::vec_cast(x, integer()), silent = TRUE))
+    return(tryCatch(vctrs::vec_cast(x, integer()), error = function(e) x))
   } else if (is.character(x) || is.factor(x)) {
     return(chr_to_num(x, std = std_chr, warn = warn))
   } else if (lubridate::is.Date(x)) {
@@ -122,9 +124,10 @@ std_num <- function(x, std_chr = TRUE, warn = TRUE) {
 }
 
 
-chr_to_num <- function(x, std = TRUE, warn = TRUE) {
+chr_to_num <- function(x, std = TRUE, warn = TRUE, convert = TRUE) {
   as_rlang_error(checkmate::assert_flag(std))
   as_rlang_error(checkmate::assert_flag(warn))
+  as_rlang_error(checkmate::assert_flag(convert))
   if (std) x <- std_chr(x)
   # Extract potential numeric values
   x_chr <- data.table::fifelse(
@@ -137,9 +140,17 @@ chr_to_num <- function(x, std = TRUE, warn = TRUE) {
   # Handle missings coded as numeric values
   x_chr[x_chr %like% "-999[0-9]"] <- NA_character_
   # Handle numeric values coded as dates in Excel
-  x_chr <- stringr::str_replace(x_chr, "^0?1/([0-9]{1,2})/1900$", "\\1")
+  x_chr <- x_chr %>%
+    # Extract number
+    stringr::str_replace("^0?1/([0-9]{1,2})/1900(?: [0-9:]{0,5})?$", "\\1")
+  # Handle decimals
+  x_chr <- x_chr %>%
+    # Handle multiple consecutive decimals
+    stringr::str_replace_all("[.]{2,}", ".") %>%
+    # Handle multiple decimals inside non-zero values
+    stringr::str_remove_all("(?<=[0-9]{1,10}[.][0-9]{1,10})[.]")
   # Convert to numeric
-  x_num <- suppressWarnings(std_num(as.numeric(x_chr), std_chr = FALSE, warn = FALSE))
+  x_num <- if (convert) suppressWarnings(std_num(as.numeric(x_chr), std_chr = FALSE, warn = FALSE)) else x_chr
   if (warn) {
     not_converted <- unique(x_chr[!is.na(x_chr) & is.na(x_num)])
     if (length(not_converted) > 0L) {
@@ -154,6 +165,59 @@ chr_to_num <- function(x, std = TRUE, warn = TRUE) {
     }
   }
   return(x_num)
+}
+
+
+std_intvl <- function(x, std = TRUE, warn = TRUE) {
+  x_chr <- chr_to_num(x, std = std, warn = warn, convert = FALSE)
+  # Convert text to symbols
+  x_chr <- x_chr %>%
+    # <=
+    stringr::str_replace_all("(?:IS )?(L[.]?T[.]?|LESS (?:THAN)?) (?:OR )?EQ(?:UAL)?(?: TO)?", "<=") %>%
+    # >=
+    stringr::str_replace_all("(?:\\b|\\s)?(?:IS )?(G[.]?T[.]?|GREATER (?:THAN)) (?:OR )?EQ(?:UAL)?(?: TO)?", ">=") %>%
+    # <
+    stringr::str_replace_all("(?:IS )?(?:L[.]?T[.]?|LESS (?:THAN)?)", "<") %>%
+    # >
+    stringr::str_replace_all("(?:IS )?(G[.]?T[.]?|GREATER (?:THAN)?)", ">")
+  # Clean up symbols
+  x_chr <- x_chr %>%
+    # Remove spaces
+    stringr::str_remove_all("\\s") %>%
+    # Replace repeats and incorrect ordering of symbols
+    stringr::str_replace_all("<{2,}", "<") %>%
+    stringr::str_replace_all(">{2,}", ">") %>%
+    stringr::str_replace_all("={2,}", "=") %>%
+    stringr::str_replace_all("(?:<=|=<)+", "<=") %>%
+    stringr::str_replace_all("(?:>=|=>)+", ">=") %>%
+    # Ensure symbols are on correct side
+    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?<=", ">=\\1") %>%
+    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?>=", "<=\\1") %>%
+    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?<", ">\\1") %>%
+    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?>", "<\\1")
+  # Extract each part of the interval - get rid of the fill representation
+  x_mat <- stringr::str_match(x_chr, "([<>=]*)([0-9.]+)(?:[^<>=0-9.]*)([<>=]*)([0-9]*)")[, -1L]
+  # Standardize numeric columns
+  x_mat[, 2L] <- suppressWarnings(as.character(as.numeric(x_mat[, 2L])))
+  x_mat[, 4L] <- suppressWarnings(as.character(as.numeric(x_mat[, 4L])))
+  # Create return vector
+  x_out <- character(NROW(x_mat))
+  # Scalars
+  is_scalar <- !is.na(x_mat[, 2L]) & is.na(x_mat[, 4L])
+  x_scalar <- x_mat[is_scalar,]
+  x_out[is_scalar] <- paste0(x_scalar[, 1L], x_scalar[, 2L])
+  # # Intervals
+  is_intvl <- !is_scalar & !is.na(x_mat[, 2L])
+  x_intvl <- x_mat[is_intvl,]
+  x_intvl[, 1L] <- data.table::fifelse(
+    x_intvl[, 1L] == ">", "(", "["
+  )
+  x_intvl[, 3L] <- data.table::fifelse(
+    x_intvl[, 3L] == "<", ")", "]"
+  )
+  x_out[is_intvl] <- paste0(x_intvl[, 1L], x_intvl[, 2L], ",", x_intvl[, 4L], x_intvl[, 3L])
+  x_out[x_out == ""] <- NA_character_
+  x_out
 }
 
 
