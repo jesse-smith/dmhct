@@ -1,4 +1,4 @@
-dm_reshape <- function(dm_std = dm_standardize()) {
+dm_combine <- function(dm_std = dm_standardize()) {
   # Cerner tables
   cerner_tbls <- stringr::str_subset(names(dm_std), "cerner[0-9]")
   # Combine cerner
