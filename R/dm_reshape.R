@@ -32,19 +32,23 @@ dm_reshape <- function(dm_std = dm_standardize()) {
   dm_std <- dm_std %>%
     dm::dm_select_tbl(-{{ hla_tbls }}) %>%
     dm::dm(hla = hla_combined)
+  # Force cleanup
+  gc(verbose = FALSE)
 
   dm_sort(dm_std)
 }
 
 
 pivot_hla <- function(dt_hla) {
-  id_cols <- stringr::str_subset(colnames(dt_hla), "_id|date")
-  dt_hla <- data.table::dcast(
-    dt_hla,
-    entity_id + donor_id + date ~ cat_gene,
-    value.var = "cat_allele",
-    fun.aggregate = function(x) paste0(x, collapse = ",")
-  )
+  id_cols <- stringr::str_subset(colnames(dt_hla), "(?:_id|date)$")
+  dt_hla <- paste0("data.table::dcast(",
+    "dt_hla, ",
+    paste0(id_cols, collapse = " + "), "  ~ cat_gene, ",
+    "value.var = 'cat_allele', ",
+    "fun.aggregate = function(x) paste0(x, collapse = ',')",
+  ")") %>%
+    rlang::parse_expr() %>%
+    eval()
   dt_hla <- janitor::clean_names(dt_hla)
   dt_hla
 }
