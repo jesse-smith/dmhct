@@ -22,9 +22,9 @@ Indication for HCT for hematologic Malignancy,cat_indication
 Specify indication,chr_indication_specify
 Date Conditioning Began,dt_prep2
 Disease Status at Transplant,cat_disease_status_at_trans
-MRD Result Percentage at Transplant,pct_mrd_at_trans
+MRD Result Percentage at Transplant,intvl_pct_mrd_at_trans
 MRD Date,dt_mrd
-Marrow blast percentage,pct_marrow_blast
+Marrow blast percentage,intvl_pct_marrow_blast
 Marrow blast date,dt_marrow_blast
 Planned sequential treatment,lgl_seq_treat
 Is this a repeat transplant (HCT)?,lgl_rep_trans
