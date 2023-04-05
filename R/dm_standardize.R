@@ -43,6 +43,22 @@ dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE
       )
     }
 
+    # Handle interval columns
+    intvl_cols <- select_colnames(dt, dplyr::starts_with("intvl_"))
+    for (col in intvl_cols) {
+      ch <- stringr::str_extract(col, "(?<=_)donor|host$")
+      if (is.na(ch)) ch <- "no"
+      withCallingHandlers(
+        data.table::set(dt, j = col, value = std_intvl(dt[[col]], std_chr = FALSE, warn = !quiet, chimerism = ch)),
+        warning = function(w) {
+          w$call <- NULL
+          w$message <- paste0("When standardizing `", tbl_nm, "$", col, "`:\n", w$message)
+          rlang::cnd_signal(w)
+          rlang::cnd_muffle(w)
+        }
+      )
+    }
+
     # Handle date and datetime columns
     date_cols <- select_colnames(
       dt, where(lubridate::is.Date) | where(lubridate::is.POSIXt) | dplyr::starts_with(c("dt_", "dttm_", "date"))
