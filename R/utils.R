@@ -124,35 +124,98 @@ std_num <- function(x, std_chr = TRUE, warn = TRUE) {
 }
 
 
-chr_to_num <- function(x, std = TRUE, warn = TRUE, convert = TRUE) {
+chr_to_num <- function(
+    x, std = TRUE, warn = TRUE, convert = TRUE,
+    na_patterns = c(
+      "^-*$", # Includes ""
+      "(?:^|\\W)N/?A(?:$|\\W)",
+      "NOT? (?:AMP|AVAIL|DATA|DONE|EVAL|FOLLOWED|RER?PORT|IDENT|(?:[A-Z ]|-)*PHENOTYPE|VALUE)",
+      "(?:^|\\W)(?:NG|UNK|CQNS|QNS|QIS|NSQ|IQ|QI|NR|UNKNOWN|INCONCLUSIVE|INSUFFICIENT)(?:$|\\W)",
+      "-999[0-9]",
+      "^REPORTED$"
+    ),
+    chimerism = c("no", "donor", "host")
+) {
   as_rlang_error(checkmate::assert_flag(std))
   as_rlang_error(checkmate::assert_flag(warn))
   as_rlang_error(checkmate::assert_flag(convert))
-  if (std) x <- std_chr(x)
-  # Extract potential numeric values
-  x_chr <- data.table::fifelse(
-    x %like% "[0-9]",
-    stringr::str_extract(x, "(?:(?:LESS|GREATER) THAN )?[0-9.\\- <>=/]+"),
-    NA_character_
-  )
-  # Trim whitespace
-  x_chr <- trimws(x_chr, whitespace = "[ \t\v\f\r\n]")
-  # Handle missings coded as numeric values
-  x_chr[x_chr %like% "-999[0-9]"] <- NA_character_
-  # Handle numeric values coded as dates in Excel
-  x_chr <- x_chr %>%
-    # Extract number
-    stringr::str_replace("^0?1/([0-9]{1,2})/1900(?: [0-9:]{0,5})?$", "\\1")
-  # Handle decimals
-  x_chr <- x_chr %>%
-    # Handle multiple consecutive decimals
-    stringr::str_replace_all("[.]{2,}", ".") %>%
-    # Handle multiple decimals inside non-zero values
-    stringr::str_remove_all("(?<=[0-9]{1,10}[.][0-9]{1,10})[.]")
-  # Convert to numeric
+  chimerism <- rlang::arg_match(chimerism)[[1L]]
+  x_chr <- if (std) std_chr(x) else x
+  # Convert missings
+  for (na_pat in na_patterns) {
+    x_chr[x_chr %like% na_pat] <- NA_character_
+  }
+  # Replace "10^x" with 1Ex
+  x_chr <- stringr::str_replace_all(x_chr, "10\\^(-?[0-9]+)", "1E\\1")
+  # Replace multiple decimals inside a number with single decimal
+  x_chr <- stringr::str_replace_all(x_chr, "(?<=[0-9])\\.{2,}(?=[0-9])", ".")
+  # Remove repeated leading zeros
+  x_chr <- stringr::str_remove(x_chr, "(?<=^|[^0-9])(?:0+\\.)+(?=0+\\.)")
+  # Remove additional decimals inside non-zero values
+  x_chr <- stringr::str_remove_all(x_chr, "(?<=[0-9]{1,10}\\.[0-9]{1,10})\\.")
+  # Remove trailing decimals
+  x_chr <- stringr::str_remove(x_chr, "\\.$")
+  # Remove comma-separators in single number
+  x_chr <- stringr::str_remove_all(x_chr, "(?<=[0-9]),(?=[0-9])")
+  # Replace numeric values coded as Excel dates with true value
+  x_dt_mat <- stringr::str_match(x_chr, "^0?1/(\\d{1,2})/1900(?: (\\d{1,2})\\:(\\d{1,2}))?$")
+  is_dt_num <- !is.na(x_dt_mat[, 1L])
+  if (any(is_dt_num)) {
+    x_dt_mat <- x_dt_mat[is_dt_num, 2:4, drop = FALSE]
+    x_dt_mat <- suppressWarnings(as.numeric(x_dt_mat))
+    x_dt_mat[is.na(x_dt_mat)] <- 0
+    x_dt_mat <- matrix(x_dt_mat, ncol = 3L)
+    x_chr[is_dt_num] <- as.character(rowSums(x_dt_mat))
+  }
+  # Remove percentages
+  x_chr <- stringr::str_remove_all(x_chr, " ?%")
+  # Convert per million
+  is_ppm <- stringr::str_detect(x_chr, "PER MILLION")
+  is_ppm[is.na(is_ppm)] <- FALSE
+  if (any(is_ppm)) {
+    x_chr[is_ppm] <- stringr::str_replace_all(x_chr[is_ppm], "([0-9.]+(?:E-?[0-9]+)?)(?:\\w|\\s)+PER MILLION", "\\1/1000000")
+  }
+  # Convert fractions
+  is_frac <- stringr::str_detect(x_chr, "[0-9]/[0-9]")
+  is_frac[is.na(is_frac)] <- FALSE
+  if (any(is_frac)) {
+    frac <- stringr::str_match(x_chr[is_frac], "([0-9.]+)/([0-9.]+)")[, 2:3, drop = FALSE]
+    frac <- suppressWarnings(as.numeric(frac))
+    frac <- matrix(frac, ncol = 2L)
+    i_frac <- which(is_frac)
+    for (i in length(i_frac)) {
+      if (frac[i, 2L] >= 1) {
+        x_chr[i_frac[[i]]] <- stringr::str_replace(
+          x_chr[i_frac[[i]]],
+          "([0-9.]+)/([0-9.]+)",
+          as.character(frac[i, 1L] / frac[i, 2L])
+        )
+      }
+    }
+  }
+  # Remove leading and trailing text where possible
+  x_chr <- stringr::str_remove(x_chr, "^MRD BY NGS ?")
+  # Convert `NEGATIVE`
+  x_chr[x_chr == "NEGATIVE"] <- "0"
+  # Convert POSITIVE and WEAKLY POSITIVE
+  x_chr[x_chr %like% "^(?:WE[EA]KLY )?POSITIVE$"] <- ">0"
+  # Convert complete remission (CR)
+  x_chr <- stringr::str_replace(x_chr, ".*(?:^|\\W)IN CR(?:$|\\W).*", "0")
+  # Extract donor/host numbers
+  if (chimerism == "donor") {
+    x_chr <- stringr::str_replace(x_chr, ".*D=? ?([0-9.]+).*", "\\1")
+    x_chr <- stringr::str_replace(x_chr, ".*([0-9.]+) DONOR.*", "\\1")
+  } else if (chimerism == "host") {
+    x_chr <- stringr::str_replace(x_chr, ".*PT=? ?([0-9.]+).*", "\\1")
+    x_chr <- stringr::str_replace(x_chr, ".*([0-9.]+) PATIENT.*", "\\1")
+  }
+  # Replace new empty strings with missings
+  x_chr <- trimws(x_chr)
+  x_chr[x_chr == ""] <- NA_character_
+  # Convert (maybe) to numeric
   x_num <- if (convert) suppressWarnings(std_num(as.numeric(x_chr), std_chr = FALSE, warn = FALSE)) else x_chr
   if (warn) {
-    not_converted <- unique(x_chr[!is.na(x_chr) & is.na(x_num)])
+    not_converted <- unique(x[!is.na(x_chr) & is.na(x_num)])
     if (length(not_converted) > 0L) {
       not_converted <- paste0(
         '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
@@ -168,56 +231,141 @@ chr_to_num <- function(x, std = TRUE, warn = TRUE, convert = TRUE) {
 }
 
 
-std_intvl <- function(x, std = TRUE, warn = TRUE) {
-  x_chr <- chr_to_num(x, std = std, warn = warn, convert = FALSE)
-  # Convert text to symbols
-  x_chr <- x_chr %>%
-    # <=
-    stringr::str_replace_all("(?:IS )?(L[.]?T[.]?|LESS (?:THAN)?) (?:OR )?EQ(?:UAL)?(?: TO)?", "<=") %>%
-    # >=
-    stringr::str_replace_all("(?:\\b|\\s)?(?:IS )?(G[.]?T[.]?|GREATER (?:THAN)) (?:OR )?EQ(?:UAL)?(?: TO)?", ">=") %>%
-    # <
-    stringr::str_replace_all("(?:IS )?(?:L[.]?T[.]?|LESS (?:THAN)?)", "<") %>%
-    # >
-    stringr::str_replace_all("(?:IS )?(G[.]?T[.]?|GREATER (?:THAN)?)", ">")
-  # Clean up symbols
-  x_chr <- x_chr %>%
+std_intvl <- function(x, std_chr = TRUE, warn = TRUE, chimerism = c("no", "donor", "host")) {
+  # Clean character representation (w/o converting)
+  x_chr <- chr_to_num(x, std = std_chr, warn = warn, convert = FALSE, chimerism = chimerism)
+  x_num <- x_chr %>%
+    # Replace "less than"
+    stringr::str_replace("LESS THAN", "<") %>%
+    # Replace "greater than"
+    stringr::str_replace("GREATER THAN", ">") %>%
+    # Replace "nothing to suggest w/ sensitivity"
+    stringr::str_replace("[A-Z ]*NOTHING TO SUGGEST[A-Z ]*SENSITIVITY[A-Z ]*(?=[0-9])", "<") %>%
+    # Extract ranges and numbers
+    stringr::str_extract("[0-9(<>=][0-9- .Ee<>=)]*") %>%
     # Remove spaces
-    stringr::str_remove_all("\\s") %>%
-    # Replace repeats and incorrect ordering of symbols
-    stringr::str_replace_all("<{2,}", "<") %>%
-    stringr::str_replace_all(">{2,}", ">") %>%
-    stringr::str_replace_all("={2,}", "=") %>%
-    stringr::str_replace_all("(?:<=|=<)+", "<=") %>%
-    stringr::str_replace_all("(?:>=|=>)+", ">=") %>%
-    # Ensure symbols are on correct side
-    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?<=", ">=\\1") %>%
-    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?>=", "<=\\1") %>%
-    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?<", ">\\1") %>%
-    stringr::str_replace_all("([0-9.]+(?:[Ee]-?[0-9.]+)?)\\s?>", "<\\1")
-  # Extract each part of the interval - get rid of the fill representation
-  x_mat <- stringr::str_match(x_chr, "([<>=]*)([0-9.]+)(?:[^<>=0-9.]*)([<>=]*)([0-9]*)")[, -1L]
-  # Standardize numeric columns
-  x_mat[, 2L] <- suppressWarnings(as.character(as.numeric(x_mat[, 2L])))
-  x_mat[, 4L] <- suppressWarnings(as.character(as.numeric(x_mat[, 4L])))
+    stringr::str_remove_all("\\s")
   # Create return vector
-  x_out <- character(NROW(x_mat))
-  # Scalars
-  is_scalar <- !is.na(x_mat[, 2L]) & is.na(x_mat[, 4L])
-  x_scalar <- x_mat[is_scalar,]
-  x_out[is_scalar] <- paste0(x_scalar[, 1L], x_scalar[, 2L])
-  # # Intervals
-  is_intvl <- !is_scalar & !is.na(x_mat[, 2L])
-  x_intvl <- x_mat[is_intvl,]
-  x_intvl[, 1L] <- data.table::fifelse(
-    x_intvl[, 1L] == ">", "(", "["
+  x_rtn <- x_num
+  # Get limits of double precision for rounding (floor to avoid previous roundoffs)
+  digits <- floor(abs(log10(.Machine$double.eps)))
+  # Handle regular numbers and intervals with 1 number
+  x_op <- stringr::str_extract(x_num, "^[<>]")
+  x_numeric <- stringr::str_remove(x_num, "^[<>]")
+  x_numeric <- suppressWarnings(as.numeric(x_numeric))
+  is_numeric_intvl1 <- !is.na(x_numeric)
+  x_numeric <- as.character(round(x_numeric[is_numeric_intvl1], digits))
+  x_op <- x_op[is_numeric_intvl1]
+  x_op[is.na(x_op)] <- ""
+  x_rtn[is_numeric_intvl1] <- paste0(x_op, x_numeric)
+  # Handle intervals with 2 numbers and no operators
+  is_intvl2_no_op <- !is_numeric_intvl1 & !x_num %like% "[<>()]" & x_num %like% "[0-9]-[0-9]"
+  x_mat_intvl2_no_op <- stringr::str_match(x_num[is_intvl2_no_op], "([0-9.]+(?:[Ee]-?[0-9]+)?)-([0-9.]+(?:[Ee]-?[0-9]+)?)")[, -1L]
+  x_mat_intvl2_no_op <- round(suppressWarnings(as.numeric(x_mat_intvl2_no_op)), digits)
+  x_mat_intvl2_no_op <- matrix(as.character(x_mat_intvl2_no_op), ncol = 2L)
+  x_intvl2_no_op <- paste0("[", x_mat_intvl2_no_op[, 1L], ",", x_mat_intvl2_no_op[, 2L], "]")
+  x_intvl2_no_op[x_intvl2_no_op == "[NA,NA]"] <- NA_character_
+  x_rtn[is_intvl2_no_op] <- x_intvl2_no_op
+  # Handle intervals with 2 numbers and operators
+  is_intvl2_op <- !(is_numeric_intvl1 | is_intvl2_no_op) & x_num %like% "[0-9]-[<>0-9]" & x_num %like% "[<>()]"
+  x_mat_intvl2_op <- stringr::str_match(
+    x_num[is_intvl2_op],
+    "(\\()?([<>])?([0-9.]+(?:[Ee]-?[0-9]+)?)-([<>])?([0-9.]+(?:[Ee]-?[0-9]+)?)(\\))?"
+  )[, -1L]
+  x_mat_intvl2_op_num <- x_mat_intvl2_op[, c(3L, 5L)]
+  x_mat_intvl2_op_num <- round(suppressWarnings(as.numeric(x_mat_intvl2_op_num)), digits)
+  x_mat_intvl2_op_num <- matrix(as.character(x_mat_intvl2_op_num), ncol = 2L)
+  x_mat_intvl2_op_op <- x_mat_intvl2_op[, -c(3L, 5L)]
+  # Combine "<>" and "()" - prefer "()"
+  x_mat_intvl2_op_op[, 1L] <- data.table::fcoalesce(x_mat_intvl2_op_op[, 1L], x_mat_intvl2_op_op[, 2L])
+  x_mat_intvl2_op_op[, 4L] <- data.table::fcoalesce(x_mat_intvl2_op_op[, 4L], x_mat_intvl2_op_op[, 3L])
+  x_mat_intvl2_op_op <- x_mat_intvl2_op_op[, c(1L, 4L)]
+  x_mat_intvl2_op_op[x_mat_intvl2_op_op[, 1L] == ">", 1L] <- "("
+  x_mat_intvl2_op_op[is.na(x_mat_intvl2_op_op[, 1L]), 1L] <- "["
+  x_mat_intvl2_op_op[x_mat_intvl2_op_op[, 1L] == "<", 1L] <- "["
+  x_mat_intvl2_op_op[x_mat_intvl2_op_op[, 2L] == "<", 2L] <- ")"
+  x_mat_intvl2_op_op[is.na(x_mat_intvl2_op_op[, 2L]), 2L] <- "]"
+  x_mat_intvl2_op_op[x_mat_intvl2_op_op[, 2L] == ">", 2L] <- "]"
+  x_intvl2_op <- paste0(x_mat_intvl2_op_op[, 1L], x_mat_intvl2_op_num[, 1L], ",", x_mat_intvl2_op_num[, 2L], x_mat_intvl2_op_op[, 2L])
+  x_intvl2_op[x_intvl2_op %in% c("[NA,NA]", "(NA,NA]", "[NA,NA)", "(NA,NA)")] <- NA_character_
+  x_rtn[is_intvl2_op] <- x_intvl2_op
+  # Convert closed zero bound and open upper bound to "< upper bound"
+  is_closed_zero <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "^\\[0," & x_rtn %like% "\\)$"
+  x_rtn[is_closed_zero] <- stringr::str_replace(x_rtn[is_closed_zero], "\\[0,([^)]+)\\)", "<\\1")
+  # Convert closed zero bound and closed upper bound to "<= upper bound"
+  is_closed_zero_c <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "^\\[0," & x_rtn %like% "\\]$"
+  x_rtn[is_closed_zero_c] <- stringr::str_replace(x_rtn[is_closed_zero_c], "\\[0,([^\\]]+)\\]", "<=\\1")
+  # Convert closed 100 bound and open lower bound to "> lower bound"
+  is_closed_100 <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "100\\]$" & x_rtn %like% "^\\("
+  x_rtn[is_closed_100] <- stringr::str_replace(x_rtn[is_closed_100], "\\(([^,]+),100\\]", ">\\1")
+  # Convert closed 100 bound and closed lower bound to ">= lower bound"
+  is_closed_100_c <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "100\\]$" & x_rtn %like% "^\\["
+  x_rtn[is_closed_100_c] <- stringr::str_replace(x_rtn[is_closed_100_c], "\\[([^,]+),100\\]", ">=\\1")
+  if (warn) {
+    not_converted <- unique(x[!is.na(x_chr) & is.na(x_rtn)])
+    if (length(not_converted) > 0L) {
+      not_converted <- paste0(
+        '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
+        collapse = ", "
+      )
+      rlang::warn(paste0(
+        "Not all character strings converted to interval.",
+        " Values not converted were: ", not_converted
+      ))
+    }
+  }
+  x_rtn
+}
+
+intvl_to_matrix <- function(x) {
+  # Extract numbers
+  x_numeric <- suppressWarnings(as.numeric(x))
+  is_numeric <- !is.na(x_numeric)
+  x_numeric <- x_numeric[is_numeric]
+  # Extract single bounds
+  is_intvl1 <- !is_numeric & x %like% "^[<>=]"
+  x_intvl1 <- x[is_intvl1]
+  op_intvl1 <- stringr::str_extract(x_intvl1, "^[<>=]{1,2}")
+  x_intvl1 <- stringr::str_remove(x_intvl1, "^[<>=]{1,2}")
+  x_intvl1 <- suppressWarnings(as.numeric(x_intvl1))
+  is_intvl1_update <- !is.na(x_intvl1)
+  is_intvl1[is_intvl1] <- is_intvl1_update
+  op_intvl1 <- op_intvl1[is_intvl1_update]
+  x_intvl1 <- x_intvl1[is_intvl1_update]
+  # Extract dual bounds
+  pat2 <- "(\\(|\\[)([0-9.]+(?:[Ee]-?[0-9]+)?),([0-9.]+(?:[Ee]-?[0-9]+)?)(\\]|\\))"
+  is_intvl2 <- !(is_numeric | is_intvl1) & x %like% pat2
+  x_intvl2 <- stringr::str_match(x[is_intvl2], pat2)[, -1L]
+  op_intvl2 <- x_intvl2[, c(1L, 4L)]
+  x_intvl2 <- x_intvl2[, c(2L, 3L)]
+  x_intvl2 <- matrix(suppressWarnings(as.numeric(x_intvl2)), ncol = 2L)
+  is_intvl2_update <- !(apply(x_intvl2, 1L, anyNA) | apply(op_intvl2, 1L, anyNA))
+  is_intvl2[is_intvl2] <- is_intvl2_update
+  op_intvl2 <- op_intvl2[is_intvl2_update, , drop = FALSE]
+  x_intvl2 <- x_intvl2[is_intvl2_update, , drop = FALSE]
+  # Create matrix
+  x_mat <- matrix(NA_real_, nrow = length(x), ncol = 4L, dimnames = list(NULL, c("left_closed", "left_bound", "right_bound", "right_closed")))
+  # Add numeric
+  x_mat[is_numeric, c(1L, 4L)] <- 1
+  x_mat[is_numeric, 2L] <- x_numeric
+  x_mat[is_numeric, 3L] <- x_numeric
+  # Add interval1
+  x_mat[is_intvl1, 1L] <- data.table::fcase(op_intvl1 == ">=", 1, op_intvl1 == ">", 0, op_intvl1 %in% c("<", "<="), 1)
+  x_mat[is_intvl1, 4L] <- data.table::fcase(op_intvl1 == "<=", 1, op_intvl1 == "<", 0, op_intvl1 %in% c(">", ">="), 1)
+  x_mat[is_intvl1, 2L] <- data.table::fcase(
+    op_intvl1 %in% c(">", ">="), x_intvl1,
+    op_intvl1 %in% c("<", "<=") & x_intvl1 > 0, 0
   )
-  x_intvl[, 3L] <- data.table::fifelse(
-    x_intvl[, 3L] == "<", ")", "]"
+  x_mat[is_intvl1, 3L] <- data.table::fcase(
+    op_intvl1 %in% c("<", "<="), x_intvl1,
+    op_intvl1 %in% c(">", ">=") & x_intvl1 < 100, 100
   )
-  x_out[is_intvl] <- paste0(x_intvl[, 1L], x_intvl[, 2L], ",", x_intvl[, 4L], x_intvl[, 3L])
-  x_out[x_out == ""] <- NA_character_
-  x_out
+  # Add interval2
+  x_mat[is_intvl2, 1L] <- as.numeric(op_intvl2[, 1L] == "[")
+  x_mat[is_intvl2, 4L] <- as.numeric(op_intvl2[, 2L] == "]")
+  x_mat[is_intvl2, c(2L, 3L)] <- x_intvl2
+  # Return
+  x_mat
 }
 
 
