@@ -302,6 +302,7 @@ DMTransformLegacy <- R6Class(
 
 
     chimerism = function(dm_local) {
+      rlang::check_installed(c("forcats", "lme4"))
       dt <- dm_local$chimerism
       class <- df_class(dt)
       dt <- data.table::as.data.table(dt)
@@ -524,6 +525,7 @@ DMTransformLegacy <- R6Class(
 
 
     death = function(dm_local) {
+      rlang::check_installed("tidyr")
       dt <- dm_local$death
       class <- df_class(dt)
       dt <- data.table::as.data.table(dt)
@@ -964,6 +966,7 @@ DMTransformLegacy <- R6Class(
 
 
     master = function(dm_local) {
+      rlang::check_installed("tidyr")
       dt <- dm_local$master
       class <- df_class(dt)
       dt <- data.table::as.data.table(dt)
