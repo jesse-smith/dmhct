@@ -151,7 +151,7 @@ UtilsSQLServer <- R6Class(
         dplyr::mutate(time_stamp = lubridate::as_datetime(.data$time_stamp))
 
       # Replace with TimeStamp or Dataload_Timestamp, if present
-      tbl_ts <- purrr::map(dm::dm_get_tables(dm_remote), function(x) {
+      lst_ts <- purrr::map(dm::dm_get_tables(dm_remote), function(x) {
         # Dataload_Timestamp preferred - sort puts it first
         ts <- sort(stringr::str_subset(colnames(x), "(?i)timestamp"))
         if (length(ts) == 0L) {
@@ -165,9 +165,11 @@ UtilsSQLServer <- R6Class(
           dplyr::collect() %>%
           dplyr::pull(1L) %>%
           lubridate::as_datetime()
-      }) %>%
-        dplyr::as_tibble() %>%
-        tidyr::pivot_longer(dplyr::everything(), values_to = "time_stamp") %>%
+      })
+      tbl_ts <- dplyr::tibble(
+        name = names(lst_ts),
+        time_stamp = lubridate::as_datetime(unname(unlist(lst_ts)))
+      ) %>%
         dplyr::full_join(tbl_ts, by = "name", suffix = c("_col", "_sys")) %>%
         dplyr::transmute(
           .data$name,
