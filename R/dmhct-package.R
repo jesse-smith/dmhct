@@ -21,8 +21,6 @@
 #' @importFrom dbplyr in_schema
 #' @importFrom dbplyr sql
 #' @importFrom lifecycle deprecated
-#' @importFrom qs qread
-#' @importFrom qs qsave
 #' @importFrom R6 R6Class
 ## usethis namespace: end
 NULL

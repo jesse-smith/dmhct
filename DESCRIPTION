@@ -24,7 +24,6 @@ Imports:
     lubridate,
     odbc,
     purrr,
-    qs,
     R6,
     rlang,
     stringi,
@@ -36,6 +35,7 @@ Suggests:
     DiagrammeRsvg,
     forcats,
     lme4,
+    qs,
     stats,
     tidyr
 Encoding: UTF-8

@@ -112,6 +112,7 @@ DMCache <- R6Class(
     dir = path_create("~", ".cache_dmhct"),
     n_threads = max(1L, parallel::detectCores() %/% 2L)
     ) {
+      rlang::check_installed("qs")
       # Clean and combine file and dir
       path <- path_create(dir, file) %>%
         fs::path_ext_remove() %>%
@@ -134,8 +135,8 @@ DMCache <- R6Class(
       on.exit(try(fs::file_delete(tmp_checksum), silent = TRUE), add = TRUE)
       on.exit(try(fs::file_delete(tmp_data),     silent = TRUE), add = TRUE)
       # Save checksum and data
-      qsave(checksum, tmp_checksum)
-      qsave(dm, tmp_data, nthreads = n_threads)
+      qs::qsave(checksum, tmp_checksum)
+      qs::qsave(dm, tmp_data, nthreads = n_threads)
       # Move checksum and data
       fs::file_move(c(tmp_checksum, tmp_data), c(path_checksum, path_data))
       # Return dm invisibly
@@ -159,6 +160,7 @@ DMCache <- R6Class(
     fail = TRUE,
     n_threads = if (obj == "data") max(1L, parallel::detectCores() %/% 2L) else 1L
     ) {
+      rlang::check_installed("qs")
       obj <- rlang::arg_match(obj)[[1L]]
       # Clean and combine file and dir
       path <- path_create(dir, file) %>%
@@ -169,7 +171,7 @@ DMCache <- R6Class(
       path <- path_create(dir, file)
       # Read
       if (!fail && !fs::file_exists(path)) return(NULL)
-      q <- qread(path, nthreads = n_threads)
+      q <- qs::qread(path, nthreads = n_threads)
       # Make sure dm is recognized
       if (obj == "data") dm::is_dm(q)
       q
