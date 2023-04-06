@@ -302,7 +302,7 @@ DMTransformLegacy <- R6Class(
 
 
     chimerism = function(dm_local) {
-      rlang::check_installed(c("forcats", "lme4"))
+      rlang::check_installed(c("forcats", "lme4", "stats"))
       dt <- dm_local$chimerism
       class <- df_class(dt)
       dt <- data.table::as.data.table(dt)
