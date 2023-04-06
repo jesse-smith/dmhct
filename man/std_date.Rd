@@ -56,6 +56,13 @@ subset of the original input vector. This might result in
 \verb{⁠All formats failed to parse}⁠ error.See notes
 in \code{\link[lubridate:parse_date_time]{lubridate::parse_date_time()}}.}
 
+\item{na}{Regular expressions to convert to \code{NA}}
+
+\item{range_value}{The value to use if the date is given as a range; can be
+the start date, the end date, or fill with \code{NA}}
+
+\item{range_sep}{Separators used for date ranges}
+
 \item{...}{Additional arguments to pass to
 \code{\link[janitor:convert_to_date]{convert_to_datetime()}}. These
 will, in turn, be passed to further methods, including

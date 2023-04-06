@@ -1,3 +1,31 @@
+#' Standardize Column Values in a local `dm` for MLinHCT
+#'
+#' @description
+#' `dm_standardize()` takes a local version of the SQL server as input and
+#' standardizes all columns across all tables. Standardization procedures are
+#' based on both column type and the typing prefix of the column name. Specifically,
+#' columns are standardized using the following workflow:
+#'
+#' \enumerate{
+#'   \item Columns with type `character` or chr/cat/lgl/mcat/intvl prefixes are
+#'     passed to `std_chr()`
+#'   \item Columns with type `logical` or the lgl prefix are passed to `std_lgl()`
+#'   \item Columns with type `numeric` or `integer`, or num/pct prefixes, are passed
+#'     to `std_num()`
+#'   \item Columns with the intvl prefix are passed to `std_intvl()`
+#'   \item Column with types `Date`, `POSIXct`, or `POSIXlt`, or with dt/dttm/date
+#'     prefixes, are passed to `std_date()`
+#' }
+#'
+#' After standardization, tables are sorted into alphabetical order before
+#' returning.
+#'
+#' @param dm_local A local `dm` object containing MLinHCT data from `dm_extract()`
+#' @param quiet Whether to suppress progress messages
+#'
+#' @return The input `dm` with standarized column values
+#'
+#' @export
 dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE) {
   tbl_nms <- names(dm_local)
   for (tbl_nm in tbl_nms) {
