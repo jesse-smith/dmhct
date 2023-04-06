@@ -10,7 +10,7 @@ Transplant Number,num_n_trans
 Date of Transplant,dt_trans
 Transplant/Donor Type,cat_donor_type
 Product Type,cat_product_type
-Did the patient die prior to cellular infusion...,lgl_death_during_prep
+"Did the patient die prior to cellular infusion, AND after the start of the preparative regimen?",lgl_death_during_prep
 What is the donor source: ,cat_donor_source
 "Allogeneic, related",cat_donor_match_relation
 Donor Type,cat_donor_relation
