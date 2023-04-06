@@ -116,7 +116,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
       colClasses = "character",
       na.strings = NULL
     ) %>%
-      dplyr::filter(New_Name == "cat_protocol") %>%
+      dplyr::filter(.data$New_Name == "cat_protocol") %>%
       dplyr::pull("Old_Name")
     if (!protocol_colname %in% colnames(dm_remote$master)) {
       rlang::warn("Protocol information is not available; DSMB-monitored patients will be included in the dataset.")
