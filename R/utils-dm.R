@@ -45,8 +45,6 @@ dm_compute <- function(dm_remote, quiet = TRUE) {
 }
 
 
-
-
 #' Check Whether a `dm` Object is Connected to a Remote Server
 #'
 #' @param dm The `dm` object to check
@@ -72,7 +70,17 @@ dm_disconnect <- function(dm) {
   invisible(dm)
 }
 
-
+#' Sort a `dm` Object by Table Name
+#'
+#' `dm_sort()` converts a `dm` to a list, sorts the list, and converts back to
+#' a `dm`. Currently, all `dm`-specific properties (specifically primary and
+#' foreign keys) are lost during this process.
+#'
+#' @param dm A `dm` object to sort
+#'
+#' @return The sorted `dm`
+#'
+#' @keywords internal
 dm_sort <- function(dm) {
   lst <- dm::dm_get_tables(dm)
   nms <- sort(names(lst))
