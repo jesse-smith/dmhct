@@ -141,7 +141,11 @@ intvl_to_matrix <- function(x) {
 #' @return The standardized character vector
 #'
 #' @export
-std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inner_newlines = TRUE) {
+std_chr <- function(
+    x,
+    case = c("upper", "lower", "title", "sentence"),
+    keep_inner_newlines = TRUE,
+    na = "") {
   if (!is.null(case)) case <- rlang::arg_match(case)[[1L]]
   # Convert to ASCII
   not_ascii <- !stringi::stri_enc_isascii(x)
@@ -164,15 +168,27 @@ std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inn
   } else {
     x <- stringr::str_squish(x)
   }
-
-  if (is.null(case)) return(x)
-  switch(
-    case,
-    "lower" = stringr::str_to_lower(x),
-    "upper" = stringr::str_to_upper(x),
-    "title" = stringr::str_to_title(x),
-    "sentence" = stringr::str_to_sentence(x)
-  )
+  # Standardize case
+  if (!is.null(case)) {
+    x <- switch(
+      case,
+      "lower" = stringr::str_to_lower(x),
+      "upper" = stringr::str_to_upper(x),
+      "title" = stringr::str_to_title(x),
+      "sentence" = stringr::str_to_sentence(x)
+    )
+    na <- switch(
+      case,
+      "lower" = stringr::str_to_lower(na),
+      "upper" = stringr::str_to_upper(na),
+      "title" = stringr::str_to_title(na),
+      "sentence" = stringr::str_to_sentence(na)
+    )
+  }
+  # Replace NA text
+  x[x %in% na] <- NA_character_
+  # Return
+  x
 }
 
 
@@ -195,7 +211,7 @@ std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inn
 #' @return A `numeric` vector
 #'
 #' @export
-std_num <- function(x, std_chr = TRUE, warn = TRUE) {
+std_num <- function(x, std_chr = TRUE, warn = TRUE, ...) {
   if (is.integer(x)) {
     return(x)
   } else if (bit64::is.integer64(x)) {
@@ -203,7 +219,7 @@ std_num <- function(x, std_chr = TRUE, warn = TRUE) {
   } else if (is.double(x)) {
     return(tryCatch(vctrs::vec_cast(x, integer()), error = function(e) x))
   } else if (is.character(x) || is.factor(x)) {
-    return(chr_to_num(x, std = std_chr, warn = warn))
+    return(chr_to_num(x, std = std_chr, warn = warn, ...))
   } else if (lubridate::is.Date(x)) {
     return(as.integer(x))
   } else if (lubridate::is.POSIXt(x)) {
@@ -372,20 +388,26 @@ std_intvl <- function(x, std_chr = TRUE, warn = TRUE, chimerism = c("no", "donor
 #' @export
 std_lgl <- function(
     x,
-    true = c("YES", "POS", "ALIVE", "ON THERAPY"),
-    false = c("NO", "NEG", "EXPIRED", "DECEASED", "OFF THERAPY"),
-    na = c("^$", "N/?A", "-999[0-9]", "UNSPEC", "NO DATA", "UNKN?",
-           "INCONCLUSIVE", "NOT? (?:EVAL|APPL|DONE|DETER)", "EQUIVOCAL",
-           "NEVER DROPPED BELOW"),
+    true = c("^YES", "^POS", "^ALIVE", "^ON THERAPY", "^1$"),
+    false = c("^NO", "^NEG", "^EXPIRED", "^DECEASED", "^OFF THERAPY", "^0$"),
+    na = c("^$", "^N/?A", "^-999[0-9]", "^UNSPEC", "^NO DATA", "^UNKN?",
+           "^INCONCLUSIVE", "^NOT? (?:EVAL|APPL|DONE|DETER)", "^EQUIVOCAL",
+           "^NEVER DROPPED BELOW"),
     std_chr = TRUE,
     warn = TRUE
 ) {
   checkmate::assert_flag(std_chr)
   if (std_chr && (is.character(x) || is.factor(x))) x <- std_chr(x)
   if (is.character(x)) {
-    x[stringr::str_starts(x, paste0(na, collapse = "|"))] <- NA_character_
-    x[stringr::str_starts(x, paste0(true, collapse = "|"))] <- "TRUE"
-    x[stringr::str_starts(x, paste0(false, collapse = "|"))] <- "FALSE"
+    for (pat_na in na) {
+      x[stringr::str_detect(x, pat_na)] <- NA_character_
+    }
+    for (pat_true in true) {
+      x[stringr::str_detect(x, pat_true)] <- "TRUE"
+    }
+    for (pat_false in false) {
+      x[stringr::str_detect(x, pat_false)] <- "FALSE"
+    }
     not_converted <- unique(x[!x %in% c("TRUE", "FALSE", NA_character_)])
     if (length(not_converted) > 0L) {
       if (warn) {
