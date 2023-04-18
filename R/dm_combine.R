@@ -19,40 +19,30 @@ dm_combine <- function(dm_std = dm_standardize(), quiet = FALSE) {
 
   # HLA tables
   hla_tbls <- stringr::str_subset(names(dm_std), "^hla_")
+  if (!quiet) rlang::inform(paste0("Combining ", paste0(hla_tbls, collapse = ", ")))
   # Combine HLA tables
   hla_dts <- dm_std %>%
     dm::dm_select_tbl({{ hla_tbls }}) %>%
     dm::dm_get_tables() %>%
-    purrr::map(data.table::setDT) %>%
-    purrr::map(pivot_hla)
+    purrr::map(data.table::as.data.table)
   hla_combined <- data.table::merge.data.table(
     hla_dts$hla_donor,
     hla_dts$hla_patient,
-    by = "entity_id",
+    by = c("entity_id", "cat_gene"),
     all = TRUE,
     suffixes = c("_donor", "_patient")
   )
+  # Move `donor_id` to front
+  data.table::setcolorder(hla_combined, c("entity_id", "donor_id", "cat_gene"))
+  # Revert to `tibble`
+  setTBL(hla_combined)
   # Add back to dm
   dm_std <- dm_std %>%
     dm::dm_select_tbl(-{{ hla_tbls }}) %>%
     dm::dm(hla = hla_combined)
-  # Force cleanup
-  gc(verbose = FALSE)
 
   dm_sort(dm_std)
 }
 
 
-pivot_hla <- function(dt_hla) {
-  id_cols <- stringr::str_subset(colnames(dt_hla), "(?:_id|date)$")
-  dt_hla <- paste0("data.table::dcast(",
-    "dt_hla, ",
-    paste0(id_cols, collapse = " + "), "  ~ cat_gene, ",
-    "value.var = 'cat_allele', ",
-    "fun.aggregate = function(x) paste0(x, collapse = ',')",
-  ")") %>%
-    rlang::parse_expr() %>%
-    eval()
-  dt_hla <- janitor::clean_names(dt_hla)
-  dt_hla
-}
+
