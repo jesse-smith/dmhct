@@ -71,6 +71,16 @@ is_tibble <- function(x) {
 }
 
 
+setTBL <- function(x, rownames = NULL) {
+  # Convert to data.frame
+  data.table::setDF(x, rownames = rownames)
+  # Convert to tibble
+  data.table::setattr(x, "class", c("tbl_df", "tbl", "data.frame"))
+  # Return
+  invisible(x)
+}
+
+
 #' Select Column Names Using Tidyselect Specifications
 #'
 #' `select_colnames()` selects the names of columns specified in `...`. It is
