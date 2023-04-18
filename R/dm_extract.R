@@ -82,7 +82,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
     system.file("extdata/table_name_map.csv", package = "dmhct"),
     colClasses = "character",
     na.strings = NULL
-  ) %>% dplyr::mutate(dplyr::across(.fns = janitor::make_clean_names))
+  ) %>% dplyr::mutate(dplyr::across(dplyr::everything(), .fns = janitor::make_clean_names))
   dm_remote <- paste0(
     "dm::dm_rename_tbl(dm_remote, ",
     paste0(nm_map$New_Name, " = ", nm_map$Old_Name, collapse = ", "), ")"
