@@ -1,0 +1,227 @@
+test,var
+25-OH Vitamin D,num_vit_d
+Absolute Lymphocytes,num_lympho
+Adenovirus PCR,lgl_pcr_adenovirus
+Adenovirus PCR Blood,lgl_pcr_adenovirus
+Adenovirus PCR Preliminary Report,NA
+Albumin Lvl,num_albumin
+Alkaline Phosphatase,num_alp
+ALT (SGPT),num_alt
+ANC,num_neutro
+Anion Gap (without K),num_anion_gap
+Antibody Screen,lgl_anti_screen
+APC AUTO,num_apc
+Aspergillus Antigen,lgl_antigen_aspergillus
+AST (SGOT),num_ast
+Basophil Absolute Auto,num_baso
+Basophils Auto (%),pct_baso
+Bilirubin,num_bili
+Blast (%),pct_blast
+Blood Type,cat_blood_type
+BMT Chagas Screen,lgl_anti_chagas
+BMT Cytomegalovirus Total Antibody,lgl_anti_cmv
+BMT Hepatitis B Core Total Antibody,lgl_anti_hb_c
+BMT Hepatitis B Surf Ag Confirm Note,lgl_antigen_hb_s_note
+BMT Hepatitis B Surface Antigen,lgl_antigen_hb_s
+BMT Hepatitis C Antibody,lgl_anti_hcv
+BMT HIV-1/2 Antibody Screen,lgl_anti_hiv
+BMT HIV-1/HCV/HBV NAT,lgl_pcr_hiv1_hcv_hbv
+BMT HIV1/HCV/HBV NAT Discriminatory Note,lgl_pcr_hiv1_hcv_hbv_note
+BMT HTLV 1/2 Antibody Screen,lgl_anti_htlv
+BMT Syphilis IgG Antibody,lgl_anti_syphilis
+BMT West Nile Virus Nucleic Acid Test,lgl_pcr_wnv
+Body Mass Index,num_bmi
+Body Mass Index,num_bmi
+Body surface area,num_bsa
+Bordetella pertussis IgG,lgl_anti_b_pertussis
+Bordetella pertussis PCR,lgl_pcr_b_pertussis
+BSA,num_bsa
+BSA,num_bsa
+BUN,num_bun
+C-Reactive Protein,num_crp
+Calcium,num_ca
+Calcium Lvl,num_ca
+CD19 (Pan-B ) (%),pct_cd19
+CD19 Absolute,num_cd19
+CD3 (Mature T) (%),pct_mature_t_cells
+CD3 Absolute,num_cd3
+"CD3+, CD4+ (Helper T) (%)",pct_helper_t_cells
+"CD3+, CD4+ Absolute",num_helper_t_cells
+"CD3+, CD8+ (Suppressor T) (%)",pct_suppressor_t_cells
+"CD3+, CD8+ Absolute",num_suppressor_t_cells
+CD3+/TCR-ab+ (%),pct_cd3_tcr_ab
+CD3+/TCR-ab+ Absolute,num_cd3_ab
+CD3+/TCR-gd+ (%),pct_cd3_gd
+CD3+/TCR-gd+ Absolute,num_cd3_gd
+"CD3-, CD56+/CD16+ (NK) (%)",pct_nk_cells
+"CD3-, CD56+/CD16+ Absolute",num_nk_cells
+CD4:CD8 Ratio,num_cd4_cd8_ratio
+Chlamydia pneumoniae PCR,lgl_pcr_c_pneumoniae
+Cl,num_cl
+CO2,num_co2
+Coronavirus PCR,lgl_pcr_coronavirus
+Creatinine,num_creatinine
+Creatinine Clearance (norm. to 1.73m2),num_crcl
+Creatinine Urine 24 Hr,num_u_creatinine
+Cuff Monitored DBP,num_dbp
+Cuff Monitored MAP,num_map
+Cuff Monitored SBP,num_sbp
+Cytomegalovirus by PCR,lgl_pcr_cmv
+D Bilirubin,num_d_bili
+DATE OF LAST CONTACT,dt_last_contact
+DBP,num_dbp
+Diphtheria Antibody,lgl_anti_diptheria
+DLCOcor % Predicted Pre-Bronch,pct_pft_dlco
+End Tidal CO2,pct_etco2
+Eosinophil Absolute Auto,num_eosino
+Eosinophils Auto (%),pct_eosino
+Epstein Barr Virus PCR Blood,lgl_pcr_ebv
+Epstein-Barr Nuclear Ag IgG Ab,lgl_anti_ebv_na
+Epstein-Barr Viral Capsid Ag IgG Ab,lgl_anti_ebv_vca_igg
+Epstein-Barr Viral Capsid Ag IgM Ab,lgl_anti_ebv_vca_igm
+Ferritin,num_ferritin
+FEV1 % Predicted Pre-Bronch,pct_pft_fev1
+Free T4,num_t4
+FSH,num_fsh
+FVC % Predicted Pre-Bronch,pct_pft_fvc
+Glucose,num_glucose
+Glucose Lvl,num_glucose
+HCT,pct_hct
+HDL Cholesterol,num_chol_hdl
+Heart Rate Monitored,num_hr
+Hemoglobin A1C,num_hba1c
+Hepatitis B Surface Antibody,lgl_anti_hb_s
+Hepatitis C Antibody,lgl_anti_hcv
+Herpes Simplex Virus Types 1 and 2 IgG,lgl_anti_hsv
+HGB,num_hgb
+HR,num_hr
+HR METHOD,NA
+Ht,num_ht
+Human Herpesvirus 6 PCR Blood,lgl_pcr_hhv6
+Human Metapneumovirus PCR,lgl_pcr_hmpv
+Human rhinovirus/enterovirus PCR,lgl_pcr_rhino_enterovirus
+Immature Granulocytes Absolute Auto,num_granulo
+Immature Granulocytes Auto (%),pct_granulo
+Immature Reticulocyte Fraction,pct_irf
+Immunoglobulin A,num_iga
+Immunoglobulin E,num_ige
+Immunoglobulin G,num_igg
+Immunoglobulin M,num_igm
+Influenza A PCR,lgl_pcr_flu_a
+Influenza B PCR,lgl_pcr_flu_b
+Insulin,num_insulin
+Iron,num_iron
+K,num_k
+LDH,num_ldh
+LDL Cholesterol,num_chol_ldl
+Luteinizing Hormone,num_lh
+Lymphocyte (%),pct_lympho
+Lymphocyte Absolute Auto,num_lympho
+Lymphocytes Auto (%),pct_lympho
+Lymphocytes(%),pct_lympho
+Magnesium,num_mg
+MCH,num_mch
+MCHC,num_mchc
+MCV,num_mcv
+Mean Arterial Pressure,num_map
+Measles (Rubeola) IgG,lgl_anti_measles
+Monocyte Absolute Auto,num_mono
+Monocytes Auto (%),pct_mono
+MPV,num_mpv
+Na,num_na
+Neutrophil Absolute Auto,num_neutro
+Neutrophils Auto (%),pct_neutro
+New/previous height,NA
+Oxygen Device,cat_o2_device
+Oxygen Flow Rate,num_o2_flow_rate
+Pain Scale,NA
+Pain Score,NA
+Parainfluenza virus PCR,lgl_pcr_hpiv
+Phosphorus,num_phos
+Platelet Count,num_platelet
+Poliovirus Antibodies Type 1,lgl_anti_wpv1
+Poliovirus Antibodies Type 3,lgl_anti_wpv3
+Pregnancy Qualitative Rapid Blood,lgl_pregnancy
+Preliminary Shortening Fraction,pct_prelim_short
+"Protein, Total",num_prot
+Pulmonary Function Results,NA
+Pulse 02 Sat,pct_o2_sat
+Pulse O2 Sat Monitored,pct_o2_sat
+RBC x10e6/mm3,num_rbc
+RDW,num_rdw
+Reason for Vital Signs,cat_vs_reason
+Respiratory Rate Monitored,num_rr
+Respiratory Syncytial Virus PCR,lgl_pcr_rsv
+Retic Count Percentage,pct_reticulo
+Reticulocyte (x10^6),num_reticulo
+Reticulocyte Hemoglobin Equivalent,num_ret_he
+RR,num_rr
+Rubella IgG Antibody,lgl_anti_rubella
+SBP,num_sbp
+Strep pneumo Antibody Interpretation,NA
+"Strep pneumo Type 1 IgG (P13,PNX)",num_strep_t01
+Strep pneumo Type 12F IgG (PNX),num_strep_t12f
+"Strep pneumo Type 14 IgG (P7, P13, PNX)",num_strep_t14
+"Strep pneumo Type 18C IgG (P7, P13, PNX)",num_strep_t18c
+"Strep pneumo Type 19F IgG (P7, P13, PNX)",num_strep_t19f
+"Strep pneumo Type 23F IgG (P7, P13, PNX)",num_strep_t23f
+"Strep pneumo Type 3 IgG (P13, PNX)",num_strep_t03
+"Strep pneumo Type 4 IgG (P7, P13, PNX)",num_strep_t04
+"Strep pneumo Type 5 IgG (P13, PNX)",num_strep_t05
+"Strep pneumo Type 6B IgG (P7, P13, PNX)",num_strep_t06b
+"Strep pneumo Type 7F IgG (P13, PNX)",num_strep_t07f
+Strep pneumo Type 8 IgG (PNX),num_strep_t08
+Strep pneumo Type 9N IgG (PNX),num_strep_t09n
+"Strep pneumo Type 9V IgG (P7, P13, PNX)",num_strep_t09v
+"Strep pneumoniae Type 1 IgG (P13,PNX)",num_strep_t01
+Strep pneumoniae Type 12F  IgG (PNX),num_strep_t12f
+"Strep pneumoniae Type 14 IgG (P7, P13, P",num_strep_t14
+"Strep pneumoniae Type 18C IgG (P7, P13,",num_strep_t18c
+"Strep pneumoniae Type 19F IgG (P7, P13,",num_strep_t19f
+"Strep pneumoniae Type 23F IgG (P7, P13,",num_strep_t23f
+"Strep pneumoniae Type 3 IgG (P13, PNX)",num_strep_t03
+"Strep pneumoniae Type 4 IgG (P7, P13, PN",num_strep_t04
+"Strep pneumoniae Type 5 IgG (P13, PNX)",num_strep_t05
+"Strep pneumoniae Type 6B IgG (P7, P13, P",num_strep_t06b
+"Strep pneumoniae Type 7F IgG (P13, PNX)",num_strep_t07f
+Strep pneumoniae Type 8 IgG (PNX),num_strep_t08
+Strep pneumoniae Type 9N IgG (PNX),num_strep_t09n
+"Strep pneumoniae Type 9V IgG (P7, P13, P",num_strep_t09v
+TCR-ab+/RA+/RO+ (%,pct_cd19_ab_ra_pos_ro_pos
+TCR-ab+/RA+/RO+ (%),pct_cd19_ab_ra_pos_ro_pos
+TCR-ab+/RA+/RO+ Absolute,num_cd19_ab_ra_pos_ro_pos
+TCR-ab+/RA+/RO- (%),pct_cd19_ab_ra_pos_ro_neg
+TCR-ab+/RA+/RO- Absolute,num_cd19_ab_ra_pos_ro_neg
+TCR-ab+/RA-/RO+ (%),pct_cd19_ab_ra_neg_ro_pos
+TCR-ab+/RA-/RO+ Absolute,num_cd19_ab_ra_neg_ro_pos
+Technetium-99m Renal Clearance,NA
+TEMP,num_temp
+TEMP METHOD,NA
+Testosterone Level,num_testosterone
+Tetanus Antitoxoid Antibody,lgl_anti_tetanus
+TLC (Pleth) % Predicted Pre-Bronch,pct_pft_tlc
+Total Cholesterol,num_chol_total
+Total Volume,num_blood_volume
+Toxoplasma IgG Antibody,lgl_anti_toxoplasma
+TSH,num_tsh
+U Appearance,NA
+U Bilirubin,cat_u_bili
+U Blood,cat_u_blood
+U Color,NA
+U Glucose,cat_u_glucose
+U Ketones,cat_u_ketones
+U Leukocyte Esterase,cat_u_leuko
+U Nitrite,cat_u_no2
+U pH,num_u_ph
+U Protein,cat_u_prot
+U Specific Gravity,num_u_sp_gr
+U Urobilinogen,cat_u_urobili
+UA Microscopic,NA
+Uric Acid,num_ua
+Varicella Zoster Virus IgG Antibody,lgl_anti_vzv
+Venous access device,NA
+VRE PCR Rectal Surveillance,lgl_rectal_culture
+WBC x10e3/mm3,num_wbc
+WT,num_wt
+WT,num_wt
+WT (Dosing WT),num_wt

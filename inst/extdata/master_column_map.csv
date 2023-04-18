@@ -2,6 +2,7 @@
 MRN,mrn
 EntityID,entity_id
 Protocol,cat_protocol
+Include,lgl_include
 DOB,dt_birth
 Sex,cat_sex
 Race,cat_race
