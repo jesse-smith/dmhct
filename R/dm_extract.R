@@ -42,7 +42,7 @@
 #'   remote source.
 #'
 #' @export
-dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legacy = TRUE, .reset = FALSE, .excl_dsmb = TRUE, reset = .reset) {
+dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legacy = FALSE, .reset = FALSE, .excl_dsmb = TRUE, .quiet = FALSE, reset = .reset) {
   # Deprecated arguments
   call_arg_nms <- rlang::call_args_names(rlang::caller_call(0L))
   if ("reset" %in% call_arg_nms) {
@@ -58,13 +58,10 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
 
   # Use legacy version if desired, but give deprecation message once `.legacy` default is FALSE
   if (rlang::is_false(rlang::fn_fmls()$.legacy)) {
-    if (".legacy" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.1", "dm_extract(.legacy)")
-    if (".reset" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.1", "dm_extract(.reset)")
+    if (".legacy" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.0", "dm_extract(.legacy)")
+    if (".reset" %in% call_arg_nms) lifecycle::deprecate_soft("1.0.0", "dm_extract(.reset)")
   }
   if (.legacy) return(dm_extract_legacy(dm_remote, collect = .collect, reset = .reset))
-
-  # Inform user if `.excl_dsmb` is FALSE
-  if (!.excl_dsmb) rlang::inform("`.excl_dsmb = FALSE`; DSMB-monitored patients will be included in the dataset.")
 
   # Standardize table names
   tbl_nms <- names(dm_remote)
@@ -182,11 +179,15 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
 
   # Load data onto local machine
   if (.collect) {
-    dm_local <- dm_collect(dm_remote)
-    rm(dm_remote)
-    gc(verbose = FALSE)
+    dm_local <- purrr::imap(dm::dm_get_tables(dm_remote), function(x, i) {
+      if (!.quiet) rlang::inform(paste0("Extracting ", i))
+      ts <- attr(x, "timestamp")
+      x <- dplyr::collect(x)
+      attr(x, "timestamp") <- ts
+      x
+    }) %>% dm::as_dm()
     return(dm_local)
   } else {
-    return(dm_remote)
+    dm_remote
   }
 }
