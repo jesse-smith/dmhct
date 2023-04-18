@@ -98,7 +98,7 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
     eval()
 
   # Remove patients who are part of an active DSMB-monitored trial
-  dsmb_entity_ids <- integer()
+  dsmb_entity_ids <- bit64::integer64()
   if (.excl_dsmb) {
     dsmb_protocols <- utils::read.csv(
       system.file("extdata/dsmb_protocols.csv", package = "dmhct"),
@@ -108,25 +108,36 @@ dm_extract <- function(dm_remote = dm_sql_server(), ..., .collect = TRUE, .legac
       dplyr::pull("Protocol") %>%
       trimws() %>%
       toupper()
-    protocol_colname <- utils::read.csv(
+    excl_colnms <- utils::read.csv(
       system.file("extdata/master_column_map.csv", package = "dmhct"),
       colClasses = "character",
       na.strings = NULL
     ) %>%
-      dplyr::filter(.data$New_Name == "cat_protocol") %>%
-      dplyr::pull("Old_Name")
-    if (!protocol_colname %in% colnames(dm_remote$master)) {
-      rlang::warn("Protocol information is not available; DSMB-monitored patients will be included in the dataset.")
-    } else {
+      dplyr::filter(.data$New_Name %in% c("cat_protocol", "lgl_include")) %>%
+      dplyr::filter(.data$Old_Name %in% colnames({{ dm_remote }}$master)) %>%
+      dplyr::arrange(.data$New_Name) %>%
+      dplyr::filter(dplyr::row_number() == 1L)
+
+    if (excl_colnms$New_Name == "cat_protocol") {
       dsmb_entity_ids <- dm_remote$master %>%
-        dplyr::select("EntityID", Protocol = {{ protocol_colname }}) %>%
+        dplyr::select("EntityID", Protocol = {{ excl_colnms }}$Old_Name) %>%
         dplyr::mutate(Protocol = toupper(trimws(.data$Protocol))) %>%
         dplyr::filter(.data$Protocol %in% {{ dsmb_protocols }}) %>%
         dplyr::collect() %>%
         dplyr::pull("EntityID") %>%
-        as.integer() %>%
         unique() %>%
         sort()
+    } else if (excl_colnms$New_Name == "lgl_include") {
+      dsmb_entity_ids <- dm_remote$master %>%
+        dplyr::select("EntityID", Include = {{ excl_colnms }}$Old_name) %>%
+        dplyr::mutate(Include = as.logical(.data$Include)) %>%
+        dplyr::filter(.data$Include == FALSE) %>%
+        dplyr::collect() %>%
+        dplyr::pull("EntityID") %>%
+        unique() %>%
+        sort()
+    } else {
+      rlang::warn("Exclusion information is not available; DSMB-monitored patients will be included in the dataset.")
     }
   }
 
