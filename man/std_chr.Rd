@@ -7,7 +7,8 @@
 std_chr(
   x,
   case = c("upper", "lower", "title", "sentence"),
-  keep_inner_newlines = TRUE
+  keep_inner_newlines = TRUE,
+  na = "^$"
 )
 }
 \arguments{
@@ -17,6 +18,9 @@ std_chr(
 
 \item{keep_inner_newlines}{Whether to retain line breaks inside text. \code{FALSE}
 will treat newlines and carriage returns identically to any other whitespace.}
+
+\item{na}{Regex patterns to consider \code{NA}. Passed to \code{stringr::str_detect()}.
+Can be a vector of patterns.}
 }
 \value{
 The standardized character vector

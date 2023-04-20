@@ -80,6 +80,36 @@ setTBL <- function(x, rownames = NULL) {
   invisible(x)
 }
 
+#' Replace Detected Patterns with `NA`
+#'
+#' `str_to_na()` detects `pattern`s in `x` using
+#' \code{\link[stringr:str_detect]{stringr::str_detect()}} and replaces all
+#' indices where a `pattern` is found with `NA_character_`. It is vectorized
+#' over both `x` and `pattern`; `pattern` will be looped over if multipel are
+#' provided.
+#'
+#' @inheritParams stringr::str_detect
+#'
+#' @return The input as a character vector with `pattern`s replaced with `NA`
+#'
+#' @keywords internal
+str_to_na <- function(string, pattern = stringr::fixed("")) {
+  for (pat in pattern) {
+    string[stringr::str_detect(string, pat)] <- NA_character_
+  }
+  string
+}
+
+str_replace_vec <- function(string, pattern, replacement) {
+  pr <- vctrs::vec_recycle_common(pattern, replacement)
+  pattern <- pr[[1L]]
+  replacement <- pr[[2L]]
+  for (i in seq_len(vctrs::vec_size(pattern))) {
+    string <- stringr::str_replace(string, pattern[i], replacement[i])
+  }
+  string
+}
+
 
 #' Select Column Names Using Tidyselect Specifications
 #'
@@ -95,8 +125,6 @@ setTBL <- function(x, rownames = NULL) {
 #' @return A character vector of column names
 #'
 #' @keywords internal
-#'
-#' @export
 select_colnames <- function(data, ...) {
   checkmate::assert_data_frame(data)
   colnames(dplyr::select(data, ...))

@@ -138,6 +138,8 @@ intvl_to_matrix <- function(x) {
 #' @param case The case to convert to. `NULL` will skip case conversion.
 #' @param keep_inner_newlines Whether to retain line breaks inside text. `FALSE`
 #'   will treat newlines and carriage returns identically to any other whitespace.
+#' @param na Regex patterns to consider `NA`. Passed to `stringr::str_detect()`.
+#'   Can be a vector of patterns.
 #' @return The standardized character vector
 #'
 #' @export
@@ -145,8 +147,12 @@ std_chr <- function(
     x,
     case = c("upper", "lower", "title", "sentence"),
     keep_inner_newlines = TRUE,
-    na = "") {
+    na = "^$"
+) {
+  if (!is.character(x)) x <- as.character(x)
   if (!is.null(case)) case <- rlang::arg_match(case)[[1L]]
+  as_rlang_error(checkmate::assert_flag(keep_inner_newlines))
+  as_rlang_error(checkmate::assert_character(na, null.ok = TRUE))
   # Convert to ASCII
   not_ascii <- !stringi::stri_enc_isascii(x)
   not_ascii[is.na(not_ascii)] <- FALSE
@@ -186,7 +192,7 @@ std_chr <- function(
     )
   }
   # Replace NA text
-  x[x %in% na] <- NA_character_
+  x <- str_to_na(x, pattern = na)
   # Return
   x
 }
@@ -205,13 +211,16 @@ std_chr <- function(
 #' the range allows, otherwise `double`.
 #'
 #' @param x A vector to convert to numeric
+#' @param na Regex patterns to consider `NA`. Passed to `stringr::str_detect()`.
+#'   Can be a vector of patterns.
 #' @param std_chr Whether to standardize a `character` or `factor` before conversion
 #' @param warn Whether to warn when strings cannot be converted; passed to `chr_to_num()`
+#' @inheritDotParams chr_to_num
 #'
 #' @return A `numeric` vector
 #'
 #' @export
-std_num <- function(x, std_chr = TRUE, warn = TRUE, ...) {
+std_num <- function(x, na = na_patterns, std_chr = TRUE, warn = TRUE, ...) {
   if (is.integer(x)) {
     return(x)
   } else if (bit64::is.integer64(x)) {
@@ -219,7 +228,7 @@ std_num <- function(x, std_chr = TRUE, warn = TRUE, ...) {
   } else if (is.double(x)) {
     return(tryCatch(vctrs::vec_cast(x, integer()), error = function(e) x))
   } else if (is.character(x) || is.factor(x)) {
-    return(chr_to_num(x, std = std_chr, warn = warn, ...))
+    return(chr_to_num(x, std = std_chr, warn = warn, na = na, ...))
   } else if (lubridate::is.Date(x)) {
     return(as.integer(x))
   } else if (lubridate::is.POSIXt(x)) {
@@ -240,25 +249,36 @@ std_num <- function(x, std_chr = TRUE, warn = TRUE, ...) {
 #' a single numeric value if possible and uses standard interval notation if not.
 #'
 #' @param x A `character` vector
+#' @param less_than Regex patterns to consider `"<"`. Passed to
+#'   `stringr::str_replace()`. Can be a vector of patterns.
+#' @param greater_than Regex patterns to consider `">"`. Passed to
+#'   `stringr::str_replace()`. Can be a vector of patterns.
+#' @param na Regex patterns to consider `NA`. Passed to `stringr::str_detect()`.
+#'   Can be a vector of patterns.
 #' @param std_chr Whether to standarize the strings before parsing
 #' @param warn Whether to emit a warning when potential numeric values are not
 #'   able to be converted to an interval
-#' @param chimerism The type of chimerism to extract, if any; passed to `chr_to_num()`,
-#'   when `std_chr = TRUE`, ignored otherwise.
+#' @inheritDotParams chr_to_num
 #'
 #' @return A `character` vector
 #'
 #' @export
-std_intvl <- function(x, std_chr = TRUE, warn = TRUE, chimerism = c("no", "donor", "host")) {
+std_intvl <- function(
+    x,
+    less_than = c("LESS THAN", "[A-Z ]*NOTHING TO SUGGEST[A-Z ]*SENSITIVITY[A-Z ]*(?=[0-9])"),
+    greater_than = c("GREATER THAN"),
+    na = na_patterns,
+    std_chr = TRUE,
+    warn = TRUE,
+    ...
+) {
   # Clean character representation (w/o converting)
-  x_chr <- chr_to_num(x, std = std_chr, warn = warn, convert = FALSE, chimerism = chimerism)
+  x_chr <- chr_to_num(x, std = std_chr, warn = warn, convert = FALSE, ...)
   x_num <- x_chr %>%
     # Replace "less than"
-    stringr::str_replace("LESS THAN", "<") %>%
+    str_replace_vec(less_than, "<") %>%
     # Replace "greater than"
-    stringr::str_replace("GREATER THAN", ">") %>%
-    # Replace "nothing to suggest w/ sensitivity"
-    stringr::str_replace("[A-Z ]*NOTHING TO SUGGEST[A-Z ]*SENSITIVITY[A-Z ]*(?=[0-9])", "<") %>%
+    str_replace_vec(greater_than, ">") %>%
     # Extract ranges and numbers
     stringr::str_extract("[0-9(<>=][0-9- .Ee<>=)]*") %>%
     # Remove spaces
@@ -373,12 +393,12 @@ std_intvl <- function(x, std_chr = TRUE, warn = TRUE, chimerism = c("no", "donor
 #' regular expression in `true`, `false`, and `na`.
 #'
 #' @param x A vector to convert
-#' @param true Regular expressions corresponding to `TRUE`; these will be
-#'   combined using `"|"`
-#' @param false Regular expressions corresponding to `FALSE`; these will be
-#'   combined using `"|"`
-#' @param na Regular expressions corresponding to `NA`; these will be combined
-#'   using `"|"`
+#' @param true Regex patterns to consider `TRUE`. Passed to
+#'   `stringr::str_detect()`. Can be a vector of patterns.
+#' @param false Regex patterns to consider `FALSE`. Passed to
+#'   `stringr::str_detect()`. Can be a vector of patterns.
+#' @param na Regex patterns to consider `NA`. Passed to
+#'   `stringr::str_detect()`. Can be a vector of patterns.
 #' @param std_chr Whether to standardized a `character` vector before parsing
 #' @param warn Whether to warn if `character` strings were not converted to
 #'   `logical`
@@ -388,20 +408,16 @@ std_intvl <- function(x, std_chr = TRUE, warn = TRUE, chimerism = c("no", "donor
 #' @export
 std_lgl <- function(
     x,
-    true = c("^YES", "^POS", "^ALIVE", "^ON THERAPY", "^1$"),
-    false = c("^NO", "^NEG", "^EXPIRED", "^DECEASED", "^OFF THERAPY", "^0$"),
-    na = c("^$", "^N/?A", "^-999[0-9]", "^UNSPEC", "^NO DATA", "^UNKN?",
-           "^INCONCLUSIVE", "^NOT? (?:EVAL|APPL|DONE|DETER)", "^EQUIVOCAL",
-           "^NEVER DROPPED BELOW"),
+    true = c("^TRUE$", "^1$", "^YES", "^POS", "^ALIVE", "^ON THERAPY"),
+    false = c("^FALSE$", "^0$", "^NO", "^NEG", "^EXPIRED", "^DECEASED", "^OFF THERAPY"),
+    na = na_patterns,
     std_chr = TRUE,
     warn = TRUE
 ) {
   checkmate::assert_flag(std_chr)
   if (std_chr && (is.character(x) || is.factor(x))) x <- std_chr(x)
   if (is.character(x)) {
-    for (pat_na in na) {
-      x[stringr::str_detect(x, pat_na)] <- NA_character_
-    }
+    x <- str_to_na(x, na)
     for (pat_true in true) {
       x[stringr::str_detect(x, pat_true)] <- "TRUE"
     }
@@ -411,10 +427,7 @@ std_lgl <- function(
     not_converted <- unique(x[!x %in% c("TRUE", "FALSE", NA_character_)])
     if (length(not_converted) > 0L) {
       if (warn) {
-        not_converted <- paste0(
-          '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
-          collapse = ", "
-        )
+        not_converted <- paste0('"', not_converted, '"', collapse = ", ")
         rlang::warn(paste0(
           "Not all character strings converted to class logical.",
           " Values not converted were: ", not_converted
@@ -498,7 +511,7 @@ std_date = function(
     tz_heuristic = c(5L, 6L),
     warn = TRUE,
     train = TRUE,
-    na = c("^$", "N/?A", "ONGOING"),
+    na = na_patterns,
     range_value = c("start", "end", "na"),
     range_sep = c("-", "to", ","),
     ...

@@ -18,41 +18,42 @@
 #' @param x A `character` vector
 #' @param std Whether to standardize the vector before cleaning and converting
 #' @param convert Whether to actually convert to `numeric`
-#' @param na_patterns Regular expressions to convert to `NA`
-#' @param chimerism The type of chimerism to extract, if any
+#' @param na Regular expressions to convert to `NA`
+#' @param replace A `data.frame` of regular expressions and strings to replace
+#'   them; regular expression should be in a column named `pattern`, and
+#'   replacements should be in a column named `replacement`. Each row is passed
+#'   to `stringr::str_replace()`.
+#' @param per_action How to treat %/percent/per million/etc labels. `drop` simply
+#'   removes the labels, `divide` divides the value by the appropriate denominator,
+#'   and `ignore` does nothing.
+#' @param multiple_decimals How to handle multiple decimals within a number
+#' @param donor_host Which value to use when values for both a donor and a host
+#'   are given
 #'
-#' @return A `numeric` or `character` vector
+#' @return A `numeric` or `character` vector, depending on the value of `convert`
 #'
 #' @keywords internal
 chr_to_num <- function(
-    x, std = TRUE, warn = TRUE, convert = TRUE,
-    na_patterns = c(
-      "^-*$", # Includes ""
-      "(?:^|\\W)N/?A(?:$|\\W)",
-      "NOT? (?:RER?PORT|(?:[A-Z ]|-)*PHENOTYPE)",
-      "NOT? (?:AMP|AVAIL|DATA|DONE|EVAL|FOLLOWED|IDENT|VALUE)",
-      "(?:^|\\W)(?:NG|UNK|CQNS|QNS|QIS|NSQ|IQ|QI|NR)(?:$|\\W)",
-      "(?:^|\\W)(?:CANCELL?(?:ED)?|NULL|UNKNOWN)(?:$|\\W)",
-      "(?:^|\\W)(?:INCONCLUSIVE|INSUFFICIENT|EQUIVOC?A?L?)(?:$|\\W)",
-      "(?:^|\\W)(?:SEE COMMENT|SEE SCANNED DOC)(?:$|\\W)",
-      "-999[0-9]",
-      "^REPORTED$"
+    x,
+    std = TRUE,
+    warn = TRUE,
+    convert = TRUE,
+    na = na_patterns,
+    replace = data.frame(
+      pattern = c("MRD BY NGS ?", "^NEGATIVE$", "^(?:WE[EA]KLY )?POSITIVE$", ".*\\bIN CR\\b.*"),
+      replacement = c("", "0", ">0", "0")
     ),
     per_action = c("drop", "divide", "ignore"),
     multiple_decimals = c("use_first", "use_last", "ignore"),
-    chimerism = c("use_donor", "use_host", "ignore")
+    donor_host = c("use_donor", "use_host", "ignore")
 ) {
   as_rlang_error(checkmate::assert_flag(std))
   as_rlang_error(checkmate::assert_flag(warn))
   as_rlang_error(checkmate::assert_flag(convert))
   per_action <- rlang::arg_match(per_action)[[1L]]
   multiple_decimals <- rlang::arg_match(multiple_decimals)[[1L]]
-  chimerism <- rlang::arg_match(chimerism)[[1L]]
-  x_chr <- if (std) std_chr(x) else x
-  # Convert missings
-  for (na_pat in na_patterns) {
-    x_chr[x_chr %like% na_pat] <- NA_character_
-  }
+  donor_host <- rlang::arg_match(donor_host)[[1L]]
+  x_chr <- if (std) std_chr(x, na = na) else str_to_na(x, pattern = na)
   # Replace "10^x" with 1Ex
   x_chr <- stringr::str_replace_all(x_chr, "10\\^(-?[0-9]+)", "1E\\1")
   # Remove comma-separators in single number
@@ -65,16 +66,10 @@ chr_to_num <- function(
   x_chr <- UtilsChrToNum$std_per(x_chr, action = per_action)
   # Convert fractions
   x_chr <- UtilsChrToNum$std_frac(x_chr)
-  # Remove select expressions
-  x_chr <- stringr::str_remove(x_chr, "^MRD BY NGS ?")
-  # Convert `NEGATIVE`
-  x_chr[x_chr == "NEGATIVE"] <- "0"
-  # Convert POSITIVE and W(E|A)EKLY POSITIVE [sic]
-  x_chr[x_chr %like% "^(?:WE[EA]KLY )?POSITIVE$"] <- ">0"
-  # Convert complete remission (IN CR)
-  x_chr <- stringr::str_replace(x_chr, ".*(?:^|\\W)IN CR(?:$|\\W).*", "0")
+  # Replace select expressions
+  x_chr <- str_replace_vec(x_chr, replace$pattern, replace$replacement)
   # Extract donor/host numbers
-  x_chr <- UtilsChrToNum$std_donor_host(x_chr, action = chimerism)
+  x_chr <- UtilsChrToNum$std_donor_host(x_chr, action = donor_host)
   # Trim whitespace and replace new empty strings with missings
   x_chr <- trimws(x_chr)
   x_chr[x_chr == ""] <- NA_character_
@@ -163,16 +158,16 @@ UtilsChrToNum <- R6Class(
       action <- rlang::arg_match(action)[[1L]]
       if (action == "use_donor") {
         # Match D=x pattern (or Dx)
-        x <- stringr::str_replace(x, ".*D=? ?([0-9.]+).*", "\\1")
+        x <- stringr::str_replace(x, ".*(?:D|DONOR)=? ?([0-9.]+).*", "\\1")
         # Match x DONOR pattern
         x <- stringr::str_replace(x, ".*([0-9.]+) DONOR.*", "\\1")
         # Return
         x
       } else if (action == "use_host") {
         # Match PT=x pattern (or PTx)
-        x <- stringr::str_replace(x, ".*PT=? ?([0-9.]+).*", "\\1")
+        x <- stringr::str_replace(x, ".*(?:PT|PATIENT|HOST)=? ?([0-9.]+).*", "\\1")
         # Match x PATIENT pattern
-        x <- stringr::str_replace(x, ".*([0-9.]+) PATIENT.*", "\\1")
+        x <- stringr::str_replace(x, ".*([0-9.]+) (?:PATIENT|HOST).*", "\\1")
         # Return
         x
       } else if (action == "ignore") {

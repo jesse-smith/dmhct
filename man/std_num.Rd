@@ -4,14 +4,34 @@
 \alias{std_num}
 \title{Convert and Standardize Numeric Values in Various Forms}
 \usage{
-std_num(x, std_chr = TRUE, warn = TRUE)
+std_num(x, na = na_patterns, std_chr = TRUE, warn = TRUE, ...)
 }
 \arguments{
 \item{x}{A vector to convert to numeric}
 
+\item{na}{Regex patterns to consider \code{NA}. Passed to \code{stringr::str_detect()}.
+Can be a vector of patterns.}
+
 \item{std_chr}{Whether to standardize a \code{character} or \code{factor} before conversion}
 
 \item{warn}{Whether to warn when strings cannot be converted; passed to \code{chr_to_num()}}
+
+\item{...}{
+  Arguments passed on to \code{\link[=chr_to_num]{chr_to_num}}
+  \describe{
+    \item{\code{std}}{Whether to standardize the vector before cleaning and converting}
+    \item{\code{convert}}{Whether to actually convert to \code{numeric}}
+    \item{\code{replace}}{A \code{data.frame} of regular expressions and strings to replace
+them; regular expression should be in a column named \code{pattern}, and
+replacements should be in a column named \code{replacement}. Each row is passed
+to \code{stringr::str_replace()}.}
+    \item{\code{per_action}}{How to treat \%/percent/per million/etc labels. \code{drop} simply
+removes the labels, \code{divide} divides the value by the appropriate denominator,
+and \code{ignore} does nothing.}
+    \item{\code{multiple_decimals}}{How to handle multiple decimals within a number}
+    \item{\code{donor_host}}{Which value to use when values for both a donor and a host
+are given}
+  }}
 }
 \value{
 A \code{numeric} vector

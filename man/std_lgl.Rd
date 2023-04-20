@@ -6,10 +6,9 @@
 \usage{
 std_lgl(
   x,
-  true = c("YES", "POS", "ALIVE", "ON THERAPY"),
-  false = c("NO", "NEG", "EXPIRED", "DECEASED", "OFF THERAPY"),
-  na = c("^$", "N/?A", "-999[0-9]", "UNSPEC", "NO DATA", "UNKN?", "INCONCLUSIVE",
-    "NOT? (?:EVAL|APPL|DONE|DETER)", "EQUIVOCAL", "NEVER DROPPED BELOW"),
+  true = c("^TRUE$", "^1$", "^YES", "^POS", "^ALIVE", "^ON THERAPY"),
+  false = c("^FALSE$", "^0$", "^NO", "^NEG", "^EXPIRED", "^DECEASED", "^OFF THERAPY"),
+  na = na_patterns,
   std_chr = TRUE,
   warn = TRUE
 )
@@ -17,14 +16,14 @@ std_lgl(
 \arguments{
 \item{x}{A vector to convert}
 
-\item{true}{Regular expressions corresponding to \code{TRUE}; these will be
-combined using \code{"|"}}
+\item{true}{Regex patterns to consider \code{TRUE}. Passed to
+\code{stringr::str_detect()}. Can be a vector of patterns.}
 
-\item{false}{Regular expressions corresponding to \code{FALSE}; these will be
-combined using \code{"|"}}
+\item{false}{Regex patterns to consider \code{FALSE}. Passed to
+\code{stringr::str_detect()}. Can be a vector of patterns.}
 
-\item{na}{Regular expressions corresponding to \code{NA}; these will be combined
-using \code{"|"}}
+\item{na}{Regex patterns to consider \code{NA}. Passed to
+\code{stringr::str_detect()}. Can be a vector of patterns.}
 
 \item{std_chr}{Whether to standardized a \code{character} vector before parsing}
 

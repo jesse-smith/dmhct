@@ -14,7 +14,7 @@ std_date(
   tz_heuristic = c(5L, 6L),
   warn = TRUE,
   train = TRUE,
-  na = c("^$", "N/?A", "ONGOING"),
+  na = na_patterns,
   range_value = c("start", "end", "na"),
   range_sep = c("-", "to", ","),
   ...
