@@ -8,9 +8,10 @@ dm_extract(
   dm_remote = dm_sql_server(),
   ...,
   .collect = TRUE,
-  .legacy = TRUE,
+  .legacy = FALSE,
   .reset = FALSE,
   .excl_dsmb = TRUE,
+  .quiet = FALSE,
   reset = .reset
 )
 }
@@ -24,18 +25,19 @@ extracted}
 \item{.collect}{\verb{[lgl]} Indicates whether the extracted data should be loaded
 onto the local machine (\code{TRUE} by default)}
 
-\item{.legacy}{\verb{[lgl]} Should the legacy version of \code{dm_extract()} be used? The
-default is currently \code{TRUE} but will switch to \code{FALSE} in a subsequent update.
+\item{.legacy}{\verb{[lgl]} Should the legacy version of \code{dm_extract()} be used?
 Will be deprecated in a future release, along with \code{.reset}.}
 
 \item{.reset}{\verb{[lgl]} Should the legacy cache be forced to reset? Only applicable
-if \code{.legacy = TRUE}; ignore otherwise. Will be deprecated in a future release,
+if \code{.legacy = TRUE}; ignored otherwise. Will be deprecated in a future release,
 along with \code{.legacy}.}
 
 \item{.excl_dsmb}{\verb{[lgl]} Should patients marked as part of an active DSMB-monitored
 study be excluded from the dataset? The default is \code{TRUE}; this should only
 be changed if you are sure that your use case has been approved by the St.
 Jude DSMB.}
+
+\item{.quiet}{Should status messages be suppressed?}
 
 \item{reset}{\verb{[lgl]} \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Please use
 \code{.reset} instead. Current behavior will only consider this argument if
