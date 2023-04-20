@@ -18,7 +18,7 @@ study be excluded from the dataset? The default is \code{TRUE}; this should only
 be changed if you are sure that your use case has been approved by the St.
 Jude DSMB.}
 
-\item{.quiet}{Whether to suppress progress messages}
+\item{.quiet}{Should status messages be suppressed?}
 }
 \value{
 The prepared \code{dm} object
