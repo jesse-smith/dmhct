@@ -30,8 +30,17 @@ dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE
   tbl_nms <- names(dm_local)
   for (tbl_nm in tbl_nms) {
     if (!quiet) rlang::inform(paste0("Standardizing ", tbl_nm))
-    # Standardize table]
+    # Standardize table
     dt <- tbl_standardize(dm_local[[tbl_nm]], quiet = quiet)
+    # Handle missings in cerner results and units in advance
+    if (tbl_nm %like% "cerner[0-9]") {
+      data.table::setDT(dt)
+      for (pat in na_patterns) {
+        data.table::set(dt, i = stringr::str_which(dt$result, pat), j = "result", value = NA_character_)
+        data.table::set(dt, i = stringr::str_which(dt$units, pat), j = "units", value = NA_character_)
+      }
+      setTBL(dt)
+    }
     # Replace table
     dm_local <- dm_local %>%
       dm::dm_select_tbl(-{{ tbl_nm }}) %>%
@@ -50,7 +59,7 @@ tbl_standardize <- function(tbl, arg_nm = NULL, quiet = FALSE) {
   dt <- data.table::as.data.table(tbl)
   # Handle all character columns first
   chr_cols <- select_colnames(
-    dt, where(is.character) | where(is.factor) | dplyr::starts_with(c("chr_", "cat_", "lgl_", "mcat_", "intvl_"))
+    dt, where(is.character) | dplyr::starts_with(c("chr_", "cat_", "lgl_", "mcat_", "intvl_"))
   )
   # Standardize character columns
   dt[, (chr_cols) := lapply(.SD, std_chr), .SDcols = chr_cols]
@@ -74,8 +83,10 @@ tbl_standardize <- function(tbl, arg_nm = NULL, quiet = FALSE) {
     dt, where(is.numeric) | dplyr::starts_with(c("num_", "pct_"))
   )
   for (col in num_cols) {
+    donor_host <- stringr::str_extract(col, "donor|host")
+    donor_host <- if (is.na(donor_host)) "ignore" else paste0("use_", donor_host)
     withCallingHandlers(
-      data.table::set(dt, j = col, value = std_num(dt[[col]], std_chr = FALSE, warn = !quiet)),
+      data.table::set(dt, j = col, value = std_num(dt[[col]], std_chr = FALSE, warn = !quiet, donor_host = donor_host)),
       warning = function(w) {
         w$call <- NULL
         w$message <- paste0("When standardizing `", arg_nm, "$", col, "`:\n", w$message)
@@ -88,10 +99,10 @@ tbl_standardize <- function(tbl, arg_nm = NULL, quiet = FALSE) {
   # Handle interval columns
   intvl_cols <- select_colnames(dt, dplyr::starts_with("intvl_"))
   for (col in intvl_cols) {
-    ch <- stringr::str_extract(col, "(?<=_)donor|host$")
-    ch <- if (is.na(ch)) "ignore" else paste0("use_", ch)
+    donor_host <- stringr::str_extract(col, "donor|host")
+    donor_host <- if (is.na(donor_host)) "ignore" else paste0("use_", donor_host)
     withCallingHandlers(
-      data.table::set(dt, j = col, value = std_intvl(dt[[col]], std_chr = FALSE, warn = !quiet, chimerism = ch)),
+      data.table::set(dt, j = col, value = std_intvl(dt[[col]], std_chr = FALSE, warn = !quiet, donor_host)),
       warning = function(w) {
         w$call <- NULL
         w$message <- paste0("When standardizing `", arg_nm, "$", col, "`:\n", w$message)
