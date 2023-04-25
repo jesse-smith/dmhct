@@ -1,3 +1,12 @@
+#' Combine Table with Like Information
+#'
+#' @param dm_std A standardized `dm` object. Standardization is necessary to
+#'   ensure columns are all of the same type.
+#' @param quiet Should update messages be suppressed?
+#'
+#' @return The updated `dm` object
+#'
+#' @export
 dm_combine <- function(dm_std = dm_standardize(), quiet = FALSE) {
   as_rlang_error(checkmate::assert_flag(quiet))
   force(dm_std)

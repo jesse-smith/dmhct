@@ -3,6 +3,7 @@
 export("%>%")
 export(con_sql_server)
 export(dm_collect)
+export(dm_combine)
 export(dm_compute)
 export(dm_disconnect)
 export(dm_elt)
