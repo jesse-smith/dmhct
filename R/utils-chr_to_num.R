@@ -55,9 +55,9 @@ chr_to_num <- function(
   donor_host <- rlang::arg_match(donor_host)[[1L]]
   x_chr <- if (std) std_chr(x, na = na) else str_to_na(x, pattern = na)
   # Replace "10^x" with 1Ex
-  x_chr <- stringr::str_replace_all(x_chr, "10\\^(-?[0-9]+)", "1E\\1")
+  x_chr <- str_replace_all_vec(x_chr, "10\\^(-?[0-9]+)", "1E\\1")
   # Remove comma-separators in single number
-  x_chr <- stringr::str_remove_all(x_chr, "(?<=[0-9]),(?=[0-9])")
+  x_chr <- str_remove_all_vec(x_chr, "(?<=[0-9]),(?=[0-9])")
   # Standardize decimals
   x_chr <- UtilsChrToNum$std_decimals(x_chr, multiple = multiple_decimals)
   # Replace numeric values coded as Excel dates with true value
@@ -78,10 +78,7 @@ chr_to_num <- function(
   if (warn) {
     not_converted <- unique(x[!is.na(x_chr) & is.na(x_num)])
     if (length(not_converted) > 0L) {
-      not_converted <- paste0(
-        '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
-        collapse = ", "
-      )
+      not_converted <- paste0('"', not_converted, '"', collapse = ", ")
       rlang::warn(paste0(
         "Not all character strings converted to class numeric.",
         " Values not converted were: ", not_converted
@@ -103,9 +100,9 @@ UtilsChrToNum <- R6Class(
       x <- stringr::str_remove_all(x, "(?<=[0-9])\\.(?=$|\\b)")
       # Handle multiple decimals with numbers between them
       if (multiple == "use_first") {
-        stringr::str_replace_all(x, "(?<=\\.)(?:([0-9]+)\\.)+", "\\1")
+        str_replace_all_vec(x, "(?<=\\.)(?:([0-9]+)\\.)+", "\\1")
       } else if (multiple == "use_last") {
-        stringr::str_replace_all(x, "(?:([0-9]+)\\.)+(?=[0-9]+\\.)", "\\1")
+        str_replace_all_vec(x, "(?:([0-9]+)\\.)+(?=[0-9]+\\.)", "\\1")
       } else if (multiple == "ignore") {
         x
       } else {
@@ -115,13 +112,25 @@ UtilsChrToNum <- R6Class(
     std_per = function(x, action = c("drop", "divide", "ignore")) {
       action <- rlang::arg_match(action)[[1L]]
       if (action == "drop") {
-        stringr::str_remove_all(x, "(?i)(?<=[0-9])[\\b\\s]*%+|percent|per (?:hundred|thousand|million|billion|trillion)")
+        str_remove_all_vec(x, "(?i)(?<=[0-9])[\\b\\s]*%+|percent|per (?:hundred|thousand|million|billion|trillion)")
       } else if (action == "divide") {
-        x <- stringr::str_replace_all(x, "(?i)(?<=[0-9])[\\b\\s]*(?:%+|percent|per hundred)", "/100")
-        x <- stringr::str_replace_all(x, "(?i)(?<=[0-9])[\\b\\s]*per thousand", "/1E3")
-        x <- stringr::str_replace_all(x, "(?i)(?<=[0-9])[\\b\\s]*per million",  "/1E6")
-        x <- stringr::str_replace_all(x, "(?i)(?<=[0-9])[\\b\\s]*per billion",  "/1E9")
-        x <- stringr::str_replace_all(x, "(?i)(?<=[0-9])[\\b\\s]*per trillion", "/1E12")
+        x <- str_replace_all_vec(
+          x,
+          c(
+            "(?i)(?<=[0-9])[\\b\\s]*(?:%+|percent|per hundred)",
+            "(?i)(?<=[0-9])[\\b\\s]*per thousand",
+            "(?i)(?<=[0-9])[\\b\\s]*per million",
+            "(?i)(?<=[0-9])[\\b\\s]*per billion",
+            "(?i)(?<=[0-9])[\\b\\s]*per trillion"
+          ),
+          c(
+            "/100",
+            "/1E3",
+            "/1E6",
+            "/1E9",
+            "/1E12"
+          )
+        )
         x
       } else if (action == "ignore") {
         x
@@ -130,7 +139,7 @@ UtilsChrToNum <- R6Class(
       }
     },
     std_frac = function(x) {
-      is_frac <- stringr::str_detect(x, "[0-9]/[0-9]")
+      is_frac <- str_detect_vec(x, "[0-9]/[0-9]")
       is_frac[is.na(is_frac)] <- FALSE
       if (any(is_frac)) {
         # Extract numerator and denominator
@@ -157,19 +166,19 @@ UtilsChrToNum <- R6Class(
     std_donor_host = function(x, action = c("use_donor", "use_host", "ignore")) {
       action <- rlang::arg_match(action)[[1L]]
       if (action == "use_donor") {
-        # Match D=x pattern (or Dx)
-        x <- stringr::str_replace(x, ".*(?:D|DONOR)=? ?([0-9.]+).*", "\\1")
-        # Match x DONOR pattern
-        x <- stringr::str_replace(x, ".*([0-9.]+) DONOR.*", "\\1")
-        # Return
-        x
+        # Match D=x pattern (or Dx) and  Match x DONOR pattern
+        str_replace_vec(
+          x,
+          c(".*(?:D|DONOR)=? ?([0-9.]+).*", ".*([0-9.]+) DONOR.*"),
+          "\\1"
+        )
       } else if (action == "use_host") {
-        # Match PT=x pattern (or PTx)
-        x <- stringr::str_replace(x, ".*(?:PT|PATIENT|HOST)=? ?([0-9.]+).*", "\\1")
-        # Match x PATIENT pattern
-        x <- stringr::str_replace(x, ".*([0-9.]+) (?:PATIENT|HOST).*", "\\1")
-        # Return
-        x
+        # Match PT=x pattern (or PTx) and Match x PATIENT pattern
+        stringr::str_replace(
+          x,
+          c(".*(?:PT|PATIENT|HOST)=? ?([0-9.]+).*", ".*([0-9.]+) (?:PATIENT|HOST).*"),
+          "\\1"
+        )
       } else if (action == "ignore") {
         x
       } else {

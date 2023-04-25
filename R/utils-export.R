@@ -83,8 +83,8 @@ intvl_to_matrix <- function(x) {
   # Extract single bounds
   is_intvl1 <- !is_numeric & x %like% "^[<>=]"
   x_intvl1 <- x[is_intvl1]
-  op_intvl1 <- stringr::str_extract(x_intvl1, "^[<>=]{1,2}")
-  x_intvl1 <- stringr::str_remove(x_intvl1, "^[<>=]{1,2}")
+  op_intvl1 <- str_extract_vec(x_intvl1, "^[<>=]{1,2}")
+  x_intvl1 <- str_remove_vec(x_intvl1, "^[<>=]{1,2}")
   x_intvl1 <- suppressWarnings(as.numeric(x_intvl1))
   is_intvl1_update <- !is.na(x_intvl1)
   is_intvl1[is_intvl1] <- is_intvl1_update
@@ -161,36 +161,22 @@ std_chr <- function(
       stringi::stri_trans_general("Any-Latin;Latin-ASCII") %>%
       stringi::stri_enc_toascii()
   }
-
+  # Remove substitute character
+  x <- str_remove_all_vec(x, "\032")
   # Squish
   if (keep_inner_newlines) {
     x <- x %>%
       # Condense all whitespace except newlines (only ASCII needed)
-      stringr::str_replace_all("[ \\t\\v\\f]+", " ") %>%
+      str_replace_all_vec("[ \\t\\v\\f]+", " ") %>%
       # Remove leading & training whitespace
       stringr::str_trim() %>%
       # Condense newlines, including those separated by whitespace
-      stringr::str_replace_all("(?:[ ]*[\\r\\n]+[ ]*)+", "\n")
+      str_replace_all_vec("(?:[ ]*[\\r\\n]+[ ]*)+", "\n")
   } else {
     x <- stringr::str_squish(x)
   }
   # Standardize case
-  if (!is.null(case)) {
-    x <- switch(
-      case,
-      "lower" = stringr::str_to_lower(x),
-      "upper" = stringr::str_to_upper(x),
-      "title" = stringr::str_to_title(x),
-      "sentence" = stringr::str_to_sentence(x)
-    )
-    na <- switch(
-      case,
-      "lower" = stringr::str_to_lower(na),
-      "upper" = stringr::str_to_upper(na),
-      "title" = stringr::str_to_title(na),
-      "sentence" = stringr::str_to_sentence(na)
-    )
-  }
+  x <- str_to_case(x, case)
   # Replace NA text
   x <- str_to_na(x, pattern = na)
   # Return
@@ -275,23 +261,21 @@ std_intvl <- function(
   # Clean character representation (w/o converting)
   x_chr <- chr_to_num(x, std = std_chr, warn = warn, convert = FALSE, ...)
   x_num <- x_chr %>%
-    # Replace "less than"
-    str_replace_vec(less_than, "<") %>%
-    # Replace "greater than"
-    str_replace_vec(greater_than, ">") %>%
+    # Replace less than and greater than
+    str_replace_vec(c(less_than, greater_than), c(rep("<", length(less_than)), rep(">", length(greater_than)))) %>%
     # Extract ranges and numbers
-    stringr::str_extract("[0-9(<>=][0-9- .Ee<>=)]*") %>%
+    str_extract_vec("[0-9(<>=][0-9- .Ee<>=)]*") %>%
     # Remove spaces
-    stringr::str_remove_all("\\s")
+    str_remove_all_vec("\\s")
   # Create return vector
   x_rtn <- x_num
   # Get limits of double precision for rounding (floor to avoid previous roundoffs)
   digits <- floor(abs(log10(.Machine$double.eps)))
   # Handle regular numbers and intervals with 1 number
   # Operator for 1-number interval
-  x_op <- stringr::str_extract(x_num, "^[<>]")
+  x_op <- str_extract_vec(x_num, "^[<>]")
   # Number should convert after removal of operator
-  x_numeric <- stringr::str_remove(x_num, "^[<>]")
+  x_numeric <- str_remove_vec(x_num, "^[<>]")
   x_numeric <- suppressWarnings(as.numeric(x_numeric))
   # Define as able to be converted to numeric after removal of operator
   is_numeric_intvl1 <- !is.na(x_numeric)
@@ -356,25 +340,22 @@ std_intvl <- function(
   # Convert 0 or 100 bounds to equivalent 1-number intervals
   # Convert closed zero bound and open upper bound to "< upper bound"
   is_closed_zero <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "^\\[0," & x_rtn %like% "\\)$"
-  x_rtn[is_closed_zero] <- stringr::str_replace(x_rtn[is_closed_zero], "\\[0,([^)]+)\\)", "<\\1")
+  x_rtn[is_closed_zero] <- str_replace_vec(x_rtn[is_closed_zero], "\\[0,([^)]+)\\)", "<\\1")
   # Convert closed zero bound and closed upper bound to "<= upper bound"
   is_closed_zero_c <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "^\\[0," & x_rtn %like% "\\]$"
-  x_rtn[is_closed_zero_c] <- stringr::str_replace(x_rtn[is_closed_zero_c], "\\[0,([^\\]]+)\\]", "<=\\1")
+  x_rtn[is_closed_zero_c] <- str_replace_vec(x_rtn[is_closed_zero_c], "\\[0,([^\\]]+)\\]", "<=\\1")
   # Convert closed 100 bound and open lower bound to "> lower bound"
   is_closed_100 <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "100\\]$" & x_rtn %like% "^\\("
-  x_rtn[is_closed_100] <- stringr::str_replace(x_rtn[is_closed_100], "\\(([^,]+),100\\]", ">\\1")
+  x_rtn[is_closed_100] <- str_replace_vec(x_rtn[is_closed_100], "\\(([^,]+),100\\]", ">\\1")
   # Convert closed 100 bound and closed lower bound to ">= lower bound"
   is_closed_100_c <- (is_intvl2_no_op | is_intvl2_op) & x_rtn %like% "100\\]$" & x_rtn %like% "^\\["
-  x_rtn[is_closed_100_c] <- stringr::str_replace(x_rtn[is_closed_100_c], "\\[([^,]+),100\\]", ">=\\1")
+  x_rtn[is_closed_100_c] <- str_replace_vec(x_rtn[is_closed_100_c], "\\[([^,]+),100\\]", ">=\\1")
   # Warn of unconverted strings if desired
   if (warn) {
     is_na_rtn <- apply(intvl_to_matrix(x_rtn), 1L, function(.x) all(is.na(.x)))
     not_converted <- unique(x[!is.na(x_chr) & is_na_rtn])
     if (length(not_converted) > 0L) {
-      not_converted <- paste0(
-        '"', stringr::str_replace_all(not_converted, '"', '\\"'), '"',
-        collapse = ", "
-      )
+      not_converted <- paste0('"', not_converted, '"', collapse = ", ")
       rlang::warn(paste0(
         "Not all character strings converted to interval.",
         " Values not converted were: ", not_converted
@@ -418,12 +399,8 @@ std_lgl <- function(
   if (std_chr && (is.character(x) || is.factor(x))) x <- std_chr(x)
   if (is.character(x)) {
     x <- str_to_na(x, na)
-    for (pat_true in true) {
-      x[stringr::str_detect(x, pat_true)] <- "TRUE"
-    }
-    for (pat_false in false) {
-      x[stringr::str_detect(x, pat_false)] <- "FALSE"
-    }
+    x[str_detect_vec(x, true)] <- "TRUE"
+    x[str_detect_vec(x, false)] <- "FALSE"
     not_converted <- unique(x[!x %in% c("TRUE", "FALSE", NA_character_)])
     if (length(not_converted) > 0L) {
       if (warn) {
@@ -529,10 +506,10 @@ std_date = function(
   as_rlang_error(checkmate::assert_character(range_sep))
   if (is.character(x)) {
     # Handle missings
-    x[stringr::str_starts(x, paste0(na, collapse = "|"))] <- NA_character_
+    x[str_starts_vec(x, na)] <- NA_character_
     # Handle ranges
     if (range_value != "na") {
-      x_split <- stringr::str_split(x, paste0("\\s*(?:", paste0(range_sep, collapse = "|"), ")\\s*"))
+      x_split <- str_split_f(x, paste0("\\s*(?:", paste0(range_sep, collapse = "|"), ")\\s*"))
       is_range <- purrr::map_lgl(x_split, ~ length(.x) == 2L)
       i <- switch(range_value, "start" = 1L, "end" = 2L)
       map_fn <- function(x, ...) {

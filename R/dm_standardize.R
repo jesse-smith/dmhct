@@ -32,15 +32,8 @@ dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE
     if (!quiet) rlang::inform(paste0("Standardizing ", tbl_nm))
     # Standardize table
     dt <- tbl_standardize(dm_local[[tbl_nm]], quiet = quiet)
-    # Handle missings in cerner results and units in advance
-    if (tbl_nm %like% "cerner[0-9]") {
-      data.table::setDT(dt)
-      for (pat in na_patterns) {
-        data.table::set(dt, i = stringr::str_which(dt$result, pat), j = "result", value = NA_character_)
-        data.table::set(dt, i = stringr::str_which(dt$units, pat), j = "units", value = NA_character_)
-      }
-      setTBL(dt)
-    }
+    # Handle EAV tables
+    if (tbl_nm %like% "cerner[0-9]") dt <- cerner_standardize(dt)
     # Replace table
     dm_local <- dm_local %>%
       dm::dm_select_tbl(-{{ tbl_nm }}) %>%
@@ -78,9 +71,9 @@ tbl_standardize <- function(tbl, arg_nm = NULL, quiet = FALSE) {
     )
   }
 
-  # Handle numeric columns
+  # Handle numeric columns, including id cols
   num_cols <- select_colnames(
-    dt, where(is.numeric) | dplyr::starts_with(c("num_", "pct_"))
+    dt, where(is.numeric) | dplyr::starts_with(c("num_", "pct_", "entity_id", "donor_id"))
   )
   for (col in num_cols) {
     donor_host <- stringr::str_extract(col, "donor|host")
@@ -138,4 +131,57 @@ tbl_standardize <- function(tbl, arg_nm = NULL, quiet = FALSE) {
   }
 
   dt
+}
+
+
+cerner_standardize <- function(dt) {
+  # Convert to data.table in place
+  data.table::setDT(dt)
+  # Convert cerner code to character if not already
+  if (!is.character(dt$cerner_code)) dt[, "cerner_code" := std_chr(cerner_code)]
+  # Create `units` if it does not already exist
+  if (!"units" %in% colnames(dt)) dt[, "units" := NA_character_]
+  # Add column to track row order
+  dt[, ".row_id_" := .I]
+  # Load test map and standardize cerner code
+  cerner_test_map <- data.table::fread(
+    system.file("extdata/cerner_test_map.csv", package = "dmhct"),
+    colClasses = "character",
+    na.strings = NULL
+  )
+  cerner_test_map[, "cerner_code" := std_chr(cerner_code)]
+  # Match test_std using cerner code
+  dt <- data.table::merge.data.table(
+    dt,
+    unique(cerner_test_map[, c("cerner_code", "test_std")], by = "cerner_code"),
+    by = "cerner_code",
+    all.x = TRUE
+  )
+  # Match remaining test_std using test name
+  dt[is.na(test_std), "test_std" := data.table::merge.data.table(
+    .SD,
+    unique(..cerner_test_map[, c("test", "test_std")], by = "test"),
+    all.x = TRUE
+  )$test_std, .SDcols = c("test", "test_std")]
+  # Fill remaining test_std using cleaned test names from dataset
+  # Ideally should not be many (or any), so just run on raw names (no joining)
+  dt[is.na(test_std), "test_std" := janitor::make_clean_names(test, allow_dupes = TRUE)]
+  # Move `test_std` to be after `test`
+  cols <- colnames(dt)
+  test_loc <- which(cols == "test")
+  col_order <- unique(c(cols[1:test_loc], "test_std", cols[(test_loc + 1L):length(cols)]))
+  data.table::setcolorder(dt, col_order)
+  # Replace `na_patterns` with `NA` in both `result` and `units`
+  dt$result <- str_to_na(dt$result, na_patterns)
+  dt$units <- str_to_na(dt$units, na_patterns)
+  # # Key by `test_std`
+  # data.table::setkeyv(dt, "test_std")
+  # # If units are empty, look for them in `result`
+  # units_pat <- "(?<=[0-9] )[A-Z0-9/%^ ]+"
+  # dt[is.na(units), "units2" := stringr::str_extract(result, )]
+  # Re-order to original row order
+  data.table::setorderv(dt, ".row_id_")
+  dt[, ".row_id_" := NULL]
+  # Convert (back) to tibble
+  setTBL(dt)
 }

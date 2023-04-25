@@ -97,7 +97,7 @@ DMExtractLegacy <- R6::R6Class(
 
     cerner = function(
       dm_remote,
-      path_var = system.file("extdata", "cerner_var_map.csv", package = "dmhct"),
+      path_var = system.file("extdata", "cerner_test_map_v1.csv", package = "dmhct"),
       quiet = TRUE
     ) {
       if ("cerner" %in% names(dm_remote)) {

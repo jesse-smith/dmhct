@@ -1,4 +1,4 @@
-cerner_code,test,var
+cerner_code,test,test_std
 10523,GLUCOSE LVL,num_glucose
 10523,GLUCOSE,num_glucose
 106827511,"STREP PNEUMONIAE TYPE 1 IGG (P13,PNX)",num_strep_pneumo_type01_igg

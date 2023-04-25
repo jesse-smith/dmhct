@@ -15,7 +15,9 @@ pivot_hla <- function(dt_hla) {
   dt_hla <- data.table::as.data.table(dt_hla)
   id_cols <- stringr::str_subset(colnames(dt_hla), "_id|date_")
   rhs_cols <- "cat_gene"
-  value_cols <- stringr::str_subset(colnames(dt_hla), "allele")
+  value_cols_old <- stringr::str_subset(colnames(dt_hla), "allele")
+  value_cols <- paste0("mcat_", stringr::str_remove(value_cols_old, "^cat_"))
+  data.table::setnames(dt_hla, value_cols_old, value_cols)
   pivot_expr <- paste0("data.table::dcast(",
    "dt_hla, ",
    paste0(id_cols, collapse = " + "), "  ~ ", rhs_cols, ", ",
@@ -31,26 +33,14 @@ pivot_hla <- function(dt_hla) {
     rlang::parse_expr() %>%
     eval() %>%
     setTBL() %>%
-    janitor::clean_names()
+    janitor::clean_names() %>%
+    dplyr::rename_with(~ stringr::str_remove(.x, "_allele"))
+
   dt_hla
 }
 
 
-pivot_cerner <- function(
-    dt_cerner,
-    na_pattern = c(
-      "^-+$", # Includes ""
-      "(?:^|\\W)N/?A(?:$|\\W)",
-      "NOT? (?:RER?PORT|(?:[A-Z ]|-)*PHENOTYPE)",
-      "NOT? (?:AMP|AVAIL|DATA|DONE|EVAL|FOLLOWED|IDENT|VALUE)",
-      "(?:^|\\W)(?:NG|UNK|CQNS|QNS|QIS|NSQ|IQ|QI|NR)(?:$|\\W)",
-      "(?:^|\\W)(?:CANCELL?(?:ED)?|NULL|UNKNOWN)(?:$|\\W)",
-      "(?:^|\\W)(?:INCONCLUSIVE|INSUFFICIENT|EQUIVOC?A?L?)(?:$|\\W)",
-      "(?:^|\\W)(?:SEE COMMENT|SEE SCANNED DOC)(?:$|\\W)",
-      "-999[0-9]",
-      "^REPORTED$"
-    )
-) {
+pivot_cerner <- function(dt_cerner) {
   dt_cerner <- data.table::as.data.table(dt_cerner)
   # Standardize test names
   # Get code-test mapping
@@ -99,28 +89,23 @@ pivot_cerner <- function(
   # Use standardized name in original data if not in `code_to_test`
   dt_cerner[is.na(.std_), var := paste0("unk_", janitor::make_clean_names(test, allow_dupes = TRUE))]
   dt_cerner[, "test" := var][, c(".std_", "cerner_code", "var") := NULL]
-  # Prepare for combination with result
-  for (pat in na_pattern) {
-    data.table::set(dt_cerner, i = which(dt_cerner$result %like% pat), j = "result", value = "")
-    data.table::set(dt_cerner, i = which(dt_cerner$units %like% pat), j = "units", value = "")
-  }
-  dt_cerner[is.na(result), "result" := ""]
-  dt_cerner[is.na(units), "units" := ""][units != "", "units" := paste0(" ", units)]
-  # Combine result and units, convert back to NA
-  dt_cerner[, "result" := paste0(result, units)][, "units" := NULL]
-  dt_cerner[, "result" := std_chr(result)]
-  # Pivot wider
-  dt_cerner <- data.table::dcast(
-    dt_cerner,
-    formula = entity_id + date ~ test,
-    value.var = "result",
-    fun.aggregate = function(x) {
-      if (length(x) == 0L) return(NA_character_)
-      paste0(x, collapse = " | ")
-    }
-  )
-  # Convert to tibble
-  setTBL(dt_cerner)
+  # Re-order columns
+  data.table::setcolorder(dt_cerner, c("test", "entity_id", "date", "result", "units"))
+  # Re-order rows
+  data.table::setkeyv(dt_cerner, colnames(dt_cerner))
+  # Get unique rows
+  dt_cerner <- unique(dt_cerner, fromLast = TRUE, by = setdiff(colnames(dt_cerner), "units"))
+  # Remove missing results when there are non-missing values for that test patient, and date
+  dt_cerner[, .all_na_ := all(is.na(result)), by = intersect(c("test", "entity_id", "date"), colnames(dt_cerner))]
+  dt_cerner <- dt_cerner[!is.na(result) | .all_na_][, ".all_na_" := NULL]
+  # # Pivot wider
+  # dt_cerner <- data.table::dcast(
+  #   dt_cerner,
+  #   formula = entity_id + date + .i_ ~ test,
+  #   value.var = c("result")
+  # )
+  # # Convert to tibble
+  # setTBL(dt_cerner)
   # Return
   dt_cerner
 }
