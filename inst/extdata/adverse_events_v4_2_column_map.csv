@@ -1,0 +1,36 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+AE Category/Event,cat_ae_type
+AE Other,cat_ae_desc
+Was this event serious as defined by protocol?,lgl_sae
+Event Description,cat_ae_desc
+Grade,num_nci_grade
+Onset Date,dt_ae_onset
+Resolved Date,dt_ae_resolve
+Is AE Ongoing?,lgl_ongoing
+Action,cat_action_taken
+Outcome,cat_outcome
+Was this an unanticipated problem as defined by protocol?,lgl_unanticipated
+AE expected?,lgl_ae_expected
+Relationship To Treatment,cat_ae_tx_related
+Reason unrelated,cat_ae_tx_unrelated_reason
+"Reason unrelated: If Others, specify",chr_ae_tx_unrelated_reason_specify
+Related to CliniMACS Device,cat_ae_clinimacs_related
+Comments,chr_comments
+AE Result in off treatment?,lgl_result_off_treatment
+Dose Limiting Toxicity?,lgl_dose_limiting_toxicity
+AE Attribution,chr_ae_attribution
+Is AE Intermittent?,lgl_intermittent_symptoms
+Infection Site (location of Infection),cat_infection_site
+"Infection Site: If others, specify",chr_infection_site_specify
+Proven or Presumed,cat_infection_proven_presumed
+Infection Type,cat_infection_type
+Organism,cat_infection_organism
+Location of Culture Site,cat_infection_culture_site
+Date Identified,dt_infection
+Was PCR Done?,lgl_infection_pcr_performed
+Detected by PCR,lgl_infection_pcr_detected
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp

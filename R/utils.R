@@ -27,7 +27,7 @@ path_create <- function(..., abs = FALSE) {
 df_class <- function(data) {
   if (data.table::is.data.table(data)) {
     "data.table"
-  } else if (tibble::is_tibble(data)) {
+  } else if (is_tibble(data)) {
     "tibble"
   } else if (is.data.frame(data)) {
     "data.frame"
@@ -49,37 +49,53 @@ df_class <- function(data) {
 dt_cast <- function(data, to) {
   if (to == "data.table") return(data)
   data.table::setDF(data)
-  if (to == "tibble") data <- tibble::as_tibble(data)
+  if (to == "tibble") data <- dplyr::as_tibble(data)
   data
 }
 
 
-std_chr <- function(x, case = c("upper", "lower", "title", "sentence"), keep_inner_newlines = TRUE) {
-  if (!is.null(case)) case <- rlang::arg_match(case)[[1L]]
-  # Convert to ASCII
-  x <- x %>%
-    stringi::stri_trans_general("Any-Latin;Latin-ASCII") %>%
-    stringi::stri_enc_toascii()
+as_rlang_error <- function(error_expr) {
+  err <- rlang::catch_cnd(error_expr)
+  if (is.null(err)) return(invisible(NULL))
+  rlang::abort(err$message)
+}
 
-  # Squish
-  if (keep_inner_newlines) {
-    x <- x %>%
-      # Condense all whitespace except newlines
-      stringr::str_replace_all("[^\\S\\r\\n]+", " ") %>%
-      # Remove leading & training whitespace
-      stringr::str_trim() %>%
-      # Condense newlines, including those separated by whitespace
-      stringr::str_replace_all("(?:[^\\S\\r\\n]*[\\r\\n][^\\S\\r\\n]*)+", "\n")
-  } else {
-    x <- stringr::str_squish(x)
-  }
 
-  if (is.null(case)) return(x)
-  switch(
-    case,
-    "lower" = stringr::str_to_lower(x),
-    "upper" = stringr::str_to_upper(x),
-    "title" = stringr::str_to_title(x),
-    "sentence" = stringr::str_to_sentence(x)
-  )
+as_tibble_col <- function(x, column_name = "value") {
+  dplyr::tibble(`:=`(!!column_name, x))
+}
+
+
+is_tibble <- function(x) {
+  inherits(x, "tbl_df")
+}
+
+
+setTBL <- function(x, rownames = NULL) {
+  # Convert to data.frame
+  data.table::setDF(x, rownames = rownames)
+  # Convert to tibble
+  data.table::setattr(x, "class", c("tbl_df", "tbl", "data.frame"))
+  # Return
+  invisible(x)
+}
+
+
+#' Select Column Names Using Tidyselect Specifications
+#'
+#' `select_colnames()` selects the names of columns specified in `...`. It is
+#' useful for standardizing a function's interface while providing a link to
+#' underlying functions that may take a variety of column specifications.
+#'
+#' @param .data A data frame or data frame extension (e.g. a `tibble`)
+#'
+#' @param ... `<tidy-select>` One or more tidyselect specifications for the
+#'   desired column names (including simply using those column names)
+#'
+#' @return A character vector of column names
+#'
+#' @keywords internal
+select_colnames <- function(data, ...) {
+  checkmate::assert_data_frame(data)
+  colnames(dplyr::select(data, ...))
 }

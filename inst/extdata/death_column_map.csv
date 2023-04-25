@@ -1,0 +1,15 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Date,dt_death
+Death Location,cat_death_location
+Timing,lgl_on_therapy
+Cause of Death Determined by,cat_cause_method
+Primary cause of death,cat_cod_primary
+Other specify: Primay Cause of Death,chr_cod_primary_specify
+Contributing cause of death,cat_cod_contrib
+Other specify: Contributing Cause of Death,chr_cod_contrib_specify
+Classification of death,cat_death_class
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp
