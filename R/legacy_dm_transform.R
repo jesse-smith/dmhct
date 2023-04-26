@@ -65,7 +65,7 @@ DMTransformLegacy <- R6Class(
     cerner = function(
       dm_local,
       numeric_only = TRUE,
-      path = system.file("extdata", "cerner_var_map.csv", package = "dmhct")
+      path = system.file("extdata", "cerner_test_map_v1.csv", package = "dmhct")
     ) {
       dt <- dm_local$cerner
       class <- df_class(dt)
