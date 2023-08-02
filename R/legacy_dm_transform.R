@@ -1066,12 +1066,13 @@ DMTransformLegacy <- R6Class(
 
       # Disease status
       dt[, "cat_disease_status_at_trans" := cat_disease_status_at_trans %>%
+           toupper() %>%
            {factor(data.table::fcase(
-             . %like% "(?i)CR|Remission|Quiesc|(No Evidence)", "Remission",
-             . %in% c("PR", "VGPR", "No Evidence of Disease"), "Remission",
-             . %like% "(?i)relapse|refr", "Relapse/Refractory",
-             . %in% "N/A", NA_character_,
-             nchar(.) > 0L, "Active"
+             cat_dx_grp %ilike% "Anemia|Non-Malignan", "Active (Non-Malignant)",
+             . %like% "ACTIVE|REFR|RELAPSE|CHRONIC|NEVER TREAT|UNTREATED", "Active (Malignant)",
+             . %like% "DISEASE|PERSISTENT|PROGRESSIVE", "Active (Malignant)",
+             . %like% "CR|PR|REMISSION|QUIESC|NO EVIDENCE", "Remission",
+             . %in% "N/A", NA_character_
            ))}]
 
       # Donor related
