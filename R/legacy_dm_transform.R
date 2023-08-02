@@ -1222,11 +1222,10 @@ DMTransformLegacy <- R6Class(
       }
 
       # Don't use mismatched donors
-      dt[, "is_mm06" := tidyr::replace_na(cat_degree_match06 < 3L, FALSE)]
-      dt[, "is_mm08" := tidyr::replace_na(cat_degree_match08 < 4L, FALSE)]
-      dt[, "is_mm10" := tidyr::replace_na(cat_degree_match10 < 5L, FALSE)]
-      dt[, "is_mm" := tidyr::replace_na(cat_donor_type %like% "^MM", FALSE)]
-      dt[, "is_mm" := is_mm | is_mm06 | is_mm08 | is_mm10]
+      dt[, "is_mm06" := tidyr::replace_na(as.integer(as.character(cat_degree_match06)) < 3L, FALSE)]
+      dt[, "is_mm08" := tidyr::replace_na(as.integer(as.character(cat_degree_match08)) < 4L, FALSE)]
+      dt[, "is_mm10" := tidyr::replace_na(as.integer(as.character(cat_degree_match10)) < 5L, FALSE)]
+      dt[, "is_mm" := is_mm06 | is_mm08 | is_mm10]
       dt <- dt[is_mm == FALSE]
       mm_cols <- stringr::str_subset(colnames(dt), "^is_mm")
       dt[, c(mm_cols) := rep(list(NULL), NROW(..mm_cols))]
