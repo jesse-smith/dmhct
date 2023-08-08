@@ -1,6 +1,6 @@
 Package: dmhct
 Title: A Data Model Package for the MLinHCT Project
-Version: 0.0.0.9002
+Version: 1.0.0
 Authors@R: 
     person("Jesse", "Smith", , "jesse.smith@stjude.org", role = c("aut", "cre"))
 Description: Extracts, Loads, and Transforms data from the SQL Server
