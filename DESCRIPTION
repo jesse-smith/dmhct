@@ -16,7 +16,7 @@ Imports:
     checkmate,
     data.table,
     dbplyr,
-    dm,
+    dm (== 1.0.5),
     dplyr,
     fs,
     janitor,
