@@ -181,6 +181,7 @@ dsmb_entity_ids <- function(dm) {
   dsmb_protocols <- utils::read.csv(
     system.file("extdata/dsmb_protocols.csv", package = "dmhct"),
     colClasses = "character",
+    fileEncoding = "UTF-8-BOM",
     na.strings = NULL
   ) %>%
     dplyr::pull("Protocol") %>%
