@@ -1,6 +1,6 @@
 Package: dmhct
 Title: A Data Model Package for the MLinHCT Project
-Version: 0.0.0.9002
+Version: 1.0.0
 Authors@R: 
     person("Jesse", "Smith", , "jesse.smith@stjude.org", role = c("aut", "cre"))
 Description: Extracts, Loads, and Transforms data from the SQL Server
@@ -12,32 +12,35 @@ BugReports: https://github.com/jesse-smith/dmhct/issues
 Depends: 
     R (>= 3.6)
 Imports: 
+    bit64,
     checkmate,
-    cli,
     data.table,
-    DBI,
     dbplyr,
-    dm,
+    dm (== 1.0.5),
     dplyr,
-    forcats,
     fs,
     janitor,
     lifecycle,
-    lme4,
     lubridate,
     odbc,
     purrr,
-    qs,
     R6,
     rlang,
-    stats,
     stringi,
     stringr,
-    tibble,
-    tidyr
+    vctrs
 Suggests: 
+    cli,
+    devtools,
     DiagrammeR,
-    DiagrammeRsvg
+    DiagrammeRsvg,
+    forcats,
+    lme4,
+    qs,
+    renv,
+    stats,
+    tidyr,
+    usethis
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3

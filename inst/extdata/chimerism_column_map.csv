@@ -1,0 +1,14 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Chimerism_Date,date
+Type,cat_type
+Method,cat_method
+Cell Separation,cat_source
+CSF date,dt_csf
+Donor%,intvl_pct_donor
+Host%,intvl_pct_host
+% Donor Cells (Previous HSCT),intvl_pct_donor_previous
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp

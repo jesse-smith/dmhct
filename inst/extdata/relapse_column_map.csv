@@ -1,0 +1,13 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Relapse_Date,date
+Site,cat_site
+Was additional treatment given?,lgl_add_tx
+Method_of_Treatment,cat_add_tx
+"After treatment, did patient achieve remission?",lgl_remission
+"If yes, specify date",dt_remission
+Comments,chr_comments
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp

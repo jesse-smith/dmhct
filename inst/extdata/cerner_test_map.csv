@@ -1,0 +1,270 @@
+cerner_code,test,test_std
+10523,GLUCOSE LVL,num_glucose
+10523,GLUCOSE,num_glucose
+106827511,"STREP PNEUMONIAE TYPE 1 IGG (P13,PNX)",num_strep_pneumo_type01_igg
+106827511,"STREP PNEUMO TYPE 1 IGG (P13,PNX)",num_strep_pneumo_type01_igg
+106827537,"STREP PNEUMONIAE TYPE 3 IGG (P13, PNX)",num_strep_pneumo_type03_igg
+106827537,"STREP PNEUMO TYPE 3 IGG (P13, PNX)",num_strep_pneumo_type03_igg
+106827701,"STREP PNEUMONIAE TYPE 4 IGG (P7, P13, PN",num_strep_pneumo_type04_igg
+106827701,"STREP PNEUMO TYPE 4 IGG (P7, P13, PNX)",num_strep_pneumo_type04_igg
+106827867,"STREP PNEUMONIAE TYPE 5 IGG (P13, PNX)",num_strep_pneumo_type05_igg
+106827867,"STREP PNEUMO TYPE 5 IGG (P13, PNX)",num_strep_pneumo_type05_igg
+106828077,STREP PNEUMONIAE TYPE 8 IGG (PNX),num_strep_pneumo_type08_igg
+106828077,STREP PNEUMO TYPE 8 IGG (PNX),num_strep_pneumo_type08_igg
+106828105,"STREP PNEUMONIAE TYPE 14 IGG (P7, P13, P",num_strep_pneumo_type14_igg
+106828105,"STREP PNEUMO TYPE 14 IGG (P7, P13, PNX)",num_strep_pneumo_type14_igg
+106828163,"STREP PNEUMONIAE TYPE 6B IGG (P7, P13, P",num_strep_pneumo_type06b_igg
+106828163,"STREP PNEUMO TYPE 6B IGG (P7, P13, PNX)",num_strep_pneumo_type06b_igg
+106828181,"STREP PNEUMONIAE TYPE 7F IGG (P13, PNX)",num_strep_pneumo_type07f_igg
+106828181,"STREP PNEUMO TYPE 7F IGG (P13, PNX)",num_strep_pneumo_type07f_igg
+106828341,STREP PNEUMONIAE TYPE 9N IGG (PNX),num_strep_pneumo_type09n_igg
+106828341,STREP PNEUMO TYPE 9N IGG (PNX),num_strep_pneumo_type09n_igg
+106828449,"STREP PNEUMONIAE TYPE 9V IGG (P7, P13, P",num_strep_pneumo_type09v_igg
+106828449,"STREP PNEUMO TYPE 9V IGG (P7, P13, PNX)",num_strep_pneumo_type09v_igg
+106828473,STREP PNEUMONIAE TYPE 12F IGG (PNX),num_strep_pneumo_type12f_igg
+106828473,STREP PNEUMO TYPE 12F IGG (PNX),num_strep_pneumo_type12f_igg
+106828755,"STREP PNEUMONIAE TYPE 18C IGG (P7, P13,",num_strep_pneumo_type18c_igg
+106828755,"STREP PNEUMO TYPE 18C IGG (P7, P13, PNX)",num_strep_pneumo_type18c_igg
+106828805,"STREP PNEUMONIAE TYPE 19F IGG (P7, P13,",num_strep_pneumo_type19f_igg
+106828805,"STREP PNEUMO TYPE 19F IGG (P7, P13, PNX)",num_strep_pneumo_type19f_igg
+106828823,"STREP PNEUMONIAE TYPE 23F IGG (P7, P13,",num_strep_pneumo_type23f_igg
+106828823,"STREP PNEUMO TYPE 23F IGG (P7, P13, PNX)",num_strep_pneumo_type23f_igg
+11044,LYMPHOCYTE (%),pct_lymphocyte
+11044,LYMPHOCYTES(%),pct_lymphocyte
+12539,TECHNETIUM 99M RENAL CLEARANCE,unk_technetium_99m_renal_clearance
+12539,TECHNETIUM-99M RENAL CLEARANCE,unk_technetium_99m_renal_clearance
+14665,CALCIUM LVL,num_calcium
+14665,CALCIUM,num_calcium
+208243833,TCR-AB+/RA+/RO+ (%,pct_tcr_ab_pos_ra_pos_ro_pos
+208243833,TCR-AB+/RA+/RO+ (%),pct_tcr_ab_pos_ra_pos_ro_pos
+64632,WT,num_weight
+64632,WT (DOSING WT),num_weight
+9006261,HEMATOPATHOLOGY FINAL REPORT,unk_bm_hemo_exam_rpt
+9006261,BONE MARROW EXAMINATION REPORT,unk_bm_hemo_exam_rpt
+9006484,CYTOGENETICS FINAL REPORT,unk_cytogenetics_rpt
+9006484,CYTOGENETICS REPORT,unk_cytogenetics_rpt
+9006769,IMMUNOPHENOTYPING FINAL RPT,unk_immunophenotype_final_rpt
+9006769,IMMUNOPHENOTYPING FINAL REPORT,unk_immunophenotype_final_rpt
+9006955,MOLE PATH FINAL REPORT,unk_mol_path_rpt
+9006955,MOLECULAR PATHOLOGY REPORT,unk_mol_path_rpt
+307442,ANC,num_neutrophil_abs
+26499-4,ANC,num_neutrophil_abs
+45059118,BMT CYTOMEGALOVIRUS TOTAL ANTIBODY,lgl_bmt_cytomegalovirus_antibody
+ANTI-CMV IGG,BMT CYTOMEGALOVIRUS TOTAL ANTIBODY,lgl_bmt_cytomegalovirus_antibody
+45069499,BMT HEPATITIS B CORE TOTAL ANTIBODY,lgl_bmt_hep_b_core_antibody
+ANTI-HBC,BMT HEPATITIS B CORE TOTAL ANTIBODY,lgl_bmt_hep_b_core_antibody
+44820845,BMT HEPATITIS B SURFACE ANTIGEN,lgl_bmt_hep_b_surface_antigen
+HBSAG,BMT HEPATITIS B SURFACE ANTIGEN,lgl_bmt_hep_b_surface_antigen
+21292413,BMT HEPATITIS C ANTIBODY,lgl_hep_c_antibody
+ANTI-HCV,BMT HEPATITIS C ANTIBODY,lgl_hep_c_antibody
+44821645,BMT HIV-1/2 ANTIBODY SCREEN,lgl_bmt_hiv1_hiv2_antibody
+ANTI-HIV-1/HIV-2,BMT HIV-1/2 ANTIBODY SCREEN,lgl_bmt_hiv1_hiv2_antibody
+44821331,BMT HIV-1/HCV/HBV NAT,lgl_bmt_hiv1_hcv_hbv_nat
+HIV-1 RNA,BMT HIV-1/HCV/HBV NAT,lgl_bmt_hiv1_hcv_hbv_nat
+44821558,BMT HTLV 1/2 ANTIBODY SCREEN,lgl_bmt_htlv1_htlv_2_antibody
+ANTI-HTLV-I/HTLV-II,BMT HTLV 1/2 ANTIBODY SCREEN,lgl_bmt_htlv1_htlv_2_antibody
+44821682,BMT WEST NILE VIRUS NUCLEIC ACID TEST,lgl_bmt_west_nile_virus_nat
+WNV RNA,BMT WEST NILE VIRUS NUCLEIC ACID TEST,lgl_bmt_west_nile_virus_nat
+357931,BODY MASS INDEX,num_bmi
+39156-5,BODY MASS INDEX,num_bmi
+11333493,CYTOMEGALOVIRUS BY PCR,lgl_cytomegalovirus_pcr
+CMV,CYTOMEGALOVIRUS BY PCR,lgl_cytomegalovirus_pcr
+6419328,EPSTEIN BARR VIRUS PCR BLOOD,lgl_epstein_barr_virus_pcr_blood
+EBV,EPSTEIN BARR VIRUS PCR BLOOD,lgl_epstein_barr_virus_pcr_blood
+11033,HCT,pct_hct
+20570-8,HCT,pct_hct
+11703,HEPATITIS B SURFACE ANTIBODY,lgl_hep_b_surface_antibody
+ANTI-HBS,HEPATITIS B SURFACE ANTIBODY,lgl_hep_b_surface_antibody
+11032,HGB,num_hgb
+718-7,HGB,num_hgb
+60635,HT,num_height
+8302-2,HT,num_height
+187761885,IMMATURE GRANULOCYTES ABSOLUTE AUTO,num_immature_granulocyte_abs_auto
+51584-1,IMMATURE GRANULOCYTES ABSOLUTE AUTO,num_immature_granulocyte_abs_auto
+11018,LYMPHOCYTES AUTO (%),pct_lymphocyte_auto
+26478-8,LYMPHOCYTES AUTO (%),pct_lymphocyte_auto
+11025,MONOCYTES AUTO (%),pct_monocyte_auto
+26485-3,MONOCYTES AUTO (%),pct_monocyte_auto
+11027,NEUTROPHILS AUTO (%),pct_neutrophil_auto
+26511-6,NEUTROPHILS AUTO (%),pct_neutrophil_auto
+11064,PLATELET COUNT,num_platelet
+26515-7,PLATELET COUNT,num_platelet
+5189017,RUBELLA IGG ANTIBODY,lgl_rubella_igg_antibody
+ANTI-RUB IGG,RUBELLA IGG ANTIBODY,lgl_rubella_igg_antibody
+5138382,TOXOPLASMA IGG ANTIBODY,lgl_toxoplasma_igg_antibody
+ANTI-TOXO IGG,TOXOPLASMA IGG ANTIBODY,lgl_toxoplasma_igg_antibody
+5189015,VARICELLA ZOSTER VIRUS IGG ANTIBODY,lgl_varicella_zoster_virus_igg_antibody
+55274-5,VARICELLA ZOSTER VIRUS IGG ANTIBODY,lgl_varicella_zoster_virus_igg_antibody
+14684,WBC X10E3/MM3,num_wbc_10e3_mm3
+26464-8,WBC X10E3/MM3,num_wbc_10e3_mm3
+85369,25-OH VITAMIN D,num_vit_d_25oh
+133848955,ABSOLUTE LYMPHOCYTES,num_lymphocyte_abs
+68974852,ADENOVIRUS PCR,lgl_adenovirus_pcr
+7219803,ADENOVIRUS PCR BLOOD,lgl_adenovirus_pcr_blood
+73141706,ADENOVIRUS PCR PRELIMINARY REPORT,unk_adenovirous_pcr_prelim_rpt
+14659,ALBUMIN LVL,num_albumin
+10474,ALKALINE PHOSPHATASE,num_alkaline_phosphatase
+10937,ALT (SGPT),num_alanine_aminotransferase
+212951,ANION GAP (WITHOUT K),num_anion_gap_wo_k
+253213,ANTIBODY SCREEN,lgl_antibody_screen
+307443,APC AUTO,num_argon_plasma_coagulation_auto
+7524021,ASPERGILLUS ANTIGEN,lgl_aspergillus_antigen
+10936,AST (SGOT),num_aspartate_aminotransferase
+11023,BASOPHIL ABSOLUTE AUTO,num_baso_abs_auto
+11021,BASOPHILS AUTO (%),pct_baso_auto
+10484,BILIRUBIN,num_bilirubin
+11037,BLAST (%),pct_blast
+253209,BLOOD TYPE,cat_blood_type
+44821798,BMT CHAGAS SCREEN,lgl_bmt_chagas_screen
+44836123,BMT HEPATITIS B SURF AG CONFIRM NOTE,lgl_bmt_hep_b_surface_antigen_confirm_note
+44821368,BMT HIV1/HCV/HBV NAT DISCRIMINATORY NOTE,lgl_bmt_hiv1_hcv_hbv_nat_discrim_note
+44821227,BMT SYPHILIS IGG ANTIBODY,lgl_bmt_syphilis_igg_antibody
+3140-1,BODY SURFACE AREA,num_bsa
+13375073,BORDETELLA PERTUSSIS IGG,lgl_anti_b_pertussis
+68975227,BORDETELLA PERTUSSIS PCR,lgl_pcr_b_pertussis
+139213,BSA,num_bsa
+10947,BUN,num_blood_urea_nitrogen
+4852075,C-REACTIVE PROTEIN,num_c_reactive_protein
+37362864,CARDIAC RHYTHM STRIPS,unk_cardiac_rhythm_strips
+133847449,CD19 (PAN-B ) (%),pct_cd19_pan_b
+133847465,CD19 ABSOLUTE,num_cd19
+133847535,CD3 (MATURE T) (%),pct_cd3
+133847771,CD3 ABSOLUTE,num_cd3_abs
+133848521,"CD3+, CD4+ (HELPER T) (%)",pct_cd3_pos_cd4_pos
+133848569,"CD3+, CD4+ ABSOLUTE",num_cd3_pos_cd4_pos_abs
+133848585,"CD3+, CD8+ (SUPPRESSOR T) (%)",pct_cd3_pos_cd8_pos
+133848639,"CD3+, CD8+ ABSOLUTE",num_cd3_pos_cd8_pos_abs
+208243809,CD3+/TCR-AB+ (%),pct_cd3_pos_tcr_ab_pos
+208243849,CD3+/TCR-AB+ ABSOLUTE,num_cd3_pos_tcr_ab_pos_abs
+208243817,CD3+/TCR-GD+ (%),pct_cd3_pos_tcr_gd_pos
+208243857,CD3+/TCR-GD+ ABSOLUTE,num_cd3_pos_tcr_gd_pos_abs
+133847921,"CD3-, CD56+/CD16+ (NK) (%)",pct_cd3_neg_cd56_pos_cd16_pos
+133848483,"CD3-, CD56+/CD16+ ABSOLUTE",num_cd3_neg_cd56_pos_cd16_pos_abs
+133848647,CD4:CD8 RATIO,num_cd4_cd8_ratio
+68975411,CHLAMYDIA PNEUMONIAE PCR,lgl_chlamydia_pneumo_pcr
+10505,CL,num_chloride
+10513,CO2,num_co2
+68975141,CORONAVIRUS PCR,lgl_coronavirus_pcr
+10516,CREATININE,num_creatinine
+10519,CREATININE CLEARANCE (NORM. TO 1.73M2),num_creatinine_clearance
+7415305,CREATININE URINE 24 HR,num_creatinine_urine_24hr
+45260625,CSF CYTOLOGY FINAL REPORT,unk_csf_cyto_rpt
+37343200,CUFF MONITORED DBP,num_dbp_cuff
+34451766,CUFF MONITORED MAP,num_map_cuff
+34451757,CUFF MONITORED SBP,num_sbp_cuff
+8074592,CULTURE RECTAL SURVEILLANCE,unk_culture_rectal_surveillance
+10483,D BILIRUBIN,num_d_bilirubin
+DT LAST CONT,DATE OF LAST CONTACT,dt_last_contact
+60620,DBP,num_dbp
+11692,DIPHTHERIA ANTIBODY,lgl_diptheria_antibody
+8999921,DLCOCOR % PREDICTED PRE-BRONCH,pct_dlcocor_predicted_pre_bronch
+9690581,ECHOCARDIOGRAM REPORT,unk_ecg_rpt
+42064713,EKG 12 LEAD,unk_ekg_12_lead
+10634348,EKG REPORT,unk_ekg_rpt
+22480352,END TIDAL CO2,pct_end_tidal_co2
+11019,EOSINOPHIL ABSOLUTE AUTO,num_eosinophil_abs_auto
+11020,EOSINOPHILS AUTO (%),pct_eosinophil_auto
+57821357,EPSTEIN-BARR NUCLEAR AG IGG AB,lgl_epstein_barr_virus_nuclear_antigen_igg_ab
+43754211,EPSTEIN-BARR VIRAL CAPSID AG IGG AB,lgl_epstein_barr_virus_viral_capsid_antigen_igg_ab
+57821402,EPSTEIN-BARR VIRAL CAPSID AG IGM AB,lgl_epstein_barr_virus_viral_capsid_antigen_igm_ab
+3702259,FERRITIN,num_ferritin
+20951583,FEV1 % PREDICTED PRE-BRONCH,pct_fev1_predicted_pre_bronch
+3702255,FREE T4,num_free_t4
+3702260,FSH,num_follicle_stimulating_hormone
+8999917,FVC % PREDICTED PRE-BRONCH,pct_fvc_predicted_pre_bronch
+36389775,GENERAL CONSENT FORM,unk_general_consent_form
+10511,HDL CHOLESTEROL,num_cholesterol_hdl
+34450437,HEART RATE MONITORED,num_heart_rate_monitored
+7415372,HEMOGLOBIN A1C,num_hba1c
+11695,HEPATITIS C ANTIBODY,lgl_hep_c_antibody
+11783,HERPES SIMPLEX VIRUS TYPES 1 AND 2 IGG,lgl_hsv1_hsv2_igg
+60616,HR,num_heart_rate
+157558,HR METHOD,unk_heart_rate_method
+17328672,HUMAN HERPESVIRUS 6 PCR BLOOD,lgl_human_herpesvirus_6_pcr_blood
+68974798,HUMAN METAPNEUMOVIRUS PCR,lgl_human_metapneumovirus_pcr
+68975105,HUMAN RHINOVIRUS/ENTEROVIRUS PCR,lgl_rhinovirus_enterovirus_pcr
+187761877,IMMATURE GRANULOCYTES AUTO (%),pct_immature_granulocyte_auto
+187761917,IMMATURE RETICULOCYTE FRACTION,pct_immature_reticulocyte_fraction
+4852077,IMMUNOGLOBULIN A,num_iga
+7508278,IMMUNOGLOBULIN E,num_ige
+7415393,IMMUNOGLOBULIN G,num_igg
+7415401,IMMUNOGLOBULIN M,num_igm
+31541280,INFLUENZA A PCR,lgl_influenza_a_pcr
+68974473,INFLUENZA B PCR,lgl_influenza_b_pcr
+7415407,INSULIN,num_insulin
+7415282,IRON,num_iron
+10928,K,num_potassium
+10538,LDH,num_ldh
+10512,LDL CHOLESTEROL,num_cholesterol_ldl
+3702261,LUTEINIZING HORMONE,num_lh
+11017,LYMPHOCYTE ABSOLUTE AUTO,num_lymphocyte_abs_auto
+133848697,LYMPHOCYTE SUBSET COMMENT,unk_lymphocyte_subset_comment
+10475,MAGNESIUM,num_magnesium
+11014,MCH,num_mch
+11015,MCHC,num_mchc
+11013,MCV,num_mcv
+34452042,MEAN ARTERIAL PRESSURE,num_map
+5189013,MEASLES (RUBEOLA) IGG,lgl_measles_igg
+30070053,MINIMAL RESIDUAL DISEASE REPORT,unk_mrd_rpt
+11024,MONOCYTE ABSOLUTE AUTO,num_monocyte_abs_auto
+11062,MPV,num_mpv
+4224287,NA,num_na
+38619228,NEUTROPHIL ABSOLUTE AUTO,num_neutrophil_abs_auto
+4663013,NEW/PREVIOUS HEIGHT,unk_new_prev_height
+37198455,NOTICE OF ADVANCE DIRECTIVE,unk_notice_of_advance_directive
+34452434,OXYGEN DEVICE,cat_oxygen_device
+34450414,OXYGEN FLOW RATE,num_oxygen_flow_rate
+8676656,PAIN SCALE,unk_pain_scale
+8725698,PAIN SCORE,unk_pain_score
+68975022,PARAINFLUENZA VIRUS PCR,lgl_parainfluenza_virus_pcr
+10921,PHOSPHORUS,num_phosphorus
+7052554,POLIOVIRUS ANTIBODIES TYPE 1,lgl_poliovirus_antibodies_type1
+7052556,POLIOVIRUS ANTIBODIES TYPE 3,lgl_poliovirus_antibodies_type3
+19359290,PREGNANCY QUALITATIVE RAPID BLOOD,lgl_pregnancy_qualitative_rapid_blood
+88496,PRELIMINARY SHORTENING FRACTION,pct_preliminary_shortening_fraction
+10935,"PROTEIN, TOTAL",num_protein_total
+37198651,PT/PARENTRIGHTS/RESPONSIBILITIES RECEIPT,unk_parent_rights_responsibilities_rcpt
+9489169,PULMONARY FUNCTION RESULTS,unk_pulmonary_function_results
+20041777,PULSE 02 SAT,pct_o2_sat
+36192403,PULSE O2 SAT MONITORED,pct_o2_sat_monitored
+41080512,RADIATION ONCOLOGY TX SUMMARY W/ IMAGES,unk_rad_onc_tx_summ_images
+11036,RBC X10E6/MM3,num_rbc_10e6_mm3
+11016,RDW,num_rdw
+21309453,REASON FOR VITAL SIGNS,cat_vital_sign_reason
+34451728,RESPIRATORY RATE MONITORED,num_respiratory_rate_monitored
+68974683,RESPIRATORY SYNCYTIAL VIRUS PCR,lgl_rsv_pcr
+247177,RETIC COUNT PERCENTAGE,pct_reticulocyte
+12532538,RETICULOCYTE (X10^6),num_reticulocyte_1e6
+187761909,RETICULOCYTE HEMOGLOBIN EQUIVALENT,num_reticulocyte_hemoglobin_equivalent
+60617,RR,num_respiratory_rate
+139215,SBP,num_sbp
+106828913,STREP PNEUMO ANTIBODY INTERPRETATION,unk_strep_pneumo_antibody_interp
+208243873,TCR-AB+/RA+/RO+ ABSOLUTE,num_tcr_ab_pos_ra_pos_ro_pos_abs
+208243841,TCR-AB+/RA+/RO- (%),pct_tcr_ab_pos_ra_pos_ro_neg
+208243881,TCR-AB+/RA+/RO- ABSOLUTE,num_tcr_ab_pos_ra_pos_ro_neg_abs
+208243825,TCR-AB+/RA-/RO+ (%),pct_tcr_ab_pos_ra_neg_ro_pos
+208243865,TCR-AB+/RA-/RO+ ABSOLUTE,num_tcr_ab_pos_ra_neg_ro_pos_abs
+60615,TEMP,num_temp
+157562,TEMP METHOD,unk_temp_method
+3702262,TESTOSTERONE LEVEL,num_testosterone
+11783776,TETANUS ANTITOXOID ANTIBODY,lgl_tetanus_antitoxoid_antibody
+20951616,TLC (PLETH) % PREDICTED PRE-BRONCH,pct_tlc_pleth_predicted_pre_bronch
+10510,TOTAL CHOLESTEROL,num_cholesterol_total
+10518,TOTAL VOLUME,num_blood_volume
+3702253,TSH,num_tsh
+11127,U APPEARANCE,unk_u_appearance
+11123,U BILIRUBIN,cat_u_bili
+11131,U BLOOD,cat_u_blood
+11126,U COLOR,unk_u_color
+10969280,U GLUCOSE,cat_u_glucose
+11132,U KETONES,cat_u_ketones
+3639958,U LEUKOCYTE ESTERASE,cat_u_leuko
+11125,U NITRITE,cat_u_no2
+11128,U PH,num_u_ph
+11133,U PROTEIN,cat_u_prot
+11129,U SPECIFIC GRAVITY,num_u_specific_gravity
+115132399,U UROBILINOGEN,cat_u_urobilinogen
+54057238,UA MICROSCOPIC,unk_ua_microscopic
+10950,URIC ACID,num_ua
+4663016,VENOUS ACCESS DEVICE,unk_venous_access_device
+30070003,VRE PCR RECTAL SURVEILLANCE,lgl_vre_rectal_surveillance_pcr

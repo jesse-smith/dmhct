@@ -1,0 +1,30 @@
+﻿Old_Name,New_Name
+EntityID,entity_id
+Date of Transplant,dt_trans
+Transplant_type_2,cat_donor_type
+Event Category,cat_ae_type
+Event Description,cat_ae_desc
+SNOMED Code,cat_ae_desc_snomed
+Was This Event an SAE,lgl_sae
+Grade,num_nci_grade
+Are Symptoms Intermittent,lgl_intermittent_symptoms
+Onset Date,dt_ae_onset
+Resolved Date,dt_ae_resolve
+Ongoing?,lgl_ongoing
+Action Taken TGT Code,cat_action_taken
+Patient Outcome TGT Code,cat_outcome
+Classification of Event TGT Code,cat_ae_class
+Relationship to Treatment TGT Code,cat_ae_tx_related
+Related to CliniMACS Device,cat_ae_clinimacs_related
+AE Comments,chr_comments
+Maximum Stage of Acute GVHD,num_agvhd_max_stage
+Overall Grade of Acute GVHD,num_agvhd_max_grade
+Acute GVHD Diagnosis Determined By,cat_agvhd_dx_method
+Chronic GVHD NIH Consensus Score,num_cgvhd_score_nih_consensus
+"NIH Criteria, Global Grading of Chronic GVHD",cat_cgvhd_grade_nih
+Seattle Criteria Grading of Chronic GVHD,chr_cgvhd_grade_seattle
+Chronic GVHD Diagnosis Determined By,cat_cgvhd_dx_method
+TGT Actions Taken,chr_actions_taken
+Stem Cell Reaction?,lgl_stell_cell_reaction
+TimeStamp,dt_timestamp
+Dataload_Timestamp,dt_dataload_timestamp
