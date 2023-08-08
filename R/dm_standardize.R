@@ -174,11 +174,20 @@ cerner_standardize <- function(dt) {
   # Replace `na_patterns` with `NA` in both `result` and `units`
   dt$result <- str_to_na(dt$result, na_patterns)
   dt$units <- str_to_na(dt$units, na_patterns)
-  # # Key by `test_std`
-  # data.table::setkeyv(dt, "test_std")
-  # # If units are empty, look for them in `result`
-  # units_pat <- "(?<=[0-9] )[A-Z0-9/%^ ]+"
-  # dt[is.na(units), "units2" := stringr::str_extract(result, )]
+  # If units are empty, look for them in `result`
+  units <- unique(dt$units)
+  units <- union(units, c(
+    "%", "% TOTAL LYMPHOCYTES", "/MM3", "AU/ML", "BPM", "BR/MIN", "C", "CM", "FL", "G/DL", "G/ML", "INT UNITS/ML",
+    "IU/ML", "IV", "KG", "KG/M2", "KU/L", "L", "L/MIN", "LOG", "LOG10 COPIES/ML", "LOG10 IU/ML", "M2", "MEQ/L",
+    "MG/24 HR", "MG/DL", "MILLI INT UNITS/ML", "MILLIONINTUNITS", "ML", "ML/MIN", "MM HG", "MM3", "MMOL/L", "PG", "PIV",
+    "U/ML", "UG/ML", "UNITS/L", "UNITS/ML", "X10^3/MM3", "X10^6/MM3", "X10E3/MM3", "X10E6/MM3"
+  ))
+  units <- sort(units[!is.na(units)])
+  units_pat <- paste0("(?<![A-Z])(?:", paste0(units, collapse = "|"), ")$")
+  dt[, "units2" := stringr::str_extract(result, ..units_pat)]
+  dt[is.na(units) & !is.na(units2), "units" := units2]
+  dt[!is.na(units2), "result" := std_chr(stringr::str_remove(result, ..units_pat))]
+  dt[, "units2" := NULL]
   # Re-order to original row order
   data.table::setorderv(dt, ".row_id_")
   dt[, ".row_id_" := NULL]
