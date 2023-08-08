@@ -44,7 +44,7 @@ Diagnosis_Date,dt_dx
 Diagnosis,cat_dx
 Diagnosis Group,cat_dx_grp
 Mailgnant,lgl_malignant
-DonorID,id_donor
+DonorID,donor_id
 Donor_Gender,cat_donor_sex
 DonorDateofBirth,dt_donor_birth
 donor_race,cat_donor_race
