@@ -57,7 +57,9 @@ dm_sql_server <- function(con = con_sql_server()) {
   # Create data model
   dm_remote <- con %>%
     # Create data model
-    dm::dm_from_con(con, learn_keys = FALSE, table_names = tbl_nms) %>%
+    dm::dm_from_con(learn_keys = FALSE) %>%
+    # Select desired tables
+    dm::dm_select_tbl({{ tbl_nms }}) %>%
     # Move large column types to end of tables to avoid ODBC error
     UtilsSQLServer$dm_relocate_large_cols() %>%
     # Add timestamps to tables
