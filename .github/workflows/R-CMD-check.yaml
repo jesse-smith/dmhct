@@ -22,8 +22,8 @@ jobs:
           - {os: windows-latest, r: 'release'}
           - {os: ubuntu-latest,  r: 'release'}
           # Build against oldest supported version of R
-          # 3.6 also triggers use of RTools35
-          - {os: windows-latest, r: '3.6'}
+          # 4.0 also triggers use of RTools40
+          - {os: windows-latest, r: '4.0'}
           # Build against upcoming version of R
           - {os: ubuntu-latest,  r: 'devel'}
 
