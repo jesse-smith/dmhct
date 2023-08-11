@@ -4,7 +4,7 @@
 \alias{dm_standardize}
 \title{Standardize Column Values in a local \code{dm} for MLinHCT}
 \usage{
-dm_standardize(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE)
+dm_standardize(dm_local = dm_extract(), quiet = FALSE)
 }
 \arguments{
 \item{dm_local}{A local \code{dm} object containing MLinHCT data from \code{dm_extract()}}

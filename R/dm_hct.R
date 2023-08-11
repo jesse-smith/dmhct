@@ -17,7 +17,8 @@ dm_hct <- function(
   as_rlang_error(checkmate::assert_flag(.quiet))
   style_bold <- if (rlang::is_installed("cli")) cli::style_bold else function(x) x
   # Extract data from database
-  if (!.quiet) rlang::inform(style_bold("Extracting database (1/4)"))
+  force(dm_remote)
+  if (!.quiet) rlang::inform(style_bold("Extracting database tables (1/4)"))
   dm <- dm_extract(dm_remote = dm_remote, ..., .legacy = FALSE, .excl_dsmb = .excl_dsmb)
   if (!.quiet) rlang::inform("Done.")
   # Standardize columns

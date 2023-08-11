@@ -26,10 +26,12 @@
 #' @return The input `dm` with standarized column values
 #'
 #' @export
-dm_standardize <- function(dm_local = dm_extract(.legacy = FALSE), quiet = FALSE) {
+dm_standardize <- function(dm_local = dm_extract(), quiet = FALSE) {
+  as_rlang_error(checkmate::assert_flag(quiet))
+  force(dm_local)
   tbl_nms <- names(dm_local)
   for (tbl_nm in tbl_nms) {
-    if (!quiet) rlang::inform(paste0("Standardizing ", tbl_nm))
+    if (!quiet) rlang::inform(paste0("Standardizing `", tbl_nm, "`"))
     # Standardize table
     dt <- tbl_standardize(dm_local[[tbl_nm]], quiet = quiet)
     # Handle EAV tables
@@ -125,9 +127,9 @@ tbl_standardize <- function(tbl, arg_nm = NULL, quiet = FALSE) {
   if (is_tibble(tbl)) {
     setTBL(dt)
   } else if (is.data.frame(tbl)) {
-    setDF(dt)
+    data.table::setDF(dt)
   } else {
-    dt <- tryCatch(as(dt, tbl_class), error = function(e) dt)
+    dt <- tryCatch(methods::as(dt, tbl_class), error = function(e) dt)
   }
 
   dt
@@ -172,8 +174,8 @@ cerner_standardize <- function(dt) {
   col_order <- unique(c(cols[1:test_loc], "test_std", cols[(test_loc + 1L):length(cols)]))
   data.table::setcolorder(dt, col_order)
   # Replace `na_patterns` with `NA` in both `result` and `units`
-  dt$result <- str_to_na(dt$result, na_patterns)
-  dt$units <- str_to_na(dt$units, na_patterns)
+  dt[, "result" := str_to_na(result, ..na_patterns)]
+  dt[, "units" := str_to_na(units, ..na_patterns)]
   # If units are empty, look for them in `result`
   units <- unique(dt$units)
   units <- union(units, c(

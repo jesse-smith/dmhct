@@ -72,6 +72,8 @@ dm_extract <- function(
   }
   if (.legacy) return(dm_extract_legacy(dm_remote, collect = .collect, reset = .reset))
 
+  force(dm_remote)
+
   # Standardize table names
   tbl_nms <- names(dm_remote)
   tbl_new_nms <- janitor::make_clean_names(tbl_nms)
@@ -161,7 +163,7 @@ dm_extract <- function(
   # Load data onto local machine or just return
   if (.collect) {
     dm_local <- purrr::imap(dm::dm_get_tables(dm_remote), function(x, i) {
-      if (!.quiet) rlang::inform(paste0("Extracting ", i))
+      if (!.quiet) rlang::inform(paste0("Extracting `", i, "`"))
       ts <- attr(x, "timestamp")
       x <- dplyr::collect(x)
       attr(x, "timestamp") <- ts
