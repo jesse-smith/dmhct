@@ -1,7 +1,17 @@
+#' Pivot Tables in Entity-Attribute-Value Format
+#'
+#' @param dm_cmb A `dm` object with combined tables. This is necessary b/c the pivoted tables are created by
+#'   `dm_combine()`.
+#' @param quiet Should update messages be suppressed?
+#'
+#' @return The updated `dm` object
+#'
+#' @export
 dm_pivot <- function(dm_cmb = dm_combine(), quiet = FALSE) {
   as_rlang_error(checkmate::assert_flag(quiet))
+  force(dm_cmb)
   # Pivot HLA table
-  if (!quiet) rlang::inform("Pivoting hla...")
+  if (!quiet) rlang::inform("Pivoting `hla`")
   dm_cmb <- dm_cmb %>%
     dm::dm_select_tbl(-"hla") %>%
     dm::dm("hla" := pivot_hla(dm_cmb$hla))
