@@ -9,10 +9,10 @@
     containing HCT data to a `dm` object with cleaned tables.">
 <title>A Data Model Package for the MLinHCT Project • dmhct</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.1.3/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.1.3/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link href="deps/bootstrap-5.2.2/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.2.2/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
-<!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Data Model Package for the MLinHCT Project">
+<!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="A Data Model Package for the MLinHCT Project">
 <meta property="og:description" content="Extracts, Loads, and Transforms data from the SQL Server
     containing HCT data to a `dm` object with cleaned tables.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -28,7 +28,7 @@
     
     <a class="navbar-brand me-2" href="index.html">dmhct</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,9 +39,6 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item">
   <a class="nav-link" href="reference/index.html">Reference</a>
-</li>
-<li class="nav-item">
-  <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
@@ -67,513 +64,198 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a> extracts, loads, and transforms data for the MLinHCT project. The main functionality is wrapped into a single function, <code><a href="reference/dm_elt.html">dm_elt()</a></code>, that produces a <code>dm</code> object (from the <a href="https://cynkra.github.io/dm/" class="external-link"><code>{dm}</code> package</a>) containing cleaned data tables from an SQL Server database.</p>
+<p><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a> extracts and prepares data for the MLinHCT project. The main functionality is wrapped into a single function, <code><a href="reference/dm_hct.html">dm_hct()</a></code>, that produces a <code>dm</code> object (from the <a href="https://cynkra.github.io/dm/" class="external-link"><code>{dm}</code> package</a>) containing cleaned data tables from an SQL Server database.</p>
 <div class="section level2">
 <h2 id="installation-and-setup">Installation and Setup<a class="anchor" aria-label="anchor" href="#installation-and-setup"></a>
 </h2>
 <p>You can install <a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a> from Github with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"jesse-smith/dmhct"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"jesse-smith/dmhct"</span><span class="op">)</span></span></code></pre></div>
 <p>To use the package, you will need access to the SQL Server instance containing the data. This is provided by St. Jude IT; contact <a href="mailto:jesse.smith@stjude.org">Jesse Smith</a> to learn how to gain access.</p>
 </div>
 <div class="section level2">
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
-<p>The main functionality in the package is in <code><a href="reference/dm_elt.html">dm_elt()</a></code>; this function combines two sub-functions, <code><a href="reference/dm_extract.html">dm_extract()</a></code> and <code><a href="reference/dm_transform.html">dm_transform()</a></code>, into a small pipeline.</p>
+<p><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a> is designed to get data from the SQL server database to your local machine in a standardized fashion. As noted above, the main entry point to this functionality is the <code><a href="reference/dm_hct.html">dm_hct()</a></code> function, which may be all you ever need to use. It wraps the entire pipeline into a single call:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a></span><span class="op">)</span></span>
-<span><span class="va">dm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dm_elt.html">dm_elt</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="va">dm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dm_extract.html">dm_extract</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu"><a href="reference/dm_transform.html">dm_transform</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">dm</span>, <span class="va">dm2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p>The <code><a href="reference/dm_extract.html">dm_extract()</a></code> function is itself a wrapper for a pipeline used to extract the necessary data from the SQL Server and load it onto your local machine. The <code><a href="reference/dm_transform.html">dm_transform()</a></code> function provides a second pipeline that cleans each table in the database and outputs tables ready for analysis (as <a href="https://rdatatable.gitlab.io/data.table/" class="external-link"><code>data.table</code>s</a>).</p>
-<p>Both functions cache their results by default and compare a checksum of their inputs to a cached checksum to determine whether re-calculation is necessary. This allows the functions to simply read the cached outputs, rather than repeat costly computations, if the input is unchanged. Each function also allows the user to force re-computation and cache overwriting via a <code>reset</code> argument. This caching behavior (and the control arguments) are made available in the <code><a href="reference/dm_elt.html">dm_elt()</a></code> wrapper as well.</p>
-</div>
-<div class="section level2">
-<h2 id="tables">Tables<a class="anchor" aria-label="anchor" href="#tables"></a>
-</h2>
-<p>The data used in the project consists of 10 tables:</p>
+<span><span class="va">dm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dm_hct.html">dm_hct</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Creating remote `dm` object</span></span>
+<span><span class="co">#&gt; Extracting database tables (1/4)</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v2`</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v3`</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v4_1`</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v4_2`</span></span>
+<span><span class="co">#&gt; Extracting `cerner_obs`</span></span>
+<span><span class="co">#&gt; Extracting `cerner1`</span></span>
+<span><span class="co">#&gt; Extracting `cerner2`</span></span>
+<span><span class="co">#&gt; Extracting `cerner3`</span></span>
+<span><span class="co">#&gt; Extracting `chimerism`</span></span>
+<span><span class="co">#&gt; Extracting `death`</span></span>
+<span><span class="co">#&gt; Extracting `disease_status`</span></span>
+<span><span class="co">#&gt; Extracting `encounters`</span></span>
+<span><span class="co">#&gt; Extracting `engraftment`</span></span>
+<span><span class="co">#&gt; Extracting `gvhd`</span></span>
+<span><span class="co">#&gt; Extracting `hla_donor`</span></span>
+<span><span class="co">#&gt; Extracting `hla_patient`</span></span>
+<span><span class="co">#&gt; Extracting `master`</span></span>
+<span><span class="co">#&gt; Extracting `mrd`</span></span>
+<span><span class="co">#&gt; Extracting `prior_transplant`</span></span>
+<span><span class="co">#&gt; Extracting `relapse`</span></span>
+<span><span class="co">#&gt; Done.</span></span>
+<span><span class="co">#&gt; Standardizing table columns (2/4)</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v2`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v3`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v4_1`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v4_2`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner_obs`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner1`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner2`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner3`</span></span>
+<span><span class="co">#&gt; Standardizing `chimerism`</span></span>
+<span><span class="co">#&gt; Standardizing `death`</span></span>
+<span><span class="co">#&gt; Standardizing `disease_status`</span></span>
+<span><span class="co">#&gt; Standardizing `encounters`</span></span>
+<span><span class="co">#&gt; Standardizing `engraftment`</span></span>
+<span><span class="co">#&gt; Standardizing `gvhd`</span></span>
+<span><span class="co">#&gt; Standardizing `hla_donor`</span></span>
+<span><span class="co">#&gt; Standardizing `hla_patient`</span></span>
+<span><span class="co">#&gt; Standardizing `master`</span></span>
+<span><span class="co">#&gt; Standardizing `mrd`</span></span>
+<span><span class="co">#&gt; Standardizing `prior_transplant`</span></span>
+<span><span class="co">#&gt; Standardizing `relapse`</span></span>
+<span><span class="co">#&gt; Combining similar tables (3/4)</span></span>
+<span><span class="co">#&gt; Combining `cerner1`, `cerner2`, `cerner3`</span></span>
+<span><span class="co">#&gt; Combining hla_donor, hla_patient</span></span>
+<span><span class="co">#&gt; Done.</span></span>
+<span><span class="co">#&gt; Pivoting E-A-V tables (4/4)</span></span>
+<span><span class="co">#&gt; Pivoting `hla`</span></span>
+<span><span class="co">#&gt; Done.</span></span>
+<span><span class="va">dm</span></span>
+<span><span class="co">#&gt; ── Metadata ────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Tables: `adverse_events_v2`, `adverse_events_v3`, `adverse_events_v4_1`, `adverse_events_v4_2`, `cerner`, … (17 total)</span></span>
+<span><span class="co">#&gt; Columns: 332</span></span>
+<span><span class="co">#&gt; Primary keys: 0</span></span>
+<span><span class="co">#&gt; Foreign keys: 0</span></span></code></pre></div>
+<p>The pipeline can be decompsed into 4 steps, which are each responsible for a set of tasks:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code><a href="reference/dm_extract.html">dm_extract()</a></code> pulls the database from the SQL server onto your local machine</li>
+<li>
+<code><a href="reference/dm_standardize.html">dm_standardize()</a></code> ensures that column names, types, and contents are consistent and in a standard format</li>
+<li>
+<code><a href="reference/dm_combine.html">dm_combine()</a></code> combines certain sets of tables into single tables</li>
+<li>
+<code><a href="reference/dm_pivot.html">dm_pivot()</a></code> pivots long-format datasets that can be widened without losing information</li>
+</ol>
+<p>Running these functions in order will produce the same results as running <code><a href="reference/dm_hct.html">dm_hct()</a></code>:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dm</span><span class="op">)</span><span class="op">[</span>, <span class="op">-</span><span class="fl">3L</span><span class="op">]</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt;                Length Class     </span></span>
-<span><span class="co">#&gt; hla            14     data.table</span></span>
-<span><span class="co">#&gt; master         26     data.table</span></span>
-<span><span class="co">#&gt; cerner          5     data.table</span></span>
-<span><span class="co">#&gt; chimerism       5     data.table</span></span>
-<span><span class="co">#&gt; death          10     data.table</span></span>
-<span><span class="co">#&gt; disease_status  4     data.table</span></span>
-<span><span class="co">#&gt; engraftment     5     data.table</span></span>
-<span><span class="co">#&gt; gvhd            5     data.table</span></span>
-<span><span class="co">#&gt; mrd             5     data.table</span></span>
-<span><span class="co">#&gt; relapse         4     data.table</span></span></code></pre></div>
-<p>The entry point to this data is the <code>master</code> table, which contains one row per patient and includes baseline variables such as transplant date, patient demographics, and donor characteristics. It also contains unique IDs for patients (<code>entity_id</code>) and donors (<code>donor_id</code>).</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">skimr</span><span class="fu">::</span><span class="fu">skim</span><span class="op">(</span><span class="va">dm</span><span class="op">$</span><span class="va">master</span>, <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">dm</span><span class="op">$</span><span class="va">master</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"entity_id"</span>, <span class="st">"donor_id"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span></code></pre></div>
-<table class="table"><tbody>
-<tr class="odd">
-<td align="left">Name</td>
-<td align="left">dm$master</td>
-</tr>
-<tr class="even">
-<td align="left">Number of rows</td>
-<td align="left">852</td>
-</tr>
-<tr class="odd">
-<td align="left">Number of columns</td>
-<td align="left">26</td>
-</tr>
-<tr class="even">
-<td align="left">Key</td>
-<td align="left">entity_id</td>
-</tr>
-<tr class="odd">
-<td align="left">_______________________</td>
-<td align="left"></td>
-</tr>
-<tr class="even">
-<td align="left">Column type frequency:</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">character</td>
-<td align="left">1</td>
-</tr>
-<tr class="even">
-<td align="left">Date</td>
-<td align="left">1</td>
-</tr>
-<tr class="odd">
-<td align="left">factor</td>
-<td align="left">13</td>
-</tr>
-<tr class="even">
-<td align="left">logical</td>
-<td align="left">3</td>
-</tr>
-<tr class="odd">
-<td align="left">numeric</td>
-<td align="left">6</td>
-</tr>
-<tr class="even">
-<td align="left">________________________</td>
-<td align="left"></td>
-</tr>
-<tr class="odd">
-<td align="left">Group variables</td>
-<td align="left">None</td>
-</tr>
-</tbody></table>
-<p>Data summary</p>
-<p><strong>Variable type: character</strong></p>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="23%">
-<col width="12%">
-<col width="17%">
-<col width="5%">
-<col width="5%">
-<col width="8%">
-<col width="11%">
-<col width="14%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="right">min</th>
-<th align="right">max</th>
-<th align="right">empty</th>
-<th align="right">n_unique</th>
-<th align="right">whitespace</th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="left">cat_donor_relation</td>
-<td align="right">285</td>
-<td align="right">0.67</td>
-<td align="right">4</td>
-<td align="right">11</td>
-<td align="right">0</td>
-<td align="right">7</td>
-<td align="right">0</td>
-</tr></tbody>
-</table>
-<p><strong>Variable type: Date</strong></p>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="17%">
-<col width="12%">
-<col width="17%">
-<col width="13%">
-<col width="13%">
-<col width="13%">
-<col width="11%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="left">min</th>
-<th align="left">max</th>
-<th align="left">median</th>
-<th align="right">n_unique</th>
-</tr></thead>
-<tbody><tr class="odd">
-<td align="left">dt_trans</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="left">2000-01-15</td>
-<td align="left">2022-09-06</td>
-<td align="left">2012-02-02</td>
-<td align="right">807</td>
-</tr></tbody>
-</table>
-<p><strong>Variable type: factor</strong></p>
-<table class="table">
-<colgroup>
-<col width="25%">
-<col width="9%">
-<col width="13%">
-<col width="7%">
-<col width="8%">
-<col width="34%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="left">ordered</th>
-<th align="right">n_unique</th>
-<th align="left">top_counts</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">cat_degree_match06</td>
-<td align="right">62</td>
-<td align="right">0.93</td>
-<td align="left">TRUE</td>
-<td align="right">4</td>
-<td align="left">6: 499, 3: 138, 4: 83, 5: 70</td>
-</tr>
-<tr class="even">
-<td align="left">cat_degree_match08</td>
-<td align="right">230</td>
-<td align="right">0.73</td>
-<td align="left">TRUE</td>
-<td align="right">5</td>
-<td align="left">8: 340, 4: 116, 5: 85, 7: 43</td>
-</tr>
-<tr class="odd">
-<td align="left">cat_degree_match10</td>
-<td align="right">234</td>
-<td align="right">0.73</td>
-<td align="left">TRUE</td>
-<td align="right">6</td>
-<td align="left">10: 320, 6: 86, 5: 82, 7: 53</td>
-</tr>
-<tr class="even">
-<td align="left">cat_disease_status_at_trans</td>
-<td align="right">188</td>
-<td align="right">0.78</td>
-<td align="left">FALSE</td>
-<td align="right">3</td>
-<td align="left">Rem: 411, Act: 179, Rel: 74</td>
-</tr>
-<tr class="odd">
-<td align="left">cat_donor_race</td>
-<td align="right">182</td>
-<td align="right">0.79</td>
-<td align="left">FALSE</td>
-<td align="right">3</td>
-<td align="left">Whi: 434, Bla: 146, Oth: 90</td>
-</tr>
-<tr class="even">
-<td align="left">cat_donor_sex</td>
-<td align="right">43</td>
-<td align="right">0.95</td>
-<td align="left">FALSE</td>
-<td align="right">2</td>
-<td align="left">Mal: 419, Fem: 390</td>
-</tr>
-<tr class="odd">
-<td align="left">cat_dx_grp</td>
-<td align="right">10</td>
-<td align="right">0.99</td>
-<td align="left">FALSE</td>
-<td align="right">9</td>
-<td align="left">AML: 283, ALL: 267, Oth: 94, Apl: 58</td>
-</tr>
-<tr class="even">
-<td align="left">cat_ethnicity</td>
-<td align="right">8</td>
-<td align="right">0.99</td>
-<td align="left">FALSE</td>
-<td align="right">2</td>
-<td align="left">Not: 669, His: 175</td>
-</tr>
-<tr class="odd">
-<td align="left">cat_matched_related</td>
-<td align="right">368</td>
-<td align="right">0.57</td>
-<td align="left">FALSE</td>
-<td align="right">4</td>
-<td align="left">mis: 177, mat: 149, mat: 127, mis: 31</td>
-</tr>
-<tr class="even">
-<td align="left">cat_prep_type</td>
-<td align="right">224</td>
-<td align="right">0.74</td>
-<td align="left">TRUE</td>
-<td align="right">3</td>
-<td align="left">Mye: 373, Red: 219, Non: 36</td>
-</tr>
-<tr class="odd">
-<td align="left">cat_product_type</td>
-<td align="right">4</td>
-<td align="right">1.00</td>
-<td align="left">FALSE</td>
-<td align="right">2</td>
-<td align="left">Mar: 481, PBS: 367, Cor: 0, Mar: 0</td>
-</tr>
-<tr class="even">
-<td align="left">cat_race</td>
-<td align="right">1</td>
-<td align="right">1.00</td>
-<td align="left">FALSE</td>
-<td align="right">3</td>
-<td align="left">Whi: 597, Bla: 165, Oth: 89</td>
-</tr>
-<tr class="odd">
-<td align="left">cat_sex</td>
-<td align="right">0</td>
-<td align="right">1.00</td>
-<td align="left">FALSE</td>
-<td align="right">2</td>
-<td align="left">Mal: 487, Fem: 365</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: logical</strong></p>
-<table class="table">
-<colgroup>
-<col width="26%">
-<col width="15%">
-<col width="21%">
-<col width="8%">
-<col width="28%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="right">mean</th>
-<th align="left">count</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">lgl_death</td>
-<td align="right">0</td>
-<td align="right">1.00</td>
-<td align="right">0.35</td>
-<td align="left">FAL: 551, TRU: 301</td>
-</tr>
-<tr class="even">
-<td align="left">lgl_donor_related</td>
-<td align="right">285</td>
-<td align="right">0.67</td>
-<td align="right">0.58</td>
-<td align="left">TRU: 328, FAL: 239</td>
-</tr>
-<tr class="odd">
-<td align="left">lgl_malignant</td>
-<td align="right">10</td>
-<td align="right">0.99</td>
-<td align="right">0.78</td>
-<td align="left">TRU: 657, FAL: 185</td>
-</tr>
-</tbody>
-</table>
-<p><strong>Variable type: numeric</strong></p>
-<table style="width:100%;" class="table">
-<colgroup>
-<col width="13%">
-<col width="9%">
-<col width="13%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="8%">
-<col width="6%">
-</colgroup>
-<thead><tr class="header">
-<th align="left">skim_variable</th>
-<th align="right">n_missing</th>
-<th align="right">complete_rate</th>
-<th align="right">mean</th>
-<th align="right">sd</th>
-<th align="right">p0</th>
-<th align="right">p25</th>
-<th align="right">p50</th>
-<th align="right">p75</th>
-<th align="right">p100</th>
-<th align="left">hist</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">num_age</td>
-<td align="right">0</td>
-<td align="right">1.00</td>
-<td align="right">9.61</td>
-<td align="right">5.98</td>
-<td align="right">0.07</td>
-<td align="right">4.19</td>
-<td align="right">9.77</td>
-<td align="right">14.97</td>
-<td align="right">20.88</td>
-<td align="left">▇▆▆▇▅</td>
-</tr>
-<tr class="even">
-<td align="left">num_age_donor</td>
-<td align="right">49</td>
-<td align="right">0.94</td>
-<td align="right">28.06</td>
-<td align="right">12.64</td>
-<td align="right">0.60</td>
-<td align="right">20.02</td>
-<td align="right">28.19</td>
-<td align="right">37.71</td>
-<td align="right">65.72</td>
-<td align="left">▃▇▇▅▁</td>
-</tr>
-<tr class="odd">
-<td align="left">num_dt_trans</td>
-<td align="right">0</td>
-<td align="right">1.00</td>
-<td align="right">2011.78</td>
-<td align="right">6.65</td>
-<td align="right">2000.04</td>
-<td align="right">2005.71</td>
-<td align="right">2012.09</td>
-<td align="right">2017.87</td>
-<td align="right">2022.68</td>
-<td align="left">▆▇▆▆▇</td>
-</tr>
-<tr class="even">
-<td align="left">num_n_trans</td>
-<td align="right">0</td>
-<td align="right">1.00</td>
-<td align="right">1.00</td>
-<td align="right">0.00</td>
-<td align="right">1.00</td>
-<td align="right">1.00</td>
-<td align="right">1.00</td>
-<td align="right">1.00</td>
-<td align="right">1.00</td>
-<td align="left">▁▁▇▁▁</td>
-</tr>
-<tr class="odd">
-<td align="left">num_t_surv</td>
-<td align="right">0</td>
-<td align="right">1.00</td>
-<td align="right">2342.64</td>
-<td align="right">2410.06</td>
-<td align="right">-48.00</td>
-<td align="right">271.75</td>
-<td align="right">1283.00</td>
-<td align="right">4044.00</td>
-<td align="right">8216.00</td>
-<td align="left">▇▂▂▂▁</td>
-</tr>
-<tr class="even">
-<td align="left">num_t_trans</td>
-<td align="right">11</td>
-<td align="right">0.99</td>
-<td align="right">692.43</td>
-<td align="right">1060.01</td>
-<td align="right">16.00</td>
-<td align="right">123.00</td>
-<td align="right">232.00</td>
-<td align="right">748.00</td>
-<td align="right">6668.00</td>
-<td align="left">▇▁▁▁▁</td>
-</tr>
-</tbody>
-</table>
-<p>All tables are keyed by one or more columns that are (jointly) unique to each row. Each table contains <code>entity_id</code> as a primary key; most tables except <code>master</code> then define additional keys specific to the data contained in that table (for example, many tables contain repeated observations for a patient and thus add a <code>date</code> key).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">dm</span><span class="fu">::</span><span class="fu"><a href="https://cynkra.github.io/dm/reference/dm_get_all_pks.html" class="external-link">dm_get_all_pks</a></span><span class="op">(</span><span class="va">dm</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>pk_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html" class="external-link">format</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">pk_col</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; # A tibble: 10 × 2</span></span>
-<span><span class="co">#&gt;    table          pk_col                      </span></span>
-<span><span class="co">#&gt;    &lt;chr&gt;          &lt;chr&gt;                       </span></span>
-<span><span class="co">#&gt;  1 hla            entity_id, donor_id         </span></span>
-<span><span class="co">#&gt;  2 master         entity_id                   </span></span>
-<span><span class="co">#&gt;  3 cerner         entity_id, test, date, n_obs</span></span>
-<span><span class="co">#&gt;  4 chimerism      entity_id, date, cat_source </span></span>
-<span><span class="co">#&gt;  5 death          entity_id, n_id             </span></span>
-<span><span class="co">#&gt;  6 disease_status entity_id, date, n_status   </span></span>
-<span><span class="co">#&gt;  7 engraftment    entity_id, date             </span></span>
-<span><span class="co">#&gt;  8 gvhd           entity_id, date, cat_site   </span></span>
-<span><span class="co">#&gt;  9 mrd            entity_id, date             </span></span>
-<span><span class="co">#&gt; 10 relapse        entity_id, date</span></span></code></pre></div>
-<p>Here’s a list of data (non-key) columns in each table (excluding <code>master</code>):</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
-<span>  table <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="fu">dm</span><span class="fu">::</span><span class="fu"><a href="https://cynkra.github.io/dm/reference/dm_select_tbl.html" class="external-link">dm_select_tbl</a></span><span class="op">(</span><span class="va">dm</span>, <span class="op">-</span><span class="st">"master"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu">dm</span><span class="fu">::</span><span class="fu"><a href="https://cynkra.github.io/dm/reference/dm_select_tbl.html" class="external-link">dm_select_tbl</a></span><span class="op">(</span><span class="va">dm</span>, <span class="op">-</span><span class="st">"master"</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://Rdatatable.gitlab.io/data.table/reference/setkey.html" class="external-link">key</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span></span>
-<span>  <span class="op">}</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; Upgrading dm object created with dm &lt;= 0.3.0.</span></span>
-<span><span class="co">#&gt; # A tibble: 9 × 2</span></span>
-<span><span class="co">#&gt;   table          cols                                                           </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;          &lt;chr&gt;                                                          </span></span>
-<span><span class="co">#&gt; 1 hla            n06, n08, n10, a, b, drb1, c, dqb1, dpb1, drb345, dqa1, dpa1   </span></span>
-<span><span class="co">#&gt; 2 cerner         result                                                         </span></span>
-<span><span class="co">#&gt; 3 chimerism      cat_method, pct_donor                                          </span></span>
-<span><span class="co">#&gt; 4 death          dt_death, dt_trans, lgl_on_therapy, cat_death_location, cat_de…</span></span>
-<span><span class="co">#&gt; 5 disease_status disease_status                                                 </span></span>
-<span><span class="co">#&gt; 6 engraftment    recovery_anc500, recovery_plat20k, recovery_plat50k            </span></span>
-<span><span class="co">#&gt; 7 gvhd           cat_grade, cat_type                                            </span></span>
-<span><span class="co">#&gt; 8 mrd            cat_method, pct_result, lgl_result                             </span></span>
-<span><span class="co">#&gt; 9 relapse        lgl_remission, dt_remission</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">dm2</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/dm_extract.html">dm_extract</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/dm_standardize.html">dm_standardize</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/dm_combine.html">dm_combine</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="reference/dm_pivot.html">dm_pivot</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Creating remote `dm` object</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v2`</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v3`</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v4_1`</span></span>
+<span><span class="co">#&gt; Extracting `adverse_events_v4_2`</span></span>
+<span><span class="co">#&gt; Extracting `cerner_obs`</span></span>
+<span><span class="co">#&gt; Extracting `cerner1`</span></span>
+<span><span class="co">#&gt; Extracting `cerner2`</span></span>
+<span><span class="co">#&gt; Extracting `cerner3`</span></span>
+<span><span class="co">#&gt; Extracting `chimerism`</span></span>
+<span><span class="co">#&gt; Extracting `death`</span></span>
+<span><span class="co">#&gt; Extracting `disease_status`</span></span>
+<span><span class="co">#&gt; Extracting `encounters`</span></span>
+<span><span class="co">#&gt; Extracting `engraftment`</span></span>
+<span><span class="co">#&gt; Extracting `gvhd`</span></span>
+<span><span class="co">#&gt; Extracting `hla_donor`</span></span>
+<span><span class="co">#&gt; Extracting `hla_patient`</span></span>
+<span><span class="co">#&gt; Extracting `master`</span></span>
+<span><span class="co">#&gt; Extracting `mrd`</span></span>
+<span><span class="co">#&gt; Extracting `prior_transplant`</span></span>
+<span><span class="co">#&gt; Extracting `relapse`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v2`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v3`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v4_1`</span></span>
+<span><span class="co">#&gt; Standardizing `adverse_events_v4_2`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner_obs`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner1`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner2`</span></span>
+<span><span class="co">#&gt; Standardizing `cerner3`</span></span>
+<span><span class="co">#&gt; Standardizing `chimerism`</span></span>
+<span><span class="co">#&gt; Standardizing `death`</span></span>
+<span><span class="co">#&gt; Standardizing `disease_status`</span></span>
+<span><span class="co">#&gt; Standardizing `encounters`</span></span>
+<span><span class="co">#&gt; Standardizing `engraftment`</span></span>
+<span><span class="co">#&gt; Standardizing `gvhd`</span></span>
+<span><span class="co">#&gt; Standardizing `hla_donor`</span></span>
+<span><span class="co">#&gt; Standardizing `hla_patient`</span></span>
+<span><span class="co">#&gt; Standardizing `master`</span></span>
+<span><span class="co">#&gt; Standardizing `mrd`</span></span>
+<span><span class="co">#&gt; Standardizing `prior_transplant`</span></span>
+<span><span class="co">#&gt; Standardizing `relapse`</span></span>
+<span><span class="co">#&gt; Combining `cerner1`, `cerner2`, `cerner3`</span></span>
+<span><span class="co">#&gt; Combining hla_donor, hla_patient</span></span>
+<span><span class="co">#&gt; Pivoting `hla`</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">dm</span>, <span class="va">dm2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
+<h2 id="changes-from-previous-versions">Changes from previous versions<a class="anchor" aria-label="anchor" href="#changes-from-previous-versions"></a>
 </h2>
-<p>You can find code generating results for each table in a corresponding file named <code>"dm_[table-name]"</code>. Changes should not be committed directly to the <code>main</code> branch; going forward, all changes should be made in a feature/bug fix/etc. branch and reviewed by another team member before merging. The Github repository is set up to dis-allow pushing direct commits to <code>main</code>.</p>
+<p>The previous iteration of this package used the <code><a href="reference/dm_elt.html">dm_elt()</a></code> function as the wrapper and attempted to thoroughly clean all datasets. Unfortunately, this requires many ad hoc decisions, hard-coded transformations, and frequent revisions; the resulting codebase was very difficult to maintain and frequently made decisions that would be better left to the user. The updated version of this package attempts to do much less; its goal is to provide the database in a standardized format, with all information from the original data preserved. This passes the task of interpreting the data to the user.</p>
+<p>Note that <code><a href="reference/dm_elt.html">dm_elt()</a></code> and its components are still exported; <code>dm_extract(.legacy = TRUE)</code> and <code><a href="reference/dm_transform.html">dm_transform()</a></code> are the components of this pipeline. However, these functions (and the <code>.legacy</code> argument of <code><a href="reference/dm_extract.html">dm_extract()</a></code>) are deprecated, and their use is discouraged.</p>
 </div>
 <div class="section level2">
-<h2 id="using-with-predhct">Using with <code>{predHCT}</code>
-<a class="anchor" aria-label="anchor" href="#using-with-predhct"></a>
+<h2 id="variable-typing-system">Variable Typing System<a class="anchor" aria-label="anchor" href="#variable-typing-system"></a>
 </h2>
-<p><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a> was created to de-couple data cleaning code from modeling code for the MLinHCT project. However, it is a required dependency for the main modeling package, <code>{predHCT}</code>. While it is possible to install your local development version for use with <code>{predHCT}</code>, this is not recommended. Instead, please install from the <code>main</code> Github branch using the installation instructions at the beginning of this document.</p>
+<p>Variables names are snakecased, with a prefix describing the content of the variable. This mostly maps to familiar R classes: <code>num_</code> and <code>pct_</code> variables are <code>numeric</code> (with <code>pct_</code> taking values between 0 and 100), <code>lgl_</code> variables are <code>logical</code>, and <code>chr_</code> variables are <code>character</code>. There are exceptions, though; these come in two forms. The first are variable prefixes that could map to an <strong>R</strong> type, but do not because the underlying data may need additional cleaning. This is currently true for <code>cat_</code> variable, which are conceptually <code>factor</code>s but are stored as <code>character</code>, and <code>dt_</code> variables, which may be stored as either <code>Date</code> or <code>POSIXct</code> class, depending on whether time information is included. The second form of exception are variables that have no equivalent base <strong>R</strong> type; this is currently true for <code>mcat_</code> variables, which represent categorical variables that can take multiple values simultaneously, and <code>intvl_</code> variables, which are interval-valued numerics. Both are stored as <code>character</code>, with <code>mcat_</code> values separated by a comma and <code>intvl_</code> represented in standard interval notation.</p>
+</div>
+<div class="section level2">
+<h2 id="helper-functions">Helper Functions<a class="anchor" aria-label="anchor" href="#helper-functions"></a>
+</h2>
+<p><a href="https://github.com/jesse-smith/dmhct" class="external-link">dmhct</a> exports several sets of helper functions. These are used internally to make data extraction and cleaning a bit easier. The functions are listed below; see each function’s documentation for more information.</p>
+<div class="section level3">
+<h3 id="data-cleaning">Data cleaning<a class="anchor" aria-label="anchor" href="#data-cleaning"></a>
+</h3>
+<ul>
+<li>
+<code><a href="reference/intvl_to_matrix.html">intvl_to_matrix()</a></code>: Converts the interval representation in <code>intvl_</code> variables to a 4-column <code>numeric</code> matrix (these variables are standardized by <code><a href="reference/std_intvl.html">std_intvl()</a></code> - see below). Columns represent open or closed bounds and the location of those bounds.</li>
+<li>
+<code><a href="reference/non_numeric.html">non_numeric()</a></code>: Helps quickly determine what values in a vector cannot be converted to <code>numeric</code> (either directly or by <code><a href="reference/std_num.html">std_num()</a></code> - see below).</li>
+<li>
+<code><a href="reference/std_chr.html">std_chr()</a></code>: Standardizes <code>character</code> vectors to ASCII text with no unnecessary whitespace and a given case. By default, it will retain newlines inside a text, though it will condense consecutive newlines and any carriage returns into a single newline.</li>
+<li>
+<code><a href="reference/std_date.html">std_date()</a></code>: Standardizes a date vector and returns a vector in <code>Date</code> or <code>POSIXct</code> format, depending on whether there is sub-daily information available in the data.</li>
+<li>
+<code><a href="reference/std_intvl.html">std_intvl()</a></code>: standardizes the various interval representations found in the ML in HCT dataset. These intervals are assumed to be in percentage values and this lie between 0 and 100. Explicit intervals with upper and lower bounds, as well as implicit intervals using &lt; and &gt;, are handled (&lt;= and &gt;= are currently not supported). The return value simplifies to &lt;/&gt;/&lt;=/&gt;= or a single numeric value if possible and uses standard interval notation if not.</li>
+<li>
+<code><a href="reference/std_lgl.html">std_lgl()</a></code>: Converts other classes to <code>logical</code> vectors. All but <code>character</code> use <code><a href="https://rdrr.io/r/base/logical.html" class="external-link">as.logical()</a></code>; <code>character</code> (and <code>factor</code>) vectors are converted by first (optionally) standardizing with <code><a href="reference/std_chr.html">std_chr()</a></code> and then assigning logical value based on the regular expression in <code>true</code>, <code>false</code>, and <code>na</code>.</li>
+<li>
+<code><a href="reference/std_num.html">std_num()</a></code>: Converts all base classes, as well as <code>int64</code>, <code>factor</code>, <code>Date</code>, and <code>POSIXt</code> vectors to the simplest <code>numeric</code> form possible. <code>character</code> vectors (and <code>factor</code>s) are standardized using <code><a href="reference/std_chr.html">std_chr()</a></code> by default, then converted. <code>double</code> and <code>int64</code> vectors will be converted to <code>integer</code> if this does not cause overflow or loss of precision. <code>Date</code> is converted to <code>integer</code>, and <code>POSIXt</code> is converted to <code>integer</code> if the range allows, otherwise <code>double</code>.</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="database-interaction">Database Interaction<a class="anchor" aria-label="anchor" href="#database-interaction"></a>
+</h3>
+<ul>
+<li>
+<code><a href="reference/con_sql_server.html">con_sql_server()</a></code>: Creates an ODBC connection to the SQL server storing MLinHCT data</li>
+<li>
+<code><a href="reference/dm_sql_server.html">dm_sql_server()</a></code>: Creates a <a href="https://dm.cynkra.com/" class="external-link">dm</a> object representing data on the SQL server</li>
+<li>
+<code><a href="reference/dm_disconnect.html">dm_disconnect()</a></code>: Closes the remote server connection used by a <code>dm</code> object, if present</li>
+<li>
+<code><a href="reference/dm_is_remote.html">dm_is_remote()</a></code>: Determines whether a <code>dm</code> object has a remote connection</li>
+<li>
+<code><a href="reference/dm_compute.html">dm_compute()</a></code>: Forces computation of database queries on all tables in a <code>dm</code> object</li>
+<li>
+<code><a href="reference/dm_collect.html">dm_collect()</a></code>: Computes all database queries (as in <code><a href="reference/dm_compute.html">dm_compute()</a></code>), and additionally loads tables onto local machine</li>
+</ul>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -625,7 +307,7 @@
 
 <div class="pkgdown-footer-right">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
     </footer>

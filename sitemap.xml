@@ -13,31 +13,13 @@
     <loc>https://jesse-smith.github.io/dmhct/index.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/news/index.html</loc>
-  </url>
-  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/DMCache.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsCerner.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsChimerism.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/UtilsDate.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsHLA.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsMRD.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsMaster.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/UtilsRelapse.html</loc>
+    <loc>https://jesse-smith.github.io/dmhct/reference/chr_to_num.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/con_sql_server.html</loc>
@@ -46,94 +28,43 @@
     <loc>https://jesse-smith.github.io/dmhct/reference/df_class.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_cerner_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_cerner_transform.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_chimerism_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_chimerism_transform.html</loc>
-  </url>
-  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_collect.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_combine.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_compute.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_death_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_death_transform.html</loc>
-  </url>
-  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_disconnect.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_disease_status_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_disease_status_transform.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_elt.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_engraftment_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_engraftment_transform.html</loc>
-  </url>
-  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_extract.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_gvhd_extract.html</loc>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_extract_legacy.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_gvhd_transform.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_hla_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_hla_transform.html</loc>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_hct.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_is_remote.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_master_extract.html</loc>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_pivot.html</loc>
   </url>
   <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_master_transform.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_mrd_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_mrd_transform.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_clean.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_extract.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_filter.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_std.html</loc>
-  </url>
-  <url>
-    <loc>https://jesse-smith.github.io/dmhct/reference/dm_relapse_transform.html</loc>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_sort.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_sql_server.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/dm_standardize.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/dm_transform.html</loc>
@@ -148,9 +79,39 @@
     <loc>https://jesse-smith.github.io/dmhct/reference/index.html</loc>
   </url>
   <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/intvl_to_matrix.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/na_patterns.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/non_numeric.html</loc>
+  </url>
+  <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/path_create.html</loc>
   </url>
   <url>
     <loc>https://jesse-smith.github.io/dmhct/reference/pipe.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/select_colnames.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/std_chr.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/std_date.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/std_intvl.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/std_lgl.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/std_num.html</loc>
+  </url>
+  <url>
+    <loc>https://jesse-smith.github.io/dmhct/reference/str_to_na.html</loc>
   </url>
 </urlset>
