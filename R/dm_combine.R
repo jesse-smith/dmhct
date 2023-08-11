@@ -12,7 +12,7 @@ dm_combine <- function(dm_std = dm_standardize(), quiet = FALSE) {
   force(dm_std)
   # Cerner tables
   cerner_tbls <- stringr::str_subset(names(dm_std), "cerner[0-9]")
-  if (!quiet) rlang::inform(paste0("Combining ", paste0(cerner_tbls, collapse = ", ")))
+  if (!quiet) rlang::inform(paste0("Combining ", paste0("`", cerner_tbls, "`", collapse = ", ")))
   # Combine cerner
   cerner_combined <- dm_std %>%
     dm::dm_select_tbl({{ cerner_tbls }}) %>%

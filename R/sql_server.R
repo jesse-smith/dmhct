@@ -37,17 +37,21 @@ con_sql_server <- function(
 #'
 #' @param con `[Microsoft SQL Server]` An ODBC connection to an SQL Server
 #'   database
+#' @param quiet Should update messages be suppressed?
 #'
 #' @return `[dm]` A `dm` containing HCT data
 #'
 #' @export
-dm_sql_server <- function(con = con_sql_server()) {
+dm_sql_server <- function(con = con_sql_server(), quiet = FALSE) {
+  as_rlang_error(checkmate::assert_flag(quiet))
   # Check whether connection is default argument (and thus transient)
   con_quo <- rlang::enquo(con)
   con_is_simple_call <- rlang::is_call_simple(con_quo)
   con_quo_nm <- if (con_is_simple_call) rlang::call_name(con_quo) else NULL
   con_fml_nm <- rlang::call_name(rlang::fn_fmls()$con)
   con_is_default <- rlang::is_true(con_quo_nm == con_fml_nm)
+
+  if (!quiet) rlang::inform("Creating remote `dm` object")
 
   # Get table names (user tables only, exclude pivot and missing tables)
   tbl_nms <- odbc::dbListTables(
@@ -57,7 +61,9 @@ dm_sql_server <- function(con = con_sql_server()) {
   # Create data model
   dm_remote <- con %>%
     # Create data model
-    dm::dm_from_con(con, learn_keys = FALSE, table_names = tbl_nms) %>%
+    dm::dm_from_con(learn_keys = FALSE) %>%
+    # Select desired tables
+    dm::dm_select_tbl({{ tbl_nms }}) %>%
     # Move large column types to end of tables to avoid ODBC error
     UtilsSQLServer$dm_relocate_large_cols() %>%
     # Add timestamps to tables

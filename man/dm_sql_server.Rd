@@ -4,11 +4,13 @@
 \alias{dm_sql_server}
 \title{Create a \code{dm} Object of HCT Data from Connection to SQL Server}
 \usage{
-dm_sql_server(con = con_sql_server())
+dm_sql_server(con = con_sql_server(), quiet = FALSE)
 }
 \arguments{
 \item{con}{\verb{[Microsoft SQL Server]} An ODBC connection to an SQL Server
 database}
+
+\item{quiet}{Should update messages be suppressed?}
 }
 \value{
 \verb{[dm]} A \code{dm} containing HCT data

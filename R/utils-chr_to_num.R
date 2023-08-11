@@ -97,7 +97,7 @@ UtilsChrToNum <- R6Class(
       # Replace multiple decimals in a row
       x <- stringr::str_replace_all(x, "\\.{2,}", ".")
       # Remove trailing decimals
-      x <- stringr::str_remove_all(x, "(?<=[0-9])\\.(?=$|\\b)")
+      x <- stringr::str_remove_all(x, "(?<=[0-9])\\.(?=$|[^0-9])")
       # Handle multiple decimals with numbers between them
       if (multiple == "use_first") {
         str_replace_all_vec(x, "(?<=\\.)(?:([0-9]+)\\.)+", "\\1")
@@ -112,12 +112,12 @@ UtilsChrToNum <- R6Class(
     std_per = function(x, action = c("drop", "divide", "ignore")) {
       action <- rlang::arg_match(action)[[1L]]
       if (action == "drop") {
-        str_remove_all_vec(x, "(?i)(?<=[0-9])[\\b\\s]*%+|percent|per (?:hundred|thousand|million|billion|trillion)")
+        str_remove_all_vec(x, "(?i)(?<=[0-9])[\\b\\s]*(?:%+|percent|per (?:hundred|thousand|million|billion|trillion))\\.*")
       } else if (action == "divide") {
         x <- str_replace_all_vec(
           x,
           c(
-            "(?i)(?<=[0-9])[\\b\\s]*(?:%+|percent|per hundred)",
+            "(?i)(?<=[0-9])[\\b\\s]*(?:%+|percent|per hundred)\\.*",
             "(?i)(?<=[0-9])[\\b\\s]*per thousand",
             "(?i)(?<=[0-9])[\\b\\s]*per million",
             "(?i)(?<=[0-9])[\\b\\s]*per billion",

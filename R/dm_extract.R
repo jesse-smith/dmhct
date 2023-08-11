@@ -72,6 +72,8 @@ dm_extract <- function(
   }
   if (.legacy) return(dm_extract_legacy(dm_remote, collect = .collect, reset = .reset))
 
+  force(dm_remote)
+
   # Standardize table names
   tbl_nms <- names(dm_remote)
   tbl_new_nms <- janitor::make_clean_names(tbl_nms)
@@ -90,6 +92,7 @@ dm_extract <- function(
   nm_map <- utils::read.csv(
     system.file("extdata/table_name_map.csv", package = "dmhct"),
     colClasses = "character",
+    fileEncoding = "UTF-8-BOM",
     na.strings = NULL
   ) %>% dplyr::mutate(dplyr::across(dplyr::everything(), .fns = janitor::make_clean_names))
   dm_remote <- paste0(
@@ -130,6 +133,7 @@ dm_extract <- function(
       col_map <- utils::read.csv(
         map_file,
         colClasses = "character",
+        fileEncoding = "UTF-8-BOM",
         na.strings = NULL
       )
     }
@@ -159,7 +163,7 @@ dm_extract <- function(
   # Load data onto local machine or just return
   if (.collect) {
     dm_local <- purrr::imap(dm::dm_get_tables(dm_remote), function(x, i) {
-      if (!.quiet) rlang::inform(paste0("Extracting ", i))
+      if (!.quiet) rlang::inform(paste0("Extracting `", i, "`"))
       ts <- attr(x, "timestamp")
       x <- dplyr::collect(x)
       attr(x, "timestamp") <- ts
@@ -192,6 +196,7 @@ dsmb_entity_ids <- function(dm) {
   excl_colnms <- utils::read.csv(
     system.file("extdata/master_column_map.csv", package = "dmhct"),
     colClasses = "character",
+    fileEncoding = "UTF-8-BOM",
     na.strings = NULL
   ) %>%
     dplyr::filter(.data$New_Name %in% {{ excl_check_cols }}) %>%
