@@ -55,7 +55,7 @@ dm_sql_server <- function(con = con_sql_server(), quiet = FALSE) {
 
   # Get table names (user tables only, exclude pivot and missing tables)
   tbl_nms <- odbc::dbListTables(
-    con, catalog = "IRB_MLinHCT", schema = "dbo", table_type = "table"
+    con, schema = "dbo", table_type = "table"
   ) %>% stringr::str_subset("(?i)(^missing)|(_pivot$)", negate = TRUE)
 
   # Create data model
