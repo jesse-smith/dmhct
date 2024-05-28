@@ -29,10 +29,8 @@
 #' @param .reset `[lgl]` Should the legacy cache be forced to reset? Only applicable
 #'   if `.legacy = TRUE`; ignored otherwise. Will be deprecated in a future release,
 #'   along with `.legacy`.
-#' @param .excl_dsmb `[lgl]` Should patients marked as part of an active DSMB-monitored
-#'   study be excluded from the dataset? The default is `TRUE`; this should only
-#'   be changed if you are sure that your use case has been approved by the St.
-#'   Jude DSMB.
+#' @param .excl_dsmb `[lgl]` `r lifecycle::badge("deprecated")` This information
+#'   is no longer available in the remote database.
 #' @param .quiet Should status messages be suppressed?
 #' @param reset `[lgl]` `r lifecycle::badge("deprecated")` Please use
 #'   `.reset` instead. Current behavior will only consider this argument if
@@ -48,7 +46,7 @@ dm_extract <- function(
     .collect = TRUE,
     .legacy = FALSE,
     .reset = FALSE,
-    .excl_dsmb = TRUE,
+    .excl_dsmb = FALSE,
     .quiet = FALSE,
     reset = .reset
 ) {
@@ -151,13 +149,6 @@ dm_extract <- function(
     ) %>%
       rlang::parse_expr() %>%
       eval()
-    # Remove DSMB patients from table
-    if (.excl_dsmb) {
-      dm_remote <- dm_remote %>%
-        dm::dm_zoom_to(!!tbl_nm) %>%
-        dplyr::filter(!.data$entity_id %in% {{ dsmb_ids }}) %>%
-        dm::dm_update_zoomed()
-    }
   }
 
   # Load data onto local machine or just return
@@ -175,53 +166,4 @@ dm_extract <- function(
     gc(verbose = FALSE)
     dm_remote
   }
-}
-
-
-dsmb_entity_ids <- function(dm) {
-  # Initialize as empty vector
-  dsmb_ids <- bit64::integer64()
-  # Get DSMB protocols
-  dsmb_protocols <- utils::read.csv(
-    system.file("extdata/dsmb_protocols.csv", package = "dmhct"),
-    colClasses = "character",
-    fileEncoding = "UTF-8-BOM",
-    na.strings = NULL
-  ) %>%
-    dplyr::pull("Protocol") %>%
-    trimws() %>%
-    toupper()
-  # Get columns used for exclusion checking
-  excl_check_cols <- c("cat_protocol", "lgl_include")
-  excl_colnms <- utils::read.csv(
-    system.file("extdata/master_column_map.csv", package = "dmhct"),
-    colClasses = "character",
-    fileEncoding = "UTF-8-BOM",
-    na.strings = NULL
-  ) %>%
-    dplyr::filter(.data$New_Name %in% {{ excl_check_cols }}) %>%
-    dplyr::filter(.data$Old_Name %in% colnames({{ dm }}$master)) %>%
-    dplyr::arrange(.data$New_Name) %>%
-    dplyr::filter(dplyr::row_number() == 1L)
-  # use protocol if available
-  if (excl_colnms$New_Name == "cat_protocol") {
-    dsmb_ids <- dm$master %>%
-      dplyr::select("EntityID", Protocol = {{ excl_colnms }}$Old_Name) %>%
-      dplyr::mutate(Protocol = toupper(trimws(.data$Protocol))) %>%
-      dplyr::filter(.data$Protocol %in% {{ dsmb_protocols }}) %>%
-      dplyr::collect() %>%
-      dplyr::pull("EntityID")
-  # Otherwise, use `Include` column if available
-  } else if (excl_colnms$New_Name == "lgl_include") {
-    dsmb_ids <- dm$master %>%
-      dplyr::select("EntityID", Include = {{ excl_colnms }}$Old_name) %>%
-      dplyr::mutate(Include = as.logical(.data$Include)) %>%
-      dplyr::filter(.data$Include == FALSE) %>%
-      dplyr::collect() %>%
-      dplyr::pull("EntityID")
-  # Otherwise warn that info isn't available
-  } else {
-    rlang::warn("Exclusion information is not available; DSMB-monitored patients will be included in the dataset.")
-  }
-  sort(unique(dsmb_ids))
 }

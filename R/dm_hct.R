@@ -11,7 +11,7 @@
 dm_hct <- function(
     dm_remote = dm_sql_server(),
     ...,
-    .excl_dsmb = TRUE,
+    .excl_dsmb = FALSE,
     .quiet = FALSE
 ) {
   as_rlang_error(checkmate::assert_flag(.quiet))

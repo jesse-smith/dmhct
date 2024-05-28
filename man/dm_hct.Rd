@@ -4,7 +4,7 @@
 \alias{dm_hct}
 \title{Extract, Standardize, and Combine Tables from the MLinHCT Database}
 \usage{
-dm_hct(dm_remote = dm_sql_server(), ..., .excl_dsmb = TRUE, .quiet = FALSE)
+dm_hct(dm_remote = dm_sql_server(), ..., .excl_dsmb = FALSE, .quiet = FALSE)
 }
 \arguments{
 \item{dm_remote}{\verb{[dm]} A \code{dm} object connected to the remote SQL server
@@ -13,10 +13,8 @@ database}
 \item{...}{Names of tables to select; if provided, only these tables will be
 extracted}
 
-\item{.excl_dsmb}{\verb{[lgl]} Should patients marked as part of an active DSMB-monitored
-study be excluded from the dataset? The default is \code{TRUE}; this should only
-be changed if you are sure that your use case has been approved by the St.
-Jude DSMB.}
+\item{.excl_dsmb}{\verb{[lgl]} \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This information
+is no longer available in the remote database.}
 
 \item{.quiet}{Should status messages be suppressed?}
 }

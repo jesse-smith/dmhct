@@ -10,7 +10,7 @@ dm_extract(
   .collect = TRUE,
   .legacy = FALSE,
   .reset = FALSE,
-  .excl_dsmb = TRUE,
+  .excl_dsmb = FALSE,
   .quiet = FALSE,
   reset = .reset
 )
@@ -32,10 +32,8 @@ Will be deprecated in a future release, along with \code{.reset}.}
 if \code{.legacy = TRUE}; ignored otherwise. Will be deprecated in a future release,
 along with \code{.legacy}.}
 
-\item{.excl_dsmb}{\verb{[lgl]} Should patients marked as part of an active DSMB-monitored
-study be excluded from the dataset? The default is \code{TRUE}; this should only
-be changed if you are sure that your use case has been approved by the St.
-Jude DSMB.}
+\item{.excl_dsmb}{\verb{[lgl]} \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} This information
+is no longer available in the remote database.}
 
 \item{.quiet}{Should status messages be suppressed?}
 
