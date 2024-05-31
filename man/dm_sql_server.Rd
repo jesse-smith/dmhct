@@ -7,7 +7,7 @@
 dm_sql_server(con = con_sql_server(), quiet = FALSE)
 }
 \arguments{
-\item{con}{\verb{[Microsoft SQL Server]} An ODBC connection to an SQL Server
+\item{con}{\verb{[Microsoft SQL Server]} An ODBC connection to a SQL Server
 database}
 
 \item{quiet}{Should update messages be suppressed?}

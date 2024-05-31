@@ -1,12 +1,6 @@
 #' Connect to SQL Server Where Data is Stored
 #'
-#' @param server `[chr(1)]` Name of server
-#' @param database `[chr(1)]` Name of database
-#' @param trusted_connection `[lgl(1)]` Whether this is a "trusted connection";
-#'   using Windows Authentication means it is such a connection.
-#' @param dsn `[chr(1)]` A DSN name to use for connection; if provided, the
-#'   above arguments are ignored.
-#' @param ... Additional named arguments to pass to `odbc::dbConnect()`
+#' @param dbname `[chr(1)]` The name of the database to connect to
 #'
 #' @return `[Microsoft SQL Server]` An ODBC connection object
 #'
