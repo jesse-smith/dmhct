@@ -1,5 +1,21 @@
 #' Connect to SQL Server Where Data is Stored
 #'
+#' @param dbname `[chr(1)]` The name of the database to connect to
+#'
+#' @return `[Microsoft SQL Server]` An ODBC connection object
+#'
+#' @export
+con_sql_server <- function(dbname = c("IRB_MLinHCT", "EDW")) {
+  dbname <- rlang::arg_match(dbname)[[1L]]
+  switch(
+    dbname,
+    IRB_MLinHCT = con_irb_mlinhct(),
+    EDW = con_stjude_edw()
+  )
+}
+
+#' Connect to SQL Server Where IRB_MLinHCT Data is Stored
+#'
 #' @param server `[chr(1)]` Name of server
 #' @param database `[chr(1)]` Name of database
 #' @param trusted_connection `[lgl(1)]` Whether this is a "trusted connection";
@@ -11,7 +27,7 @@
 #' @return `[Microsoft SQL Server]` An ODBC connection object
 #'
 #' @export
-con_sql_server <- function(
+con_irb_mlinhct <- function(
     server = "SVWPBMTCTDB01",
     database = "IRB_MLinHCT",
     trusted_connection = TRUE,
@@ -33,9 +49,37 @@ con_sql_server <- function(
   }
 }
 
+
+#' Connect to SQL Server Where EDW Data is Stored
+#'
+#' @param server `[chr(1)]` Name of server
+#' @param database `[chr(1)]` Name of database
+#' @param authentication `[chr(1)]` The authentication type to use; default is
+#'   `ActiveDirectoryIntegrated`
+#' @param ... Additional named arguments to pass to `odbc::dbConnect()`
+#'
+#' @return `[Microsoft SQL Server]` An ODBC connection object
+#'
+#' @export
+con_stjude_edw <- function(
+    server = "stjude-edw.database.windows.net",
+    database = "EDW",
+    authentication = "ActiveDirectoryIntegrated",
+    ...
+) {
+  odbc::dbConnect(
+    odbc::odbc(),
+    driver = "ODBC Driver 17 for SQL Server",
+    server = server,
+    database = database,
+    authentication = authentication,
+    ...
+  )
+}
+
 #' Create a `dm` Object of HCT Data from Connection to SQL Server
 #'
-#' @param con `[Microsoft SQL Server]` An ODBC connection to an SQL Server
+#' @param con `[Microsoft SQL Server]` An ODBC connection to a SQL Server
 #'   database
 #' @param quiet Should update messages be suppressed?
 #'
@@ -43,6 +87,14 @@ con_sql_server <- function(
 #'
 #' @export
 dm_sql_server <- function(con = con_sql_server(), quiet = FALSE) {
+  switch(
+    con@info$dbname,
+    IRB_MLinHCT = dm_irb_mlinhct(con, quiet),
+    EDW = dm_stjude_edw(con, quiet)
+  )
+}
+
+dm_irb_mlinhct <- function(con = con_sql_server(), quiet = FALSE) {
   as_rlang_error(checkmate::assert_flag(quiet))
   # Check whether connection is default argument (and thus transient)
   con_quo <- rlang::enquo(con)
@@ -76,6 +128,39 @@ dm_sql_server <- function(con = con_sql_server(), quiet = FALSE) {
   dm_remote
 }
 
+dm_stjude_edw <- function(con = con_stjude_edw(), quiet = FALSE) {
+  as_rlang_error(checkmate::assert_flag(quiet))
+  # Check whether connection is default argument (and thus transient)
+  con_quo <- rlang::enquo(con)
+  con_is_simple_call <- rlang::is_call_simple(con_quo)
+  con_quo_nm <- if (con_is_simple_call) rlang::call_name(con_quo) else NULL
+  con_fml_nm <- rlang::call_name(rlang::fn_fmls()$con)
+  con_is_default <- rlang::is_true(con_quo_nm == con_fml_nm)
+
+  if (!quiet) rlang::inform("Creating remote `dm` object")
+
+  schema <- "bmtct_sandbox"
+
+  # Get table names (user tables only, exclude pivot and missing tables)
+  tbl_nms <- odbc::dbListTables(
+    con, schema = schema, table_type = "table"
+  ) %>% stringr::str_subset("(?i)(SJCAR19|CATCHAML|_pivot$)", negate = TRUE)
+
+  # Create data model
+  dm_remote <- con %>%
+    # Create data model
+    dm::dm_from_con(learn_keys = FALSE, schema = schema) %>%
+    # Select desired tables
+    dm::dm_select_tbl({{ tbl_nms }}) %>%
+    # Add timestamps to tables
+    UtilsSQLServer$dm_add_timestamps()
+
+  # Add attribute for default connection argument
+  attr(dm_remote, "con_is_default") <- con_is_default
+
+  # Return
+  dm_remote
+}
 
 UtilsSQLServer <- R6Class(
   "UtilsSQLServer",

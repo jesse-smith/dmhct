@@ -4,26 +4,10 @@
 \alias{con_sql_server}
 \title{Connect to SQL Server Where Data is Stored}
 \usage{
-con_sql_server(
-  server = "SVWPBMTCTDB01",
-  database = "IRB_MLinHCT",
-  trusted_connection = TRUE,
-  dsn = NULL,
-  ...
-)
+con_sql_server(dbname = c("IRB_MLinHCT", "EDW"))
 }
 \arguments{
-\item{server}{\verb{[chr(1)]} Name of server}
-
-\item{database}{\verb{[chr(1)]} Name of database}
-
-\item{trusted_connection}{\verb{[lgl(1)]} Whether this is a "trusted connection";
-using Windows Authentication means it is such a connection.}
-
-\item{dsn}{\verb{[chr(1)]} A DSN name to use for connection; if provided, the
-above arguments are ignored.}
-
-\item{...}{Additional named arguments to pass to \code{odbc::dbConnect()}}
+\item{dbname}{\verb{[chr(1)]} The name of the database to connect to}
 }
 \value{
 \verb{[Microsoft SQL Server]} An ODBC connection object
